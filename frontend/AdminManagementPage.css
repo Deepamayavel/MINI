@@ -1,0 +1,226 @@
+:root {
+  --bg: #f5f8ff;
+  --panel: #ffffff;
+  --text: #111827;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --primary: #3b82f6;
+  --danger: #ef4444;
+  --surface: #f8fafc;
+}
+
+.admin-management-shell {
+  min-height: 100vh;
+  padding: 24px;
+  background: var(--bg);
+  font-family: Inter, system-ui, sans-serif;
+}
+
+.admin-management-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.admin-back-button,
+.admin-logout-button {
+  border: none;
+  background: none;
+  color: var(--primary);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.admin-back-button {
+  margin-bottom: 8px;
+}
+
+.admin-management-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.admin-management-tab {
+  padding: 10px 18px;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.admin-management-tab--active {
+  background: var(--primary);
+  color: white;
+  border-color: transparent;
+}
+
+.admin-management-grid {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 24px;
+}
+
+.admin-management-panel,
+.admin-management-content {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 24px;
+}
+
+.admin-form-card {
+  display: grid;
+  gap: 18px;
+}
+
+.admin-form h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  color: var(--text);
+}
+
+.admin-field {
+  display: grid;
+  gap: 8px;
+}
+
+.admin-field span {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.admin-field input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  font-size: 1rem;
+  color: var(--text);
+  background: #fff;
+}
+
+.admin-submit-button,
+.admin-cancel-button {
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.admin-submit-button {
+  background: var(--primary);
+  color: white;
+}
+
+.admin-cancel-button {
+  background: #f3f4f6;
+  color: var(--text);
+}
+
+.admin-error-message {
+  padding: 12px 14px;
+  background: #fee2e2;
+  color: var(--danger);
+  border-radius: 14px;
+}
+
+.admin-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.admin-list-header h2 {
+  margin: 0;
+  color: var(--text);
+}
+
+.admin-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  display: table;
+}
+
+.admin-table-row {
+  display: table-row;
+}
+
+.admin-table-row--header {
+  background: transparent;
+}
+
+.admin-table-row--item {
+  background: var(--surface);
+}
+
+.admin-table-row--item:hover {
+  background: #eef2ff;
+}
+
+.admin-table-cell {
+  display: table-cell;
+  padding: 14px 16px;
+  color: var(--text);
+  vertical-align: middle;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  max-width: 200px;
+}
+
+.admin-table-cell--header {
+  font-weight: 700;
+  color: var(--muted);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 2px solid var(--border);
+  white-space: nowrap;
+}
+
+.admin-table-actions {
+  display: flex;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.admin-table-actions button {
+  border: none;
+  padding: 8px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.admin-table-actions button:first-child {
+  background: #eef2ff;
+  color: var(--primary);
+}
+
+.admin-delete-button {
+  background: #fee2e2 !important;
+  color: var(--danger) !important;
+}
+
+.admin-loading {
+  padding: 14px;
+  border-radius: 18px;
+  background: #eef2ff;
+  color: var(--primary);
+}

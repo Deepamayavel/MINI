@@ -1,0 +1,335 @@
+:root {
+  --bg: #0b3f2f;
+  --bg-soft: #0d4d35;
+  --card-bg: #ffffff;
+  --green: #1f9d55;
+  --muted: #6b7a72;
+  --navy: #0b271b;
+  --border: rgba(255, 255, 255, 0.16);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', 'Poppins', 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--navy);
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.admin-shell {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #0d4d35 0%, #0b3f2f 35%, #08301f 100%);
+  padding: 20px;
+  display: grid;
+  place-items: center;
+  color: #f8fbff;
+}
+
+.admin-grid {
+  width: min(980px, 100%);
+  padding: 32px;
+  display: grid;
+  gap: 32px;
+}
+
+.admin-hero {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 220px;
+}
+
+.hero-pattern {
+  position: absolute;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.hero-pattern-top {
+  top: 0;
+  left: 12%;
+}
+
+.hero-pattern-bottom {
+  bottom: 0;
+  right: 14%;
+}
+
+.hero-content {
+  position: relative;
+  text-align: center;
+  color: #f8fbff;
+}
+
+.brand-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: center;
+}
+
+.brand-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--green);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+.brand-icon svg {
+  width: 28px;
+  height: 28px;
+}
+
+.brand-wordmark {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.brand-medi {
+  color: white;
+}
+
+.brand-guide {
+  color: var(--green);
+}
+
+.admin-subtitle {
+  margin: 12px auto 0;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 1rem;
+}
+
+.admin-card {
+  background: rgba(255, 255, 255, 0.97);
+  border-radius: 30px;
+  padding: 38px 36px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.18);
+  position: relative;
+  overflow: hidden;
+}
+
+.admin-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top, rgba(31, 157, 85, 0.08), transparent 35%);
+  pointer-events: none;
+}
+
+.admin-icon {
+  width: 66px;
+  height: 66px;
+  margin: 0 auto 18px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(31, 157, 85, 0.08);
+  color: var(--green);
+}
+
+.admin-icon svg {
+  width: 28px;
+  height: 28px;
+}
+
+.admin-card h2 {
+  margin: 0;
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 800;
+  color: #09211a;
+}
+
+.admin-caption {
+  margin: 10px 0 30px;
+  text-align: center;
+  color: #41534e;
+  font-size: 0.96rem;
+}
+
+.admin-form {
+  display: grid;
+  gap: 18px;
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border: 1px solid rgba(16, 45, 28, 0.18);
+  border-radius: 14px;
+  padding: 0 16px;
+  min-height: 56px;
+  background: #fbfcfb;
+}
+
+.field-icon {
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.field input {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 14px 0;
+  font-size: 0.98rem;
+  color: #16221c;
+  background: transparent;
+}
+
+.field input::placeholder {
+  color: #6a7f76;
+}
+
+.password-toggle {
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  display: grid;
+  place-items: center;
+  padding: 0;
+  cursor: pointer;
+}
+
+.password-toggle svg {
+  width: 18px;
+  height: 18px;
+}
+
+.action-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.checkbox-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.checkbox-field input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--green);
+}
+
+.text-button {
+  border: none;
+  background: transparent;
+  color: var(--green);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.admin-submit {
+  width: 100%;
+  border: none;
+  border-radius: 14px;
+  padding: 16px 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: linear-gradient(90deg, #0f522f, #14492d);
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 14px 28px rgba(31, 157, 85, 0.22);
+}
+
+.admin-submit svg {
+  width: 18px;
+  height: 18px;
+}
+
+.secure-area {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  margin: 24px 0 16px;
+  color: #5a6f68;
+  font-size: 0.9rem;
+}
+
+.secure-line {
+  flex: 1;
+  height: 1px;
+  background: rgba(16, 45, 28, 0.12);
+}
+
+.secure-copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  color: #5a6f68;
+  font-size: 0.92rem;
+  line-height: 1.4;
+}
+
+.secure-copy svg {
+  width: 18px;
+  height: 18px;
+}
+
+.back-link {
+  margin-top: 16px;
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: var(--green);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@media (max-width: 840px) {
+  .admin-grid {
+    gap: 24px;
+  }
+
+  .admin-card {
+    padding: 32px 26px;
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-shell {
+    padding: 14px;
+  }
+
+  .admin-grid {
+    width: 100%;
+    gap: 20px;
+  }
+
+  .admin-card {
+    padding: 28px 20px;
+  }
+
+  .admin-hero {
+    min-height: 180px;
+  }
+}
