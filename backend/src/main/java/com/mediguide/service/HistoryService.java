@@ -64,6 +64,7 @@ public class HistoryService {
             throw new ForbiddenException("Access denied");
         }
 
+        recommendationRepository.deleteByQueryId(queryId);
         queryRepository.delete(query);
     }
 

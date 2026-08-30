@@ -21,7 +21,7 @@ public class NlpClientService {
 
     private static final Logger log = LoggerFactory.getLogger(NlpClientService.class);
     private final RestTemplate restTemplate = new RestTemplate();
-    private final String nlpUrl = "http://localhost:5000/extract-symptoms";
+    private final String nlpUrl = "http://localhost:8000/extract-symptoms";
 
     private static final Set<String> STOPWORDS = Set.of(
             "i", "have", "am", "is", "are", "was", "been", "be", "the", "a", "an",
@@ -52,11 +52,11 @@ public class NlpClientService {
             log.warn("Python NLP service unavailable, using built-in extraction: {}", ex.getMessage());
         }
 
-        // Built-in Java fallback: tokenize + stopword removal
+        // Built-in Java fallback: tokenize + stopword removal (unicode-friendly)
         return Arrays.stream(rawText.toLowerCase()
-                        .replaceAll("[^a-z\\s]", " ")
+                        .replaceAll("[^\\p{L}\\p{N}\\s]", " ")
                         .split("\\s+"))
-                .filter(token -> token.length() > 2 && !STOPWORDS.contains(token))
+                .filter(token -> token.length() > 1 && !STOPWORDS.contains(token))
                 .distinct()
                 .collect(Collectors.toList());
     }

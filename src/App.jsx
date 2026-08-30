@@ -7,6 +7,7 @@ import DashboardPage from '../frontend/Dashboard';
 import SearchPage from '../frontend/SearchPage';
 import HistoryPage from '../frontend/HistoryPage';
 import RecommendationPage from '../frontend/RecommendationPage';
+import ProfilePage from '../frontend/ProfilePage';
 import AdminDashboard from '../frontend/AdminDashboard';
 import AdminManagementPage from '../frontend/AdminManagementPage';
 import AdminAnalyticsPage from '../frontend/AdminAnalyticsPage';
@@ -18,6 +19,7 @@ const stored = JSON.parse(localStorage.getItem('mediguide_auth') || 'null');
 function App() {
   const [view, setView] = useState(stored ? (stored.isAdmin ? 'adminDashboard' : 'dashboard') : 'home');
   const [userName, setUserName] = useState(stored?.name || '');
+  const [userEmail, setUserEmail] = useState(stored?.email || '');
   const [token, setToken] = useState(stored?.token || null);
   const [authenticated, setAuthenticated] = useState(!!stored?.token);
   const [isAdmin, setIsAdmin] = useState(stored?.isAdmin || false);
@@ -26,13 +28,21 @@ function App() {
   const [adminResource, setAdminResource] = useState('diseases');
 
   const persistAuth = (auth, admin = false) => {
-    const name = auth.name || auth.email;
-    localStorage.setItem('mediguide_auth', JSON.stringify({ token: auth.token, name, isAdmin: admin }));
+    const name = auth.name || auth.email || 'User';
+    const email = auth.email || (name.includes('@') ? name : `${name.toLowerCase().replace(/\s+/g, '')}@gmail.com`);
+    localStorage.setItem('mediguide_auth', JSON.stringify({ token: auth.token, name, email, isAdmin: admin }));
     setToken(auth.token);
     setUserName(name);
+    setUserEmail(email);
     setAuthenticated(true);
     setIsAdmin(admin);
     setVoiceMode(false);
+  };
+
+  const handleUpdateUserName = (newName) => {
+    setUserName(newName);
+    const curr = JSON.parse(localStorage.getItem('mediguide_auth') || '{}');
+    localStorage.setItem('mediguide_auth', JSON.stringify({ ...curr, name: newName }));
   };
 
   const handleLoginSuccess = (auth) => {
@@ -146,13 +156,23 @@ function App() {
       {view === 'home' && (
         <HomePage
           onSearch={handleHomeSearch}
+          onVoiceSearch={() => {
+            setVoiceMode(true);
+            if (!authenticated) {
+              setView('login');
+            } else {
+              setView('search');
+            }
+          }}
           onLogin={() => setView('login')}
           onRegister={() => setView('register')}
+          onAdminClick={() => setView('admin')}
         />
       )}
       {view === 'dashboard' && (
         <DashboardPage
           userName={userName}
+          userEmail={userEmail}
           token={token}
           onLogout={handleLogout}
           onSearchClick={handleOpenSearch}
@@ -195,6 +215,18 @@ function App() {
             setView('dashboard');
             setVoiceMode(false);
           }}
+        />
+      )}
+      {view === 'profile' && (
+        <ProfilePage
+          userName={userName}
+          token={token}
+          onLogout={handleLogout}
+          onBack={() => setView('dashboard')}
+          onUpdateUserName={handleUpdateUserName}
+          onSearchClick={handleOpenSearch}
+          onHistoryClick={handleHistory}
+          onRecommendationsClick={handleRecommendations}
         />
       )}
       {view === 'adminDashboard' && (

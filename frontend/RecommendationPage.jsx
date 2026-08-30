@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './RecommendationPage.css';
 import { getLatestRecommendation, getRecommendations, getRecommendationById } from '../src/api.js';
 
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 6;
 
 const RecommendationPage = ({ userName = '', token, onLogout, onBack }) => {
   const [latest, setLatest] = useState(null);
@@ -45,113 +45,292 @@ const RecommendationPage = ({ userName = '', token, onLogout, onBack }) => {
     try {
       const recommendation = await getRecommendationById(token, id);
       setSelectedRecommendation(recommendation);
+      window.scrollTo({ top: 300, behavior: 'smooth' });
     } catch (err) {
       setError(err.message || 'Unable to load details');
     }
   };
 
+  const getTriageClass = (disease = '') => {
+    const text = disease.toLowerCase();
+    if (text.includes('urgent') || text.includes('severe') || text.includes('emergency') || text.includes('stroke') || text.includes('heart') || text.includes('pneumonia') || text.includes('dengue')) {
+      return { badge: 'triage-urgent', label: '🔴 Urgent Care Recommended' };
+    }
+    if (text.includes('bronchitis') || text.includes('migraine') || text.includes('infection') || text.includes('typhoid') || text.includes('jaundice')) {
+      return { badge: 'triage-moderate', label: '🟡 Moderate Medical Attention' };
+    }
+    return { badge: 'triage-mild', label: '🟢 Routine / Primary Care' };
+  };
+
   return (
     <div className="recommendation-shell">
-      <header className="recommendation-topbar">
-        <div className="recommendation-left-row">
-          <button className="recommendation-back" type="button" onClick={onBack} aria-label="Go back">
+      {/* ── Top Navigation Bar ───────────────────────────────────────────── */}
+      <header className="recommendation-header">
+        <div className="recommendation-brand-wrap">
+          <button className="recommendation-back-btn" type="button" onClick={onBack} aria-label="Go back to dashboard">
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
+            <span>Dashboard</span>
           </button>
-          <div className="recommendation-brand-row">
-            <div className="recommendation-logo" aria-hidden="true">📌</div>
-            <div>
-              <p className="recommendation-brand-title">MediGuide</p>
-            </div>
+          <div className="recommendation-brand-badge">
+            <div className="recommendation-brand-icon" aria-hidden="true">📌</div>
+            <span className="recommendation-brand-name">Clinical Recommendations</span>
           </div>
         </div>
 
-        <div className="recommendation-actions">
-          <div className="recommendation-user-pill">Welcome, {userName}</div>
-          <button className="recommendation-logout" type="button" onClick={onLogout}>Logout</button>
+        <div className="recommendation-top-actions">
+          <div className="recommendation-user-pill">
+            <span>👤</span>
+            <span>{userName}</span>
+          </div>
+          <button className="recommendation-btn-logout" type="button" onClick={onLogout}>
+            Sign Out
+          </button>
         </div>
       </header>
 
       <main className="recommendation-main">
-        <section className="recommendation-hero">
-          <div className="recommendation-hero-icon" aria-hidden="true">📋</div>
-          <h1>Recommendations</h1>
-          <p>AI-powered suggestions based on your symptoms</p>
+        {/* Hero Title */}
+        <section className="recommendation-hero-card">
+          <div className="hero-pill-tag">
+            <span>🧬</span> Apache Jena Knowledge Graph + spaCy NLP Pathways
+          </div>
+          <h1>Clinical Care Recommendations</h1>
+          <p>Verified medical specialists, diagnostic tests, healthcare facilities, and preventive guidelines based on your symptom history.</p>
         </section>
 
-        {error && <div className="recommendation-error">{error}</div>}
-        {loading && <div className="recommendation-loading">Loading recommendations…</div>}
+        {error && <div className="recommendation-error-box">{error}</div>}
+        {loading && <div className="recommendation-loading-box">🔄 Loading clinical pathways…</div>}
 
-        {latest && (
-          <section className="recommendation-card latest-card">
-            <div className="latest-header">
-              <span className="latest-badge">Latest Recommendation</span>
-              <span className="latest-timestamp">{new Date(latest.createdAt).toLocaleString()}</span>
-            </div>
-            <div className="latest-row">
-              <div className="latest-content">
-                <div className="latest-icon" aria-hidden="true">🩺</div>
-                <div className="latest-body">
-                  <p className="latest-label">Possible Condition</p>
-                  <h2>{latest.predictedDisease}</h2>
-                  <p>Specialist: {latest.specialist || 'N/A'}</p>
-                </div>
+        {/* ── Latest Recommendation Hero Card ────────────────────────────── */}
+        {latest && !selectedRecommendation && (
+          <section className="latest-recommendation-card">
+            <div className="latest-card-top">
+              <div className="latest-card-tag">
+                <span className="sparkle-dot"></span>
+                <span>LATEST AI ASSESSMENT</span>
               </div>
-              <button className="latest-action" type="button" onClick={() => handleViewDetails(latest.id)}>
-                View Details →
+              <span className="latest-card-date">{new Date(latest.createdAt).toLocaleString()}</span>
+            </div>
+
+            <div className="latest-card-body">
+              <div className="latest-condition-info">
+                <span className={`triage-badge ${getTriageClass(latest.predictedDisease).badge}`}>
+                  {getTriageClass(latest.predictedDisease).label}
+                </span>
+                <h2>{latest.predictedDisease}</h2>
+                <p className="latest-specialist-text">
+                  <strong>Recommended Specialist:</strong> {latest.specialist || 'General Physician'}
+                </p>
+              </div>
+
+              <button
+                className="latest-view-details-btn"
+                type="button"
+                onClick={() => handleViewDetails(latest.id)}
+              >
+                <span>Explore Full Care Plan</span>
+                <span className="arrow">→</span>
               </button>
             </div>
           </section>
         )}
 
+        {/* ── Detailed Clinical Recommendation View ──────────────────────── */}
         {selectedRecommendation && (
-          <section className="recommendation-card detail-card">
-            <div className="detail-header">
-              <h3>Recommendation Details</h3>
-              <button type="button" onClick={() => setSelectedRecommendation(null)}>Close</button>
+          <section className="detail-recommendation-section">
+            <div className="detail-header-card">
+              <div>
+                <span className="detail-tag">DETAILED CLINICAL CARE PATHWAY</span>
+                <h2>{selectedRecommendation.predictedDisease}</h2>
+                <p className="detail-date">Analyzed on {new Date(selectedRecommendation.createdAt).toLocaleString()}</p>
+              </div>
+              <button
+                type="button"
+                className="detail-close-btn"
+                onClick={() => setSelectedRecommendation(null)}
+              >
+                ✕ Close Details
+              </button>
             </div>
-            <p><strong>Condition:</strong> {selectedRecommendation.predictedDisease}</p>
-            <p><strong>Specialist:</strong> {selectedRecommendation.specialist || 'N/A'}</p>
-            <p><strong>Tests:</strong> {selectedRecommendation.diagnosticTests?.join(', ') || 'N/A'}</p>
-            <p><strong>Hospitals:</strong> {selectedRecommendation.hospitals?.join(', ') || 'N/A'}</p>
-            <p><strong>Precautions:</strong> {selectedRecommendation.precautions?.join(', ') || 'N/A'}</p>
+
+            {/* 2x2 Clinical Cards Grid */}
+            <div className="clinical-details-grid">
+              {/* Card 1: Specialist */}
+              <div className="clinical-card clinical-card--specialist">
+                <div className="card-header">
+                  <span className="card-icon">👨‍⚕️</span>
+                  <h3>Recommended Specialist</h3>
+                </div>
+                <div className="card-body">
+                  <div className="specialist-badge">
+                    <strong>{selectedRecommendation.specialist || 'General Practitioner'}</strong>
+                    <span>Primary Medical Consultant</span>
+                  </div>
+                  <p className="card-note">Schedule a consultation for formal diagnostic validation and clinical prescription.</p>
+                </div>
+              </div>
+
+              {/* Card 2: Diagnostic Tests */}
+              <div className="clinical-card clinical-card--tests">
+                <div className="card-header">
+                  <span className="card-icon">🧪</span>
+                  <h3>Diagnostic Lab Tests</h3>
+                </div>
+                <div className="card-body">
+                  <div className="tests-chips-list">
+                    {selectedRecommendation.diagnosticTests && selectedRecommendation.diagnosticTests.length > 0 ? (
+                      selectedRecommendation.diagnosticTests.map((t, idx) => (
+                        <span key={idx} className="test-chip">
+                          🔬 {t}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="test-chip">🔬 Routine Blood Panel / CBC</span>
+                    )}
+                  </div>
+                  <p className="card-note">Standard diagnostic procedures recommended to confirm underlying clinical indicators.</p>
+                </div>
+              </div>
+
+              {/* Card 3: Nearby Hospitals */}
+              <div className="clinical-card clinical-card--hospitals">
+                <div className="card-header">
+                  <span className="card-icon">🏥</span>
+                  <h3>Nearby Facilities & Hospitals</h3>
+                </div>
+                <div className="card-body">
+                  <div className="hospitals-chips-list">
+                    {selectedRecommendation.hospitals && selectedRecommendation.hospitals.length > 0 ? (
+                      selectedRecommendation.hospitals.map((h, idx) => (
+                        <a
+                          key={idx}
+                          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(h + ' near me')}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="hospital-chip hospital-chip--link"
+                          title="Click to view live directions on Google Maps"
+                        >
+                          📍 {h} <span className="chip-arrow">↗</span>
+                        </a>
+                      ))
+                    ) : (
+                      <a
+                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('Hospitals near me')}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hospital-chip hospital-chip--link"
+                      >
+                        📍 Primary Health Centre / City Hospital <span className="chip-arrow">↗</span>
+                      </a>
+                    )}
+                  </div>
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((selectedRecommendation.specialist || 'Hospital') + ' near me')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="rec-maps-locate-btn"
+                  >
+                    🗺️ Find {selectedRecommendation.specialist || 'Hospitals'} Near Me on Google Maps →
+                  </a>
+                </div>
+              </div>
+
+              {/* Card 4: Precautions & Self-Care */}
+              <div className="clinical-card clinical-card--precautions">
+                <div className="card-header">
+                  <span className="card-icon">🛡️</span>
+                  <h3>Precautions & Care Guidelines</h3>
+                </div>
+                <div className="card-body">
+                  <div className="precautions-checklist">
+                    {selectedRecommendation.precautions && selectedRecommendation.precautions.length > 0 ? (
+                      selectedRecommendation.precautions.map((p, idx) => (
+                        <div key={idx} className="precaution-item">
+                          <span className="check-icon">✓</span>
+                          <span>{p}</span>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="precaution-item">
+                        <span className="check-icon">✓</span>
+                        <span>Ensure proper hydration and adequate bed rest.</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
           </section>
         )}
 
-        <section className="recommendation-card previous-card">
-          <div className="previous-header">
-            <h3>Previous Recommendations</h3>
+        {/* ── Previous Recommendations History List ───────────────────────── */}
+        <section className="previous-recommendations-section">
+          <div className="section-title-row">
+            <div>
+              <h2>Past Recommendations Timeline</h2>
+              <p>Review previous diagnostic assessments and specialist advice</p>
+            </div>
           </div>
-          <div className="previous-list">
+
+          <div className="previous-recommendations-list">
             {previous.length === 0 && !loading && (
-              <div className="recommendation-empty">No previous recommendations found.</div>
+              <div className="previous-empty-box">
+                <span className="empty-icon">📌</span>
+                <p>No previous clinical recommendations found in your record.</p>
+              </div>
             )}
+
             {previous.map((item) => (
-              <div key={item.id} className="previous-item">
-                <div className="previous-icon" aria-hidden="true">✔️</div>
-                <div className="previous-text">
-                  <p>{item.predictedDisease}</p>
-                  <span>{new Date(item.createdAt).toLocaleString()}</span>
+              <div key={item.id} className="previous-card-item">
+                <div className="previous-card-left">
+                  <span className="previous-icon-badge">🩺</span>
+                  <div>
+                    <div className="previous-condition-row">
+                      <h4>{item.predictedDisease}</h4>
+                      <span className={`triage-badge-sm ${getTriageClass(item.predictedDisease).badge}`}>
+                        {getTriageClass(item.predictedDisease).label.split(' ')[0]}
+                      </span>
+                    </div>
+                    <span className="previous-date-label">{new Date(item.createdAt).toLocaleString()}</span>
+                  </div>
                 </div>
-                <button type="button" className="previous-action" onClick={() => handleViewDetails(item.id)}>
-                  View
+
+                <button
+                  type="button"
+                  className="previous-view-btn"
+                  onClick={() => handleViewDetails(item.id)}
+                >
+                  <span>View Details</span>
+                  <span className="arrow">→</span>
                 </button>
               </div>
             ))}
           </div>
+
+          {/* Pagination Controls */}
           {totalPages > 1 && (
-            <div className="recommendation-pagination">
-              <button type="button" className="rec-page-btn" disabled={page === 0} onClick={() => loadPrevious(page - 1)}>← Prev</button>
-              <span>Page {page + 1} of {totalPages}</span>
-              <button type="button" className="rec-page-btn" disabled={page >= totalPages - 1} onClick={() => loadPrevious(page + 1)}>Next →</button>
+            <div className="recommendations-pagination">
+              <button
+                type="button"
+                className="page-btn"
+                disabled={page <= 0}
+                onClick={() => loadPrevious(page - 1)}
+              >
+                ← Previous
+              </button>
+              <span className="page-indicator">Page {page + 1} of {totalPages}</span>
+              <button
+                type="button"
+                className="page-btn"
+                disabled={page >= totalPages - 1}
+                onClick={() => loadPrevious(page + 1)}
+              >
+                Next →
+              </button>
             </div>
           )}
-        </section>
-
-        <section className="recommendation-note">
-          <p>Recommendations are generated using AI and are not a substitute for professional medical advice.</p>
-          <a href="#" onClick={(e) => e.preventDefault()}>Consult a doctor for accurate diagnosis.</a>
         </section>
       </main>
     </div>

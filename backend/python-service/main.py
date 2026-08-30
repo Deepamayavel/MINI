@@ -41,6 +41,120 @@ DISEASE_SYMPTOMS: Dict[str, List[str]] = {
     "Anxiety": ["worry", "restlessness", "rapid heartbeat", "sweating", "trembling", "anxiety"],
 }
 
+# Multilingual translation dictionary to map native spoken keywords to standardized symptoms
+MULTILINGUAL_SYMPTOM_MAP = {
+    # ── Tamil (தமிழ்) ────────────────────────────────────────────────────────
+    "காய்ச்சல்": "fever",
+    "சுரம்": "fever",
+    "தலைவலி": "headache",
+    "தலை வலி": "headache",
+    "இருமல்": "cough",
+    "சளி": "cold",
+    "தொண்டை வலி": "sore throat",
+    "நெஞ்சு வலி": "chest pain",
+    "மூச்சு திணறல்": "shortness of breath",
+    "மூச்சுத்திணறல்": "shortness of breath",
+    "வாந்தி": "vomiting",
+    "மயக்கம்": "dizziness",
+    "தலைச்சுற்றல்": "dizziness",
+    "வயிற்று வலி": "stomach pain",
+    "வயிற்றுப்போக்கு": "diarrhea",
+    "களைப்பு": "fatigue",
+    "சோர்வு": "fatigue",
+    "மூட்டு வலி": "joint pain",
+    "உடல் வலி": "body pain",
+    "அரிப்பு": "itchy rash",
+    "சர்க்கரை": "diabetes",
+    "நெஞ்சு இறுக்கம்": "chest tightness",
+
+    # ── Hindi (हिन्दी) ────────────────────────────────────────────────────────
+    "बुखार": "fever",
+    "तेज बुखार": "high fever",
+    "सिरदर्द": "headache",
+    "सिर दर्द": "headache",
+    "खांसी": "cough",
+    "जुकाम": "cold",
+    "गले में खराश": "sore throat",
+    "गले में दर्द": "sore throat",
+    "सीने में दर्द": "chest pain",
+    "छाती में दर्द": "chest pain",
+    "सांस लेने में तकलीफ": "shortness of breath",
+    "सांस फूलना": "shortness of breath",
+    "उल्टी": "vomiting",
+    "जी मिचलाना": "nausea",
+    "चक्कर": "dizziness",
+    "पेट दर्द": "stomach pain",
+    "पेट में दर्द": "stomach pain",
+    "दस्त": "diarrhea",
+    "थकान": "fatigue",
+    "कमजोरी": "weakness",
+    "जोड़ों का दर्द": "joint pain",
+    "बदन दर्द": "body pain",
+    "शरीर में दर्द": "body pain",
+    "खुजली": "itchy rash",
+    "दाने": "rash",
+    "मधुमेह": "diabetes",
+    "bukhar": "fever",
+    "sirdard": "headache",
+    "sar dard": "headache",
+    "khasi": "cough",
+    "ulti": "vomiting",
+    "chakkar": "dizziness",
+    "pet dard": "stomach pain",
+    "badan dard": "body pain",
+
+    # ── Telugu (తెలుగు) ─────────────────────────────────────────────────────
+    "జ్వరం": "fever",
+    "తలనొప్పి": "headache",
+    "దగ్గు": "cough",
+    "జలుబు": "cold",
+    "గొంతు నొప్పి": "sore throat",
+    "ఛాతీ నొప్పి": "chest pain",
+    "శ్వాస తీసుకోవడంలో ఇబ్బంది": "shortness of breath",
+    "వాంతులు": "vomiting",
+    "వికారం": "nausea",
+    "తలతిరగడం": "dizziness",
+    "కడుపు నొప్పి": "stomach pain",
+    "విరేచనాలు": "diarrhea",
+    "అలసట": "fatigue",
+    "కీళ్ల నొప్పులు": "joint pain",
+    "ఒళ్లు నొప్పులు": "body pain",
+    "దురద": "itchy rash",
+    "చక్కెర వ్యాధి": "diabetes",
+
+    # ── Spanish (Español) ───────────────────────────────────────────────────
+    "fiebre": "fever",
+    "fiebre alta": "high fever",
+    "dolor de cabeza": "headache",
+    "tos": "cough",
+    "resfriado": "cold",
+    "dolor de garganta": "sore throat",
+    "dolor en el pecho": "chest pain",
+    "dolor de pecho": "chest pain",
+    "dificultad para respirar": "shortness of breath",
+    "falta de aire": "shortness of breath",
+    "vomitos": "vomiting",
+    "vómitos": "vomiting",
+    "nauseas": "nausea",
+    "náuseas": "nausea",
+    "mareos": "dizziness",
+    "mareo": "dizziness",
+    "dolor de estomago": "stomach pain",
+    "dolor de estómago": "stomach pain",
+    "dolor abdominal": "abdominal pain",
+    "diarrea": "diarrhea",
+    "fatiga": "fatigue",
+    "cansancio": "fatigue",
+    "dolor en las articulaciones": "joint pain",
+    "dolor muscular": "muscle pain",
+    "dolor de cuerpo": "body pain",
+    "erupcion": "rash",
+    "erupción": "rash",
+    "picazon": "itchy rash",
+    "picazón": "itchy rash",
+    "diabetes": "diabetes",
+}
+
 # Flatten all known symptom keywords for matching
 ALL_SYMPTOM_WORDS = set()
 for symptoms in DISEASE_SYMPTOMS.values():
@@ -56,6 +170,14 @@ STOPWORDS = {
     "might", "can", "not", "no", "very", "so", "also", "just", "some",
     "feeling", "feel", "felt", "since", "days", "day", "week", "weeks",
     "experiencing", "experience", "having", "had", "get", "got", "getting",
+    # Hindi stopwords
+    "मुझे", "है", "और", "में", "हो", "रहा", "रही", "से", "का", "की", "के",
+    # Tamil stopwords
+    "எனக்கு", "மற்றும்", "உள்ளது", "இருக்கிறது", "ஒரு", "ஆக",
+    # Telugu stopwords
+    "నాకు", "మరియు", "ఉంది", "గా",
+    # Spanish stopwords
+    "tengo", "el", "la", "los", "las", "un", "una", "y", "o", "en", "de", "con", "por", "desde",
 }
 
 
@@ -77,20 +199,27 @@ class PredictResponse(BaseModel):
 
 
 def extract_symptom_phrases(text: str) -> List[str]:
-    """Extract symptom keywords from free text using tokenization + stopword removal."""
-    text = text.lower()
-    text = re.sub(r"[^\w\s]", " ", text)
-    tokens = text.split()
-    filtered = [t for t in tokens if t not in STOPWORDS and len(t) > 2]
+    """Extract and normalize symptom keywords from free text across multiple languages."""
+    lower_text = text.lower()
 
-    # Also try to match multi-word symptom phrases
     matched = []
+
+    # 1. Check Multilingual mappings (Tamil, Hindi, Telugu, Spanish, Hinglish)
+    for foreign_phrase, eng_sym in MULTILINGUAL_SYMPTOM_MAP.items():
+        if foreign_phrase.lower() in lower_text:
+            matched.append(eng_sym)
+
+    # 2. Check English multi-word phrases
     for disease_symptoms in DISEASE_SYMPTOMS.values():
         for phrase in disease_symptoms:
-            if phrase in text:
+            if phrase in lower_text:
                 matched.append(phrase)
 
-    # Add individual meaningful tokens
+    # 3. Tokenize & check individual English keywords
+    cleaned_text = re.sub(r"[^\w\s]", " ", lower_text)
+    tokens = cleaned_text.split()
+    filtered = [t for t in tokens if t not in STOPWORDS and len(t) > 2]
+
     for token in filtered:
         if token in ALL_SYMPTOM_WORDS:
             matched.append(token)

@@ -14,5 +14,6 @@ public interface RecommendationRepository extends MongoRepository<Recommendation
     Page<Recommendation> findAllByUserIdOrderByCreatedAtDesc(String userId, Pageable pageable);
     Optional<Recommendation> findByIdAndUserId(String id, String userId);
     Optional<Recommendation> findByQueryId(String queryId);
+    void deleteByQueryId(String queryId);
     long countByUserId(String userId);
 }

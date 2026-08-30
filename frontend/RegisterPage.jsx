@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './RegisterPage.css';
 import { register } from '../src/api.js';
+import doctorIllustration from '../src/login_doctor.jpg';
 
 const RegisterPage = ({ onCreateAccount, onLoginClick }) => {
   const [fullName, setFullName] = useState('');
@@ -72,38 +73,11 @@ const RegisterPage = ({ onCreateAccount, onLoginClick }) => {
           </div>
 
           <div className="register-hero">
-            <div className="hero-leaf hero-leaf-left" />
-            <div className="hero-leaf hero-leaf-right" />
             <div className="hero-illustration">
-              <div className="clipboard-card">
-                <div className="clipboard-header" />
-                <div className="clipboard-lines">
-                  <span />
-                  <span />
-                  <span />
-                </div>
-              </div>
-              <div className="hero-shield" aria-hidden="true">
-                <svg viewBox="0 0 88 88" fill="none">
-                  <path d="M44 10L64 18V38C64 50 56 61 44 70C32 61 24 50 24 38V18L44 10Z" fill="url(#registerGradient)" stroke="currentColor" strokeWidth="2.4" />
-                  <path d="M33 42L41 50L55 36" stroke="white" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" />
-                  <defs>
-                    <linearGradient id="registerGradient" x1="24" y1="10" x2="64" y2="70" gradientUnits="userSpaceOnUse">
-                      <stop offset="0%" stopColor="#2ab25f" />
-                      <stop offset="100%" stopColor="#0b6b3a" />
-                    </linearGradient>
-                  </defs>
-                </svg>
-              </div>
-              <div className="hero-stethoscope" aria-hidden="true">
-                <svg viewBox="0 0 160 140" fill="none">
-                  <path d="M56 56V44C56 35 62.8 28 71 28C79.2 28 86 35 86 44V56" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-                  <path d="M86 46C86 37 92.8 30 101 30C109.2 30 116 37 116 46V54" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-                  <path d="M46 66C46 81 34.8 94 20 94" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-                  <path d="M46 66C46 56 54 48 64 48H78" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-                  <path d="M84 58H118" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-                  <path d="M108 50L118 60L108 70" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
+              <img className="register-illustration-photo" src={doctorIllustration} alt="Healthcare Assistance" />
+              <div className="register-illustration-badge">
+                <span className="badge-pulse" />
+                <span>Join MediGuide Health Network</span>
               </div>
             </div>
           </div>

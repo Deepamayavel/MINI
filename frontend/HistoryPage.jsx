@@ -75,7 +75,7 @@ const HistoryPage = ({ userName = '', token, onLogout, onBack }) => {
             </svg>
           </div>
           <h1>Search History</h1>
-          <p>View your previously searched symptoms</p>
+          <p>View your previously searched symptoms and clinical recommendations</p>
         </section>
 
         {detail && (
@@ -83,40 +83,75 @@ const HistoryPage = ({ userName = '', token, onLogout, onBack }) => {
             <div className="history-modal" onClick={(e) => e.stopPropagation()}>
               <div className="history-modal-header">
                 <h3>Query Details</h3>
-                <button type="button" className="history-modal-close" onClick={() => setDetail(null)}>✕</button>
+                <button type="button" className="history-modal-close" onClick={() => setDetail(null)} aria-label="Close modal">✕</button>
               </div>
-              <p className="history-modal-label">Symptoms Entered</p>
-              <p className="history-modal-value">{detail.rawText}</p>
-              {detail.extractedSymptoms?.length > 0 && (
-                <>
-                  <p className="history-modal-label">Extracted Symptoms</p>
-                  <p className="history-modal-value">{detail.extractedSymptoms.join(', ')}</p>
-                </>
-              )}
-              {detail.predictedDisease && (
-                <>
-                  <p className="history-modal-label">Predicted Condition</p>
-                  <p className="history-modal-value history-modal-disease">{detail.predictedDisease}</p>
-                </>
-              )}
-              {detail.confidenceScore != null && (
-                <>
-                  <p className="history-modal-label">Confidence</p>
-                  <p className="history-modal-value">{Math.round(detail.confidenceScore * 100)}%</p>
-                </>
-              )}
-              <p className="history-modal-label">Date</p>
-              <p className="history-modal-value">{new Date(detail.timestamp).toLocaleString()}</p>
-              {detail.recommendation && (
-                <>
-                  <p className="history-modal-label">Specialist</p>
-                  <p className="history-modal-value">{detail.recommendation.specialist || 'N/A'}</p>
-                  <p className="history-modal-label">Tests</p>
-                  <p className="history-modal-value">{detail.recommendation.diagnosticTests?.join(', ') || 'N/A'}</p>
-                  <p className="history-modal-label">Precautions</p>
-                  <p className="history-modal-value">{detail.recommendation.precautions?.join(', ') || 'N/A'}</p>
-                </>
-              )}
+              <div className="history-modal-body">
+                <div className="modal-field-block">
+                  <p className="history-modal-label">Symptoms Entered</p>
+                  <p className="history-modal-value">{detail.rawText}</p>
+                </div>
+
+                {detail.extractedSymptoms?.length > 0 && (
+                  <div className="modal-field-block">
+                    <p className="history-modal-label">Extracted Symptoms</p>
+                    <div className="symptom-tag-list">
+                      {detail.extractedSymptoms.map((sym, i) => (
+                        <span key={i} className="symptom-tag-chip">{sym}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div className="modal-row-grid">
+                  {detail.predictedDisease && (
+                    <div className="modal-field-block">
+                      <p className="history-modal-label">Predicted Condition</p>
+                      <p className="history-modal-value history-modal-disease">🩺 {detail.predictedDisease}</p>
+                    </div>
+                  )}
+                  {detail.confidenceScore != null && (
+                    <div className="modal-field-block">
+                      <p className="history-modal-label">Confidence</p>
+                      <span className="confidence-pill">{Math.round(detail.confidenceScore * 100)}%</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="modal-field-block">
+                  <p className="history-modal-label">Date & Time</p>
+                  <p className="history-modal-value">{new Date(detail.timestamp).toLocaleString()}</p>
+                </div>
+
+                {detail.recommendation && (
+                  <>
+                    <div className="modal-field-block">
+                      <p className="history-modal-label">Recommended Specialist</p>
+                      <p className="history-modal-value">👨‍⚕️ {detail.recommendation.specialist || 'General Physician'}</p>
+                    </div>
+
+                    <div className="modal-field-block">
+                      <p className="history-modal-label">Recommended Tests</p>
+                      <p className="history-modal-value">🧪 {detail.recommendation.diagnosticTests?.join(', ') || 'Clinical Evaluation'}</p>
+                    </div>
+
+                    <div className="modal-field-block">
+                      <p className="history-modal-label">Precautions & Care</p>
+                      <div className="precaution-list">
+                        {detail.recommendation.precautions && detail.recommendation.precautions.length > 0 ? (
+                          detail.recommendation.precautions.map((p, idx) => (
+                            <div key={idx} className="precaution-item">
+                              <span className="precaution-bullet">⚠️</span>
+                              <span className="precaution-text">{p}</span>
+                            </div>
+                          ))
+                        ) : (
+                          <p className="history-modal-value">Stay hydrated and consult a physician.</p>
+                        )}
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         )}

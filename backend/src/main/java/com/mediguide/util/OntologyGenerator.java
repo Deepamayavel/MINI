@@ -1,47 +1,28 @@
-package com.mediguide.service;
+package com.mediguide.util;
 
-import com.mediguide.repository.AdminHospitalRepository;
-import com.mediguide.repository.AdminSpecialistRepository;
-import com.mediguide.repository.AdminTestRepository;
-import org.apache.jena.query.QueryExecution;
-import org.apache.jena.query.QueryExecutionFactory;
-import org.apache.jena.query.QueryFactory;
-import org.apache.jena.query.QuerySolution;
-import org.apache.jena.query.ResultSet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
+import org.apache.jena.ontology.DatatypeProperty;
+import org.apache.jena.ontology.Individual;
+import org.apache.jena.ontology.ObjectProperty;
+import org.apache.jena.ontology.OntClass;
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.ontology.OntModelSpec;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.vocabulary.RDFS;
+import org.apache.jena.vocabulary.XSD;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
-@Service
-public class OntologyService {
+public class OntologyGenerator {
 
-    private static final Logger log = LoggerFactory.getLogger(OntologyService.class);
+    public static final String NS = "http://example.org/mediguide#";
 
-    @Value("${jena.endpoint}")
-    private String sparqlEndpoint;
-
-    private final AdminSpecialistRepository specialistRepository;
-    private final AdminHospitalRepository hospitalRepository;
-    private final AdminTestRepository testRepository;
-
-    public OntologyService(AdminSpecialistRepository specialistRepository,
-                           AdminHospitalRepository hospitalRepository,
-                           AdminTestRepository testRepository) {
-        this.specialistRepository = specialistRepository;
-        this.hospitalRepository = hospitalRepository;
-        this.testRepository = testRepository;
-    }
-
-    // Built-in disease knowledge base: specialists, tests, hospitals, precautions
-    private static final Map<String, String[][]> DISEASE_DATA = new HashMap<>();
+    public static final Map<String, String[][]> DISEASE_DATA = new HashMap<>();
 
     static {
         DISEASE_DATA.put("Diabetes", new String[][]{
@@ -226,131 +207,169 @@ public class OntologyService {
         });
     }
 
-    public OntologyResult fetchRecommendations(String diseaseName) {
-        // Try Jena SPARQL first
-        try {
-            return fetchFromJena(diseaseName);
-        } catch (Exception ex) {
-            log.warn("Jena SPARQL unavailable, falling back to built-in dataset: {}", ex.getMessage());
-        }
-
-        // Try built-in dataset
-        if (DISEASE_DATA.containsKey(diseaseName)) {
-            return fetchFromDataset(diseaseName);
-        }
-
-        // Final fallback: MongoDB
-        return fetchFromMongoDB();
+    private static String toLocalName(String type, String value) {
+        String clean = value.replaceAll("[^a-zA-Z0-9_]", "_").replaceAll("_+", "_");
+        if (clean.startsWith("_")) clean = clean.substring(1);
+        if (clean.endsWith("_")) clean = clean.substring(0, clean.length() - 1);
+        return type + "_" + clean;
     }
 
-    private OntologyResult fetchFromDataset(String diseaseName) {
-        String[][] data = DISEASE_DATA.get(diseaseName);
-        return new OntologyResult(
-            Arrays.asList(data[0]),
-            Arrays.asList(data[1]),
-            Arrays.asList(data[2]),
-            Arrays.asList(data[3])
-        );
-    }
+    public static OntModel generateOntology() {
+        OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
+        model.setNsPrefix("md", NS);
+        model.setNsPrefix("rdfs", RDFS.getURI());
+        model.setNsPrefix("xsd", XSD.getURI());
 
-    private OntologyResult fetchFromJena(String diseaseName) {
-        String query = String.format("""
-                PREFIX md: <http://example.org/mediguide#>
-                PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        // 1. OWL Classes
+        OntClass diseaseClass = model.createClass(NS + "Disease");
+        diseaseClass.addLabel("Disease", "en");
+        diseaseClass.addComment("Represents a medical condition or disease", "en");
 
-                SELECT DISTINCT ?type ?value WHERE {
-                    ?disease md:name "%s" .
-                    {
-                        ?disease md:treatedBy ?ind .
-                        ?ind (md:value|rdfs:label) ?value .
-                        BIND("specialist" AS ?type)
-                    } UNION {
-                        ?disease md:requiresTest ?ind .
-                        ?ind (md:value|rdfs:label) ?value .
-                        BIND("test" AS ?type)
-                    } UNION {
-                        ?disease md:availableAt ?ind .
-                        ?ind (md:value|rdfs:label) ?value .
-                        BIND("hospital" AS ?type)
-                    } UNION {
-                        ?disease md:hasPrecaution ?ind .
-                        ?ind (md:value|rdfs:label) ?value .
-                        BIND("precaution" AS ?type)
-                    }
-                }
-                """, diseaseName);
+        OntClass specialistClass = model.createClass(NS + "Specialist");
+        specialistClass.addLabel("Specialist", "en");
+        specialistClass.addComment("Represents a medical specialist or doctor", "en");
 
-        List<String> specialists = new ArrayList<>();
-        List<String> tests = new ArrayList<>();
-        List<String> hospitals = new ArrayList<>();
-        List<String> precautions = new ArrayList<>();
+        OntClass testClass = model.createClass(NS + "DiagnosticTest");
+        testClass.addLabel("Diagnostic Test", "en");
+        testClass.addComment("Represents a clinical or diagnostic laboratory test", "en");
 
-        try (QueryExecution qexec = QueryExecutionFactory.sparqlService(sparqlEndpoint, QueryFactory.create(query))) {
-            ResultSet results = qexec.execSelect();
-            while (results.hasNext()) {
-                QuerySolution solution = results.next();
-                String type = solution.getLiteral("type").getString();
-                String val = solution.get("value").isLiteral() ? solution.getLiteral("value").getString() : solution.get("value").toString();
-                switch (type) {
-                    case "specialist" -> { if (!specialists.contains(val)) specialists.add(val); }
-                    case "test" -> { if (!tests.contains(val)) tests.add(val); }
-                    case "hospital" -> { if (!hospitals.contains(val)) hospitals.add(val); }
-                    case "precaution" -> { if (!precautions.contains(val)) precautions.add(val); }
-                }
+        OntClass hospitalClass = model.createClass(NS + "Hospital");
+        hospitalClass.addLabel("Hospital", "en");
+        hospitalClass.addComment("Represents a healthcare facility or hospital", "en");
+
+        OntClass precautionClass = model.createClass(NS + "Precaution");
+        precautionClass.addLabel("Precaution", "en");
+        precautionClass.addComment("Represents preventive measures and care instructions", "en");
+
+        // 2. Object Properties
+        ObjectProperty treatedBy = model.createObjectProperty(NS + "treatedBy");
+        treatedBy.addDomain(diseaseClass);
+        treatedBy.addRange(specialistClass);
+        treatedBy.addLabel("treated by", "en");
+        treatedBy.addComment("Links a disease to a medical specialist", "en");
+
+        ObjectProperty requiresTest = model.createObjectProperty(NS + "requiresTest");
+        requiresTest.addDomain(diseaseClass);
+        requiresTest.addRange(testClass);
+        requiresTest.addLabel("requires test", "en");
+        requiresTest.addComment("Links a disease to recommended diagnostic tests", "en");
+
+        ObjectProperty availableAt = model.createObjectProperty(NS + "availableAt");
+        availableAt.addDomain(diseaseClass);
+        availableAt.addRange(hospitalClass);
+        availableAt.addLabel("available at", "en");
+        availableAt.addComment("Links a disease to hospitals offering treatment", "en");
+
+        ObjectProperty hasPrecaution = model.createObjectProperty(NS + "hasPrecaution");
+        hasPrecaution.addDomain(diseaseClass);
+        hasPrecaution.addRange(precautionClass);
+        hasPrecaution.addLabel("has precaution", "en");
+        hasPrecaution.addComment("Links a disease to recommended precautions", "en");
+
+        // 3. Datatype Properties (for direct name matching)
+        DatatypeProperty nameProp = model.createDatatypeProperty(NS + "name");
+        nameProp.addDomain(diseaseClass);
+        nameProp.addRange(XSD.xstring);
+
+        DatatypeProperty valueProp = model.createDatatypeProperty(NS + "value");
+        valueProp.addRange(XSD.xstring);
+
+        // Cache for individuals to avoid duplicates
+        Map<String, Individual> specialistMap = new HashMap<>();
+        Map<String, Individual> testMap = new HashMap<>();
+        Map<String, Individual> hospitalMap = new HashMap<>();
+        Map<String, Individual> precautionMap = new HashMap<>();
+
+        // 4. Create Individuals and Link Relations
+        for (Map.Entry<String, String[][]> entry : DISEASE_DATA.entrySet()) {
+            String diseaseName = entry.getKey();
+            String[][] data = entry.getValue();
+
+            String diseaseUri = NS + toLocalName("Disease", diseaseName);
+            Individual diseaseInd = model.createIndividual(diseaseUri, diseaseClass);
+            diseaseInd.addLabel(diseaseName, "en");
+            diseaseInd.addProperty(nameProp, diseaseName);
+
+            // Specialists (treatedBy)
+            for (String spec : data[0]) {
+                Individual specInd = specialistMap.computeIfAbsent(spec, s -> {
+                    Individual ind = model.createIndividual(NS + toLocalName("Specialist", s), specialistClass);
+                    ind.addLabel(s, "en");
+                    ind.addProperty(valueProp, s);
+                    return ind;
+                });
+                diseaseInd.addProperty(treatedBy, specInd);
+            }
+
+            // Diagnostic Tests (requiresTest)
+            for (String test : data[1]) {
+                Individual testInd = testMap.computeIfAbsent(test, t -> {
+                    Individual ind = model.createIndividual(NS + toLocalName("Test", t), testClass);
+                    ind.addLabel(t, "en");
+                    ind.addProperty(valueProp, t);
+                    return ind;
+                });
+                diseaseInd.addProperty(requiresTest, testInd);
+            }
+
+            // Hospitals (availableAt)
+            for (String hosp : data[2]) {
+                Individual hospInd = hospitalMap.computeIfAbsent(hosp, h -> {
+                    Individual ind = model.createIndividual(NS + toLocalName("Hospital", h), hospitalClass);
+                    ind.addLabel(h, "en");
+                    ind.addProperty(valueProp, h);
+                    return ind;
+                });
+                diseaseInd.addProperty(availableAt, hospInd);
+            }
+
+            // Precautions (hasPrecaution)
+            for (String prec : data[3]) {
+                Individual precInd = precautionMap.computeIfAbsent(prec, p -> {
+                    Individual ind = model.createIndividual(NS + toLocalName("Precaution", p), precautionClass);
+                    ind.addLabel(p, "en");
+                    ind.addProperty(valueProp, p);
+                    return ind;
+                });
+                diseaseInd.addProperty(hasPrecaution, precInd);
             }
         }
 
-        if (specialists.isEmpty() && tests.isEmpty() && hospitals.isEmpty() && precautions.isEmpty()) {
-            throw new IllegalStateException("No ontology records found via Jena SPARQL for disease: " + diseaseName);
-        }
-
-        log.info("Jena SPARQL query succeeded for disease: {}", diseaseName);
-        return new OntologyResult(specialists, tests, hospitals, precautions);
+        return model;
     }
 
-    private OntologyResult fetchFromMongoDB() {
-        List<String> specialists = specialistRepository.findAll().stream()
-                .map(s -> s.getName() + " (" + s.getSpecialty() + ")")
-                .limit(3)
-                .collect(Collectors.toList());
+    public static void main(String[] args) {
+        try {
+            System.out.println("Starting OWL Ontology Generation with Apache Jena OntModel API...");
+            OntModel model = generateOntology();
 
-        List<String> hospitals = hospitalRepository.findAll().stream()
-                .map(h -> h.getName())
-                .limit(3)
-                .collect(Collectors.toList());
+            File rootFile = new File("mediguide_ontology.owl");
+            File backendFile = new File("src/main/resources/mediguide_ontology.owl");
+            File workspaceRootFile = new File("../mediguide_ontology.owl");
 
-        List<String> tests = testRepository.findAll().stream()
-                .map(t -> t.getName())
-                .limit(3)
-                .collect(Collectors.toList());
+            try (OutputStream out = new FileOutputStream(rootFile)) {
+                model.write(out, "RDF/XML-ABBREV");
+            }
+            System.out.println("Generated: " + rootFile.getAbsolutePath());
 
-        List<String> precautions = List.of(
-                "Consult a doctor for accurate diagnosis",
-                "Take prescribed medications regularly",
-                "Stay hydrated and get adequate rest",
-                "Monitor symptoms and seek emergency care if they worsen"
-        );
+            if (backendFile.getParentFile() != null && backendFile.getParentFile().exists()) {
+                try (OutputStream out = new FileOutputStream(backendFile)) {
+                    model.write(out, "RDF/XML-ABBREV");
+                }
+                System.out.println("Generated: " + backendFile.getAbsolutePath());
+            }
 
-        return new OntologyResult(specialists, tests, hospitals, precautions);
-    }
+            if (workspaceRootFile.getParentFile() != null && workspaceRootFile.getParentFile().exists()) {
+                try (OutputStream out = new FileOutputStream(workspaceRootFile)) {
+                    model.write(out, "RDF/XML-ABBREV");
+                }
+                System.out.println("Generated: " + workspaceRootFile.getAbsolutePath());
+            }
 
-    public static class OntologyResult {
-        private final List<String> specialists;
-        private final List<String> tests;
-        private final List<String> hospitals;
-        private final List<String> precautions;
-
-        public OntologyResult(List<String> specialists, List<String> tests,
-                              List<String> hospitals, List<String> precautions) {
-            this.specialists = specialists;
-            this.tests = tests;
-            this.hospitals = hospitals;
-            this.precautions = precautions;
+            System.out.println("OWL Ontology generated successfully with " +
+                    DISEASE_DATA.size() + " diseases, classes, properties, and linked individuals.");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        public List<String> getSpecialists() { return specialists; }
-        public List<String> getTests() { return tests; }
-        public List<String> getHospitals() { return hospitals; }
-        public List<String> getPrecautions() { return precautions; }
     }
 }

@@ -1,148 +1,397 @@
 import React, { useState } from 'react';
 import './HomePage.css';
+import heroDoctorImg from '../src/hero_doctor.jpg';
 
-const HomePage = ({ onSearch, onLogin, onRegister }) => {
+const HomePage = ({ onSearch, onVoiceSearch, onLogin, onRegister }) => {
   const [query, setQuery] = useState('');
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const sanitized = query.trim();
-
     if (sanitized && onSearch) {
       onSearch(sanitized);
     }
   };
 
+  const handleQuickPrompt = (phrase) => {
+    setQuery(phrase);
+    if (onSearch) {
+      onSearch(phrase);
+    }
+  };
+
   return (
-    <div className="homepage-shell">
-      <div className="background-blobs" aria-hidden="true">
-        <div className="blob blob-top" />
-        <div className="blob blob-bottom" />
-      </div>
-      <div className="background-grid" aria-hidden="true" />
+    <div className="home-shell">
+      {/* Background glowing gradients */}
+      <div className="home-ambient-glow home-ambient-glow-1" aria-hidden="true" />
+      <div className="home-ambient-glow home-ambient-glow-2" aria-hidden="true" />
 
-      <main className="homepage">
-        <nav className="topbar">
-          <div className="brand">
-            <div className="brand-icon" aria-hidden="true">
-              <svg viewBox="0 0 64 64" fill="none">
-                <path
-                  d="M32 10C24.268 10 18 16.268 18 24V28.5C18 33.747 22.253 38 27.5 38H36.5C41.747 38 46 33.747 46 28.5V24C46 16.268 39.732 10 32 10Z"
-                  stroke="currentColor"
-                  strokeWidth="2.4"
-                  strokeLinecap="round"
-                />
-                <path d="M32 18V46" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
-                <path d="M18 32H46" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
-              </svg>
-            </div>
-            <span className="brand-wordmark">
-              <span className="brand-medi">Medi</span>
-              <span className="brand-guide">Guide</span>
-            </span>
+      {/* ── Top Navigation Bar ───────────────────────────────────────────── */}
+      <header className="home-navbar">
+        <div className="home-brand">
+          <div className="home-brand-icon" aria-hidden="true">
+            <svg viewBox="0 0 32 32" fill="none">
+              {/* Medical Shield Outline */}
+              <path
+                d="M16 3L6 7.5V14.5C6 21.2 10.3 27.4 16 29C21.7 27.4 26 21.2 26 14.5V7.5L16 3Z"
+                fill="url(#brandGrad)"
+                stroke="#10b981"
+                strokeWidth="1.6"
+                strokeLinejoin="round"
+              />
+              {/* Medical Cross + ECG Heartbeat line in crisp white */}
+              <path
+                d="M16 9V21M10 15H22"
+                stroke="white"
+                strokeWidth="2.4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M9 16.5H12.5L14.5 12.5L17.5 19.5L19.5 15H23"
+                stroke="#ecfdf5"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <defs>
+                <linearGradient id="brandGrad" x1="6" y1="3" x2="26" y2="29" gradientUnits="userSpaceOnUse">
+                  <stop stopColor="#059669" />
+                  <stop offset="1" stopColor="#0d9488" />
+                </linearGradient>
+              </defs>
+            </svg>
           </div>
+          <div className="home-brand-wordmark">
+            <span className="brand-text-medi">Medi</span>
+            <span className="brand-text-guide">Guide</span>
+            <span className="brand-badge-ai">AI</span>
+          </div>
+        </div>
 
-          <div className="topbar-actions">
-            <button className="nav-pill nav-pill--ghost" type="button" onClick={onLogin}>
-              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M12 12C14.2091 12 16 10.2091 16 8C16 5.79086 14.2091 4 12 4C9.79086 4 8 5.79086 8 8C8 10.2091 9.79086 12 12 12Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M5 20C5.8 16.8 8.6 14.8 12 14.8C15.4 14.8 18.2 16.8 19 20" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-              </svg>
-              <span>Login</span>
-            </button>
-            <button className="nav-pill nav-pill--ghost" type="button" onClick={onRegister}>
-              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M12 5V19" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-                <path d="M5 12H19" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-                <path d="M8 8.5C8 7.11929 9.11929 6 10.5 6H13.5C14.8807 6 16 7.11929 16 8.5V9.5C16 10.8807 14.8807 12 13.5 12H10.5C9.11929 12 8 10.8807 8 9.5V8.5Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-              </svg>
-              <span>Register</span>
-            </button>
-          </div>
+        <nav className="home-nav-links">
+          <a href="#features" className="home-nav-link">Features</a>
+          <a href="#how-it-works" className="home-nav-link">How It Works</a>
+          <a href="#specialties" className="home-nav-link">Specialties</a>
         </nav>
 
-        <section className="hero">
-          <div className="hero-icon" aria-hidden="true">
-            <svg viewBox="0 0 96 96" fill="none">
-              <path d="M48 15C37.5 15 30 22.3 30 33V37.5C30 43.6 34.4 48 40.5 48H55.5C61.6 48 66 43.6 66 37.5V33C66 22.3 58.5 15 48 15Z" stroke="currentColor" strokeWidth="2.6" />
-              <path d="M48 24V72" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" />
-              <path d="M30 48H66" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" />
+        <div className="home-nav-actions">
+          <button className="home-btn-ghost" type="button" onClick={onLogin}>
+            Sign In
+          </button>
+          <button className="home-btn-primary" type="button" onClick={onRegister}>
+            <span>Get Started</span>
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
+          </button>
+        </div>
+      </header>
+
+      <main className="home-main">
+        {/* ── Hero Section ──────────────────────────────────────────────── */}
+        <section className="home-hero-section">
+          {/* Left Hero Column */}
+          <div className="home-hero-content">
+            <div className="home-pill-badge">
+              <span className="pill-dot"></span>
+              <span>AI Clinical Decision Support · 9+ Native Languages</span>
+            </div>
+
+            <h1 className="home-hero-title">
+              Smart Symptom Analysis. <br />
+              <span className="hero-title-gradient">Accurate Medical Guidance.</span>
+            </h1>
+
+            <p className="home-hero-description">
+              Describe your symptoms naturally by <strong>voice or text</strong> in English, Tamil, Hindi, Telugu, or Spanish. MediGuide leverages biomedical NLP & clinical ontology to predict conditions, suggest lab tests, and recommend specialists.
+            </p>
+
+            {/* Interactive Symptom Search & Voice Bar */}
+            <form className="home-search-box" onSubmit={handleSubmit}>
+              <div className="home-search-input-wrapper">
+                <svg className="home-search-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" />
+                  <path d="M16.5 16.5L21 21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+                <input
+                  type="text"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Describe how you feel (e.g. high fever, severe headache, dry cough)..."
+                  aria-label="Enter your symptoms"
+                />
+              </div>
+
+              <div className="home-search-actions">
+                <button
+                  type="button"
+                  className="home-voice-btn"
+                  onClick={onVoiceSearch}
+                  title="Speak symptoms in Tamil, Hindi, Telugu, Spanish, or English"
+                >
+                  <span className="voice-mic-icon">🎙️</span>
+                  <span>Voice Search</span>
+                </button>
+
+                <button type="submit" className="home-analyze-btn">
+                  <span>Analyze</span>
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
+              </div>
+            </form>
+
+            {/* Multilingual Quick Prompts */}
+            <div className="home-quick-prompts">
+              <span className="quick-prompts-label">Try speaking or tapping:</span>
+              <div className="quick-prompts-chips">
+                <button type="button" className="prompt-chip" onClick={() => handleQuickPrompt('High fever, severe headache, and joint pain')}>
+                  🗣️ Fever & Headache
+                </button>
+                <button type="button" className="prompt-chip" onClick={() => handleQuickPrompt('Persistent dry cough and sore throat')}>
+                  🗣️ Cough & Sore Throat
+                </button>
+                <button type="button" className="prompt-chip prompt-chip--tamil" onClick={() => handleQuickPrompt('எனக்கு கடுமையான காய்ச்சல் மற்றும் தலைவலி உள்ளது')}>
+                  🇮🇳 காய்ச்சல் (Tamil)
+                </button>
+                <button type="button" className="prompt-chip prompt-chip--hindi" onClick={() => handleQuickPrompt('मुझे तेज बुखार और सिरदर्द है')}>
+                  🇮🇳 बुखार और सिरदर्द (Hindi)
+                </button>
+              </div>
+            </div>
+
+            {/* Trust Metrics Bar */}
+            <div className="home-trust-row">
+              <div className="trust-item">
+                <span className="trust-icon">🩺</span>
+                <div>
+                  <strong>30+ Conditions</strong>
+                  <p>Ontology Modeled</p>
+                </div>
+              </div>
+              <div className="trust-divider" />
+              <div className="trust-item">
+                <span className="trust-icon">🌐</span>
+                <div>
+                  <strong>9 Languages</strong>
+                  <p>Real-Time Speech</p>
+                </div>
+              </div>
+              <div className="trust-divider" />
+              <div className="trust-item">
+                <span className="trust-icon">⚡</span>
+                <div>
+                  <strong>&lt; 150ms</strong>
+                  <p>Instant Inference</p>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <h1 className="hero-title">
-            <span className="hero-title-medi">Medi</span>
-            <span className="hero-title-guide">Guide</span>
-          </h1>
+          {/* Right Hero Column - Image & Floating Cards */}
+          <div className="home-hero-visual">
+            <div className="hero-image-card">
+              <img src={heroDoctorImg} alt="Doctor utilizing MediGuide AI Telemetry" className="hero-doctor-image" />
+              <div className="hero-image-overlay" />
 
-          <div className="pulse-line" aria-hidden="true">
-            <svg viewBox="0 0 180 24" fill="none">
-              <path d="M4 12C18 4 26 4 38 12C50 20 58 20 72 12C86 4 94 4 108 12C122 20 130 20 144 12C156 4 164 4 176 12" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
-            </svg>
-          </div>
+              {/* Floating Glassmorphism Badges */}
+              <div className="floating-badge floating-badge-top-left">
+                <span className="floating-badge-icon">🧠</span>
+                <div>
+                  <p className="floating-badge-title">spaCy & Jena Graph</p>
+                  <span className="floating-badge-sub">Semantic Normalization</span>
+                </div>
+              </div>
 
-          <p className="hero-subtitle hero-subtitle-main">AI-Powered Healthcare Guidance</p>
-          <p className="hero-subtitle hero-subtitle-secondary">Smart symptoms analysis. Right recommendations. Better health.</p>
+              <div className="floating-badge floating-badge-top-right">
+                <span className="floating-badge-icon">🔬</span>
+                <div>
+                  <p className="floating-badge-title">Diagnostic Lab Tests</p>
+                  <span className="floating-badge-sub">PCR, CBC & Imaging</span>
+                </div>
+              </div>
 
-          <form className="search-bar" onSubmit={handleSubmit}>
-            <svg className="search-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <circle cx="11" cy="11" r="5.4" stroke="currentColor" strokeWidth="1.8" />
-              <path d="M15 15L19 19" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-            </svg>
-            <input
-              type="text"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="Describe your symptoms..."
-              aria-label="Describe your symptoms"
-            />
-            <button className="search-submit" type="submit" aria-label="Search symptoms">
-              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                <path d="M13 6L19 12L13 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </button>
-          </form>
-
-          <div className="search-hint">
-            <svg className="hint-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M12 4L13.9 8.1L18 10L13.9 11.9L12 16L10.1 11.9L6 10L10.1 8.1L12 4Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-            </svg>
-            <span>Example: Fever, cough, headache...</span>
+              <div className="floating-badge floating-badge-bottom">
+                <div className="badge-live-pulse">
+                  <span className="live-dot"></span>
+                  <strong>Live Multi-Language Speech Engine</strong>
+                </div>
+                <div className="badge-lang-flags">
+                  <span>🇮🇳 Tamil</span>
+                  <span>🇮🇳 Hindi</span>
+                  <span>🇮🇳 Telugu</span>
+                  <span>🇪🇸 Spanish</span>
+                  <span>🇺🇸 English</span>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
-        <div className="bottom-row" aria-hidden="true">
-          <div className="decor decor-clipboard">
-            <svg viewBox="0 0 84 84" fill="none">
-              <rect x="22" y="16" width="40" height="52" rx="10" stroke="currentColor" strokeWidth="2.4" />
-              <path d="M34 24H50" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
-              <path d="M34 34H46" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
-              <path d="M34 44H42" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
-              <path d="M56 28L64 20" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
-              <path d="M64 20L66 22" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
-            </svg>
+        {/* ── How It Works Section ──────────────────────────────────────── */}
+        <section id="how-it-works" className="home-section">
+          <div className="section-header">
+            <span className="section-eyebrow">CLINICAL WORKFLOW</span>
+            <h2>How MediGuide AI Works</h2>
+            <p>From spoken symptoms to structured diagnostic recommendations in 3 simple steps.</p>
           </div>
 
-          <div className="decor decor-badge">
-            <svg viewBox="0 0 72 72" fill="none">
-              <path d="M36 8L50 14V31C50 43 44 54 36 60C28 54 22 43 22 31V14L36 8Z" stroke="currentColor" strokeWidth="2.4" />
-              <path d="M29 35L34 40L43 31" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+          <div className="steps-grid">
+            <div className="step-card">
+              <div className="step-number-badge">01</div>
+              <div className="step-icon">🎙️</div>
+              <h3>Describe Your Symptoms</h3>
+              <p>Speak in your native language (Tamil, Hindi, Telugu, Spanish, English) or type your symptoms freely.</p>
+            </div>
+
+            <div className="step-card">
+              <div className="step-number-badge">02</div>
+              <div className="step-icon">🧠</div>
+              <h3>AI Semantic Vector Reasoning</h3>
+              <p>Biomedical NLP maps colloquial terms to canonical clinical concepts, predicting conditions via cosine similarity.</p>
+            </div>
+
+            <div className="step-card">
+              <div className="step-number-badge">03</div>
+              <div className="step-icon">🩺</div>
+              <h3>Get Clinical Care Guidance</h3>
+              <p>Receive recommended medical specialists, diagnostic laboratory tests, hospital locations, and self-care precautions.</p>
+            </div>
+          </div>
+        </section>
+
+        {/* ── Key Features Grid ─────────────────────────────────────────── */}
+        <section id="features" className="home-section">
+          <div className="section-header">
+            <span className="section-eyebrow">ADVANCED CAPABILITIES</span>
+            <h2>Complete Healthcare Intelligence</h2>
+            <p>Engineered for clinical precision, multilingual accessibility, and patient safety.</p>
           </div>
 
-          <div className="decor decor-stethoscope">
-            <svg viewBox="0 0 96 96" fill="none">
-              <path d="M36 38V31C36 24.9 40.9 20 47 20C53.1 20 58 24.9 58 31V38" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
-              <path d="M58 35C58 29.5 62.5 25 68 25C73.5 25 78 29.5 78 35V39" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
-              <path d="M35 40C35 48.8 27.8 56 19 56C10.2 56 3 48.8 3 40" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
-              <path d="M35 40C35 31.2 42.2 24 51 24H57" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
-              <path d="M58 44H76" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
-              <path d="M70 38L76 44L70 50" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+          <div className="features-grid">
+            <div className="feature-card">
+              <div className="feature-icon feature-icon--voice">🌐</div>
+              <h3>Multi-Language Speech Recognition</h3>
+              <p>Native Web Speech API integration with real-time audio level monitoring for 9 global and regional Indian languages.</p>
+            </div>
+
+            <div className="feature-card">
+              <div className="feature-icon feature-icon--ontology">🧬</div>
+              <h3>Apache Jena Medical Ontology</h3>
+              <p>Structured RDF knowledge graphs link conditions to verified specialists, diagnostic procedures, and precautions.</p>
+            </div>
+
+            <div className="feature-card">
+              <div className="feature-icon feature-icon--triage">🚨</div>
+              <h3>Instant Triage Classification</h3>
+              <p>Automatically flags mild, moderate, and high-urgency conditions to help users prioritize professional doctor visits.</p>
+            </div>
+
+            <div className="feature-card">
+              <div className="feature-icon feature-icon--security">🔒</div>
+              <h3>Secure Cloud Persistence</h3>
+              <p>Enterprise JWT authentication with MongoDB Atlas storage keeps search histories and user profiles encrypted.</p>
+            </div>
+          </div>
+        </section>
+
+        {/* ── Medical Specialties Section ───────────────────────────────── */}
+        <section id="specialties" className="home-section">
+          <div className="section-header">
+            <span className="section-eyebrow">CLINICAL COVERAGE</span>
+            <h2>Specialties & Medical Domains</h2>
+            <p>Comprehensive knowledge mapping across primary and specialized medical departments.</p>
+          </div>
+
+          <div className="specialties-grid">
+            <div className="specialty-pill">
+              <span className="specialty-icon">🩺</span>
+              <div>
+                <strong>General Medicine</strong>
+                <p>Fevers, infections, viral flu, fatigue</p>
+              </div>
+            </div>
+            <div className="specialty-pill">
+              <span className="specialty-icon">🫀</span>
+              <div>
+                <strong>Cardiology</strong>
+                <p>Chest discomfort, hypertension, palpitations</p>
+              </div>
+            </div>
+            <div className="specialty-pill">
+              <span className="specialty-icon">🫁</span>
+              <div>
+                <strong>Pulmonology</strong>
+                <p>Asthma, chronic bronchitis, pneumonia</p>
+              </div>
+            </div>
+            <div className="specialty-pill">
+              <span className="specialty-icon">🧠</span>
+              <div>
+                <strong>Neurology</strong>
+                <p>Migraines, vertigo, nerve disorders</p>
+              </div>
+            </div>
+            <div className="specialty-pill">
+              <span className="specialty-icon">🧪</span>
+              <div>
+                <strong>Endocrinology</strong>
+                <p>Diabetes, thyroid, metabolic health</p>
+              </div>
+            </div>
+            <div className="specialty-pill">
+              <span className="specialty-icon">🩹</span>
+              <div>
+                <strong>Dermatology</strong>
+                <p>Rashes, allergies, skin lesions</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── Call to Action Banner ─────────────────────────────────────── */}
+        <section className="home-cta-section">
+          <div className="cta-content">
+            <h2>Take Control of Your Health Today</h2>
+            <p>Join thousands of users utilizing AI-guided symptom analysis and verified medical recommendations.</p>
+            <div className="cta-actions">
+              <button className="cta-primary-btn" type="button" onClick={onRegister}>
+                Create Free Account →
+              </button>
+              <button className="cta-secondary-btn" type="button" onClick={onVoiceSearch}>
+                🎙️ Try Voice Search Now
+              </button>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      {/* ── Footer ──────────────────────────────────────────────────────── */}
+      <footer className="home-footer">
+        <div className="footer-top">
+          <div className="footer-brand">
+            <div className="home-brand-wordmark">
+              <span className="brand-text-medi">Medi</span>
+              <span className="brand-text-guide">Guide</span>
+            </div>
+            <p>Clinical Decision Support & Multilingual Healthcare Navigation Platform.</p>
+          </div>
+          <div className="footer-links">
+            <a href="#features">Features</a>
+            <a href="#how-it-works">How It Works</a>
+            <a href="#specialties">Specialties</a>
           </div>
         </div>
-      </main>
+
+        <div className="footer-bottom">
+          <p>© 2026 MediGuide AI. All rights reserved. Designed for healthcare decision support.</p>
+          <p className="footer-disclaimer">
+            <strong>Medical Disclaimer:</strong> MediGuide is an AI-powered triage and educational decision support system. It does not replace professional medical advice, clinical diagnosis, or treatment.
+          </p>
+        </div>
+      </footer>
     </div>
   );
 };

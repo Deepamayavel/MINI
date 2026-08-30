@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './LoginPage.css';
 import { login } from '../src/api.js';
+import doctorIllustration from '../src/login_doctor.jpg';
 
 const LoginPage = ({ onLogin, onRegisterClick, onAdminLoginClick }) => {
   const [email, setEmail] = useState('');
@@ -50,36 +51,11 @@ const LoginPage = ({ onLogin, onRegisterClick, onAdminLoginClick }) => {
           </div>
 
           <div className="illustration-card" aria-hidden="true">
-            <div className="heart-background" />
-            <div className="illustration-glow" />
-            <div className="illustration-plus">+</div>
-            <svg className="ecg" viewBox="0 0 240 120" fill="none">
-              <path d="M12 58H46L62 36L80 82L104 28L126 84L146 56L232 56" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            <div className="shield-icon">
-              <svg viewBox="0 0 88 88" fill="none">
-                <path d="M44 10L64 18V38C64 50 56 61 44 70C32 61 24 50 24 38V18L44 10Z" fill="url(#shieldGradient)" stroke="currentColor" strokeWidth="2.4" />
-                <path d="M33 42L41 50L55 36" stroke="white" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" />
-                <defs>
-                  <linearGradient id="shieldGradient" x1="24" y1="10" x2="64" y2="70" gradientUnits="userSpaceOnUse">
-                    <stop offset="0%" stopColor="#2ab25f" />
-                    <stop offset="100%" stopColor="#0b6b3a" />
-                  </linearGradient>
-                </defs>
-              </svg>
+            <img className="illustration-photo" src={doctorIllustration} alt="AI Health Assistant" />
+            <div className="illustration-badge">
+              <span className="badge-pulse" />
+              <span>AI Health Guidance Active</span>
             </div>
-            <div className="stethoscope-icon">
-              <svg viewBox="0 0 160 140" fill="none">
-                <path d="M56 56V44C56 35 62.8 28 71 28C79.2 28 86 35 86 44V56" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-                <path d="M86 46C86 37 92.8 30 101 30C109.2 30 116 37 116 46V54" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-                <path d="M46 66C46 81 34.8 94 20 94" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-                <path d="M46 66C46 56 54 48 64 48H78" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-                <path d="M84 58H118" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-                <path d="M108 50L118 60L108 70" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
-            <div className="leaf leaf-left" />
-            <div className="leaf leaf-right" />
           </div>
 
           <div className="tagline">

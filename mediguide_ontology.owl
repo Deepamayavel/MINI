@@ -1,0 +1,1655 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:md="http://example.org/mediguide#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#">
+  <owl:Class rdf:about="http://example.org/mediguide#Precaution">
+    <rdfs:comment xml:lang="en">Represents preventive measures and care instructions</rdfs:comment>
+    <rdfs:label xml:lang="en">Precaution</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="http://example.org/mediguide#DiagnosticTest">
+    <rdfs:comment xml:lang="en">Represents a clinical or diagnostic laboratory test</rdfs:comment>
+    <rdfs:label xml:lang="en">Diagnostic Test</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="http://example.org/mediguide#Hospital">
+    <rdfs:comment xml:lang="en">Represents a healthcare facility or hospital</rdfs:comment>
+    <rdfs:label xml:lang="en">Hospital</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="http://example.org/mediguide#Specialist">
+    <rdfs:comment xml:lang="en">Represents a medical specialist or doctor</rdfs:comment>
+    <rdfs:label xml:lang="en">Specialist</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="http://example.org/mediguide#Disease">
+    <rdfs:comment xml:lang="en">Represents a medical condition or disease</rdfs:comment>
+    <rdfs:label xml:lang="en">Disease</rdfs:label>
+  </owl:Class>
+  <owl:ObjectProperty rdf:about="http://example.org/mediguide#hasPrecaution">
+    <rdfs:comment xml:lang="en">Links a disease to recommended precautions</rdfs:comment>
+    <rdfs:label xml:lang="en">has precaution</rdfs:label>
+    <rdfs:range rdf:resource="http://example.org/mediguide#Precaution"/>
+    <rdfs:domain rdf:resource="http://example.org/mediguide#Disease"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://example.org/mediguide#requiresTest">
+    <rdfs:comment xml:lang="en">Links a disease to recommended diagnostic tests</rdfs:comment>
+    <rdfs:label xml:lang="en">requires test</rdfs:label>
+    <rdfs:range rdf:resource="http://example.org/mediguide#DiagnosticTest"/>
+    <rdfs:domain rdf:resource="http://example.org/mediguide#Disease"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://example.org/mediguide#availableAt">
+    <rdfs:comment xml:lang="en">Links a disease to hospitals offering treatment</rdfs:comment>
+    <rdfs:label xml:lang="en">available at</rdfs:label>
+    <rdfs:range rdf:resource="http://example.org/mediguide#Hospital"/>
+    <rdfs:domain rdf:resource="http://example.org/mediguide#Disease"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="http://example.org/mediguide#treatedBy">
+    <rdfs:comment xml:lang="en">Links a disease to a medical specialist</rdfs:comment>
+    <rdfs:label xml:lang="en">treated by</rdfs:label>
+    <rdfs:range rdf:resource="http://example.org/mediguide#Specialist"/>
+    <rdfs:domain rdf:resource="http://example.org/mediguide#Disease"/>
+  </owl:ObjectProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mediguide#value">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:about="http://example.org/mediguide#name">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="http://example.org/mediguide#Disease"/>
+  </owl:DatatypeProperty>
+  <md:Disease rdf:about="http://example.org/mediguide#Disease_Migraine">
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Avoid_triggers_like_bright_light">
+        <md:value>Avoid triggers like bright light</md:value>
+        <rdfs:label xml:lang="en">Avoid triggers like bright light</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Rest_in_a_dark_quiet_room">
+        <md:value>Rest in a dark quiet room</md:value>
+        <rdfs:label xml:lang="en">Rest in a dark quiet room</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Stay_hydrated">
+        <md:value>Stay hydrated</md:value>
+        <rdfs:label xml:lang="en">Stay hydrated</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_EEG">
+        <md:value>EEG</md:value>
+        <rdfs:label xml:lang="en">EEG</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <rdfs:label xml:lang="en">Migraine</rdfs:label>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Take_prescribed_migraine_medication">
+        <md:value>Take prescribed migraine medication</md:value>
+        <rdfs:label xml:lang="en">Take prescribed migraine medication</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_CT_Scan_Brain">
+        <md:value>CT Scan Brain</md:value>
+        <rdfs:label xml:lang="en">CT Scan Brain</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:name>Migraine</md:name>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_MRI_Brain">
+        <md:value>MRI Brain</md:value>
+        <rdfs:label xml:lang="en">MRI Brain</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:treatedBy>
+      <md:Specialist rdf:about="http://example.org/mediguide#Specialist_General_Physician">
+        <md:value>General Physician</md:value>
+        <rdfs:label xml:lang="en">General Physician</rdfs:label>
+      </md:Specialist>
+    </md:treatedBy>
+    <md:treatedBy>
+      <md:Specialist rdf:about="http://example.org/mediguide#Specialist_Neurologist">
+        <md:value>Neurologist</md:value>
+        <rdfs:label xml:lang="en">Neurologist</rdfs:label>
+      </md:Specialist>
+    </md:treatedBy>
+    <md:availableAt>
+      <md:Hospital rdf:about="http://example.org/mediguide#Hospital_NIMHANS">
+        <md:value>NIMHANS</md:value>
+        <rdfs:label xml:lang="en">NIMHANS</rdfs:label>
+      </md:Hospital>
+    </md:availableAt>
+    <md:availableAt>
+      <md:Hospital rdf:about="http://example.org/mediguide#Hospital_Apollo_Hospitals">
+        <md:value>Apollo Hospitals</md:value>
+        <rdfs:label xml:lang="en">Apollo Hospitals</rdfs:label>
+      </md:Hospital>
+    </md:availableAt>
+    <md:availableAt>
+      <md:Hospital rdf:about="http://example.org/mediguide#Hospital_Fortis_Neurology">
+        <md:value>Fortis Neurology</md:value>
+        <rdfs:label xml:lang="en">Fortis Neurology</rdfs:label>
+      </md:Hospital>
+    </md:availableAt>
+  </md:Disease>
+  <md:Disease rdf:about="http://example.org/mediguide#Disease_Vertigo">
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_NIMHANS"/>
+    <md:treatedBy rdf:resource="http://example.org/mediguide#Specialist_Neurologist"/>
+    <rdfs:label xml:lang="en">Vertigo</rdfs:label>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Apollo_Hospitals"/>
+    <md:treatedBy>
+      <md:Specialist rdf:about="http://example.org/mediguide#Specialist_ENT_Specialist">
+        <md:value>ENT Specialist</md:value>
+        <rdfs:label xml:lang="en">ENT Specialist</rdfs:label>
+      </md:Specialist>
+    </md:treatedBy>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Take_prescribed_vestibular_medication">
+        <md:value>Take prescribed vestibular medication</md:value>
+        <rdfs:label xml:lang="en">Take prescribed vestibular medication</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Audiometry">
+        <md:value>Audiometry</md:value>
+        <rdfs:label xml:lang="en">Audiometry</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Avoid_sudden_head_movements">
+        <md:value>Avoid sudden head movements</md:value>
+        <rdfs:label xml:lang="en">Avoid sudden head movements</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_ENG_Test">
+        <md:value>ENG Test</md:value>
+        <rdfs:label xml:lang="en">ENG Test</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Do_Epley_maneuver_exercises">
+        <md:value>Do Epley maneuver exercises</md:value>
+        <rdfs:label xml:lang="en">Do Epley maneuver exercises</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Fortis_Neurology"/>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Avoid_driving_during_episodes">
+        <md:value>Avoid driving during episodes</md:value>
+        <rdfs:label xml:lang="en">Avoid driving during episodes</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:name>Vertigo</md:name>
+    <md:requiresTest rdf:resource="http://example.org/mediguide#Test_MRI_Brain"/>
+  </md:Disease>
+  <md:Disease rdf:about="http://example.org/mediguide#Disease_Measles">
+    <md:name>Measles</md:name>
+    <md:availableAt>
+      <md:Hospital rdf:about="http://example.org/mediguide#Hospital_Government_General_Hospital">
+        <md:value>Government General Hospital</md:value>
+        <rdfs:label xml:lang="en">Government General Hospital</rdfs:label>
+      </md:Hospital>
+    </md:availableAt>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Get_vaccinated_MMR">
+        <md:value>Get vaccinated (MMR)</md:value>
+        <rdfs:label xml:lang="en">Get vaccinated (MMR)</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:treatedBy>
+      <md:Specialist rdf:about="http://example.org/mediguide#Specialist_Infectious_Disease_Specialist">
+        <md:value>Infectious Disease Specialist</md:value>
+        <rdfs:label xml:lang="en">Infectious Disease Specialist</rdfs:label>
+      </md:Specialist>
+    </md:treatedBy>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Stay_isolated">
+        <md:value>Stay isolated</md:value>
+        <rdfs:label xml:lang="en">Stay isolated</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_CBC">
+        <md:value>CBC</md:value>
+        <rdfs:label xml:lang="en">CBC</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <rdfs:label xml:lang="en">Measles</rdfs:label>
+    <md:treatedBy rdf:resource="http://example.org/mediguide#Specialist_General_Physician"/>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Apollo_Hospitals"/>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Measles_IgM_Antibody_Test">
+        <md:value>Measles IgM Antibody Test</md:value>
+        <rdfs:label xml:lang="en">Measles IgM Antibody Test</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:availableAt>
+      <md:Hospital rdf:about="http://example.org/mediguide#Hospital_Fortis_Healthcare">
+        <md:value>Fortis Healthcare</md:value>
+        <rdfs:label xml:lang="en">Fortis Healthcare</rdfs:label>
+      </md:Hospital>
+    </md:availableAt>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Clinical_Diagnosis">
+        <md:value>Clinical Diagnosis</md:value>
+        <rdfs:label xml:lang="en">Clinical Diagnosis</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Rest_and_stay_hydrated">
+        <md:value>Rest and stay hydrated</md:value>
+        <rdfs:label xml:lang="en">Rest and stay hydrated</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Take_vitamin_A_supplements">
+        <md:value>Take vitamin A supplements</md:value>
+        <rdfs:label xml:lang="en">Take vitamin A supplements</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+  </md:Disease>
+  <md:Disease rdf:about="http://example.org/mediguide#Disease_Dengue_Fever">
+    <rdfs:label xml:lang="en">Dengue Fever</rdfs:label>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Dengue_IgM_IgG">
+        <md:value>Dengue IgM/IgG</md:value>
+        <rdfs:label xml:lang="en">Dengue IgM/IgG</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:treatedBy rdf:resource="http://example.org/mediguide#Specialist_General_Physician"/>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Stay_hydrated_with_fluids">
+        <md:value>Stay hydrated with fluids</md:value>
+        <rdfs:label xml:lang="en">Stay hydrated with fluids</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Platelet_Count">
+        <md:value>Platelet Count</md:value>
+        <rdfs:label xml:lang="en">Platelet Count</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:name>Dengue Fever</md:name>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Apollo_Hospitals"/>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Avoid_aspirin">
+        <md:value>Avoid aspirin</md:value>
+        <rdfs:label xml:lang="en">Avoid aspirin</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Use_mosquito_repellent">
+        <md:value>Use mosquito repellent</md:value>
+        <rdfs:label xml:lang="en">Use mosquito repellent</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:requiresTest rdf:resource="http://example.org/mediguide#Test_CBC"/>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_NS1_Antigen_Test">
+        <md:value>NS1 Antigen Test</md:value>
+        <rdfs:label xml:lang="en">NS1 Antigen Test</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Fortis_Healthcare"/>
+    <md:treatedBy rdf:resource="http://example.org/mediguide#Specialist_Infectious_Disease_Specialist"/>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Monitor_platelet_count">
+        <md:value>Monitor platelet count</md:value>
+        <rdfs:label xml:lang="en">Monitor platelet count</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Government_General_Hospital"/>
+  </md:Disease>
+  <md:Disease rdf:about="http://example.org/mediguide#Disease_Typhoid">
+    <rdfs:label xml:lang="en">Typhoid</rdfs:label>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Government_General_Hospital"/>
+    <md:requiresTest rdf:resource="http://example.org/mediguide#Test_CBC"/>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Complete_antibiotic_course">
+        <md:value>Complete antibiotic course</md:value>
+        <rdfs:label xml:lang="en">Complete antibiotic course</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:name>Typhoid</md:name>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Widal_Test">
+        <md:value>Widal Test</md:value>
+        <rdfs:label xml:lang="en">Widal Test</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Drink_boiled_water_only">
+        <md:value>Drink boiled water only</md:value>
+        <rdfs:label xml:lang="en">Drink boiled water only</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:treatedBy>
+      <md:Specialist rdf:about="http://example.org/mediguide#Specialist_Gastroenterologist">
+        <md:value>Gastroenterologist</md:value>
+        <rdfs:label xml:lang="en">Gastroenterologist</rdfs:label>
+      </md:Specialist>
+    </md:treatedBy>
+    <md:treatedBy rdf:resource="http://example.org/mediguide#Specialist_General_Physician"/>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Typhidot_Test">
+        <md:value>Typhidot Test</md:value>
+        <rdfs:label xml:lang="en">Typhidot Test</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Eat_light_easily_digestible_food">
+        <md:value>Eat light easily digestible food</md:value>
+        <rdfs:label xml:lang="en">Eat light easily digestible food</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Fortis_Healthcare"/>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Apollo_Hospitals"/>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Maintain_hygiene">
+        <md:value>Maintain hygiene</md:value>
+        <rdfs:label xml:lang="en">Maintain hygiene</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Blood_Culture">
+        <md:value>Blood Culture</md:value>
+        <rdfs:label xml:lang="en">Blood Culture</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+  </md:Disease>
+  <md:Disease rdf:about="http://example.org/mediguide#Disease_Malaria">
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Take_full_course_of_antimalarials">
+        <md:value>Take full course of antimalarials</md:value>
+        <rdfs:label xml:lang="en">Take full course of antimalarials</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <rdfs:label xml:lang="en">Malaria</rdfs:label>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Blood_Smear_Test">
+        <md:value>Blood Smear Test</md:value>
+        <rdfs:label xml:lang="en">Blood Smear Test</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Government_General_Hospital"/>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Apollo_Hospitals"/>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Malaria_Rapid_Test">
+        <md:value>Malaria Rapid Test</md:value>
+        <rdfs:label xml:lang="en">Malaria Rapid Test</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:name>Malaria</md:name>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Avoid_mosquito_bites">
+        <md:value>Avoid mosquito bites</md:value>
+        <rdfs:label xml:lang="en">Avoid mosquito bites</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Use_mosquito_nets">
+        <md:value>Use mosquito nets</md:value>
+        <rdfs:label xml:lang="en">Use mosquito nets</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:treatedBy rdf:resource="http://example.org/mediguide#Specialist_General_Physician"/>
+    <md:requiresTest rdf:resource="http://example.org/mediguide#Test_CBC"/>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Fortis_Healthcare"/>
+    <md:treatedBy rdf:resource="http://example.org/mediguide#Specialist_Infectious_Disease_Specialist"/>
+    <md:hasPrecaution rdf:resource="http://example.org/mediguide#Precaution_Stay_hydrated"/>
+  </md:Disease>
+  <md:Disease rdf:about="http://example.org/mediguide#Disease_Bronchitis">
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Chest_X_Ray">
+        <md:value>Chest X-Ray</md:value>
+        <rdfs:label xml:lang="en">Chest X-Ray</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:requiresTest rdf:resource="http://example.org/mediguide#Test_CBC"/>
+    <md:hasPrecaution rdf:resource="http://example.org/mediguide#Precaution_Rest_and_stay_hydrated"/>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Use_a_humidifier">
+        <md:value>Use a humidifier</md:value>
+        <rdfs:label xml:lang="en">Use a humidifier</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:availableAt>
+      <md:Hospital rdf:about="http://example.org/mediguide#Hospital_Manipal_Hospitals">
+        <md:value>Manipal Hospitals</md:value>
+        <rdfs:label xml:lang="en">Manipal Hospitals</rdfs:label>
+      </md:Hospital>
+    </md:availableAt>
+    <md:name>Bronchitis</md:name>
+    <md:treatedBy rdf:resource="http://example.org/mediguide#Specialist_General_Physician"/>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Sputum_Test">
+        <md:value>Sputum Test</md:value>
+        <rdfs:label xml:lang="en">Sputum Test</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Apollo_Hospitals"/>
+    <md:treatedBy>
+      <md:Specialist rdf:about="http://example.org/mediguide#Specialist_Pulmonologist">
+        <md:value>Pulmonologist</md:value>
+        <rdfs:label xml:lang="en">Pulmonologist</rdfs:label>
+      </md:Specialist>
+    </md:treatedBy>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Avoid_smoking">
+        <md:value>Avoid smoking</md:value>
+        <rdfs:label xml:lang="en">Avoid smoking</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <rdfs:label xml:lang="en">Bronchitis</rdfs:label>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Spirometry">
+        <md:value>Spirometry</md:value>
+        <rdfs:label xml:lang="en">Spirometry</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Fortis_Healthcare"/>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Take_prescribed_bronchodilators">
+        <md:value>Take prescribed bronchodilators</md:value>
+        <rdfs:label xml:lang="en">Take prescribed bronchodilators</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+  </md:Disease>
+  <md:Disease rdf:about="http://example.org/mediguide#Disease_Urinary_Tract_Infection">
+    <md:hasPrecaution rdf:resource="http://example.org/mediguide#Precaution_Maintain_hygiene"/>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Manipal_Hospitals"/>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Avoid_holding_urine">
+        <md:value>Avoid holding urine</md:value>
+        <rdfs:label xml:lang="en">Avoid holding urine</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:treatedBy rdf:resource="http://example.org/mediguide#Specialist_General_Physician"/>
+    <md:treatedBy>
+      <md:Specialist rdf:about="http://example.org/mediguide#Specialist_Urologist">
+        <md:value>Urologist</md:value>
+        <rdfs:label xml:lang="en">Urologist</rdfs:label>
+      </md:Specialist>
+    </md:treatedBy>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Urine_Routine_Test">
+        <md:value>Urine Routine Test</md:value>
+        <rdfs:label xml:lang="en">Urine Routine Test</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <rdfs:label xml:lang="en">Urinary Tract Infection</rdfs:label>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Urine_Culture">
+        <md:value>Urine Culture</md:value>
+        <rdfs:label xml:lang="en">Urine Culture</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:hasPrecaution rdf:resource="http://example.org/mediguide#Precaution_Complete_antibiotic_course"/>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Apollo_Hospitals"/>
+    <md:requiresTest rdf:resource="http://example.org/mediguide#Test_CBC"/>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Fortis_Healthcare"/>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Drink_plenty_of_water">
+        <md:value>Drink plenty of water</md:value>
+        <rdfs:label xml:lang="en">Drink plenty of water</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:name>Urinary Tract Infection</md:name>
+  </md:Disease>
+  <md:Disease rdf:about="http://example.org/mediguide#Disease_Influenza">
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Take_antiviral_medication">
+        <md:value>Take antiviral medication</md:value>
+        <rdfs:label xml:lang="en">Take antiviral medication</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Avoid_contact_with_others">
+        <md:value>Avoid contact with others</md:value>
+        <rdfs:label xml:lang="en">Avoid contact with others</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:treatedBy rdf:resource="http://example.org/mediguide#Specialist_Pulmonologist"/>
+    <md:requiresTest rdf:resource="http://example.org/mediguide#Test_CBC"/>
+    <md:treatedBy rdf:resource="http://example.org/mediguide#Specialist_General_Physician"/>
+    <md:requiresTest rdf:resource="http://example.org/mediguide#Test_Chest_X_Ray"/>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Apollo_Hospitals"/>
+    <rdfs:label xml:lang="en">Influenza</rdfs:label>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Get_annual_flu_vaccine">
+        <md:value>Get annual flu vaccine</md:value>
+        <rdfs:label xml:lang="en">Get annual flu vaccine</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Rapid_Influenza_Test">
+        <md:value>Rapid Influenza Test</md:value>
+        <rdfs:label xml:lang="en">Rapid Influenza Test</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Fortis_Healthcare"/>
+    <md:hasPrecaution rdf:resource="http://example.org/mediguide#Precaution_Rest_and_stay_hydrated"/>
+    <md:name>Influenza</md:name>
+    <md:availableAt>
+      <md:Hospital rdf:about="http://example.org/mediguide#Hospital_AIIMS">
+        <md:value>AIIMS</md:value>
+        <rdfs:label xml:lang="en">AIIMS</rdfs:label>
+      </md:Hospital>
+    </md:availableAt>
+  </md:Disease>
+  <md:Disease rdf:about="http://example.org/mediguide#Disease_Jaundice">
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_AIIMS"/>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Bilirubin_Test">
+        <md:value>Bilirubin Test</md:value>
+        <rdfs:label xml:lang="en">Bilirubin Test</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Ultrasound_Abdomen">
+        <md:value>Ultrasound Abdomen</md:value>
+        <rdfs:label xml:lang="en">Ultrasound Abdomen</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:hasPrecaution rdf:resource="http://example.org/mediguide#Precaution_Stay_hydrated"/>
+    <md:treatedBy>
+      <md:Specialist rdf:about="http://example.org/mediguide#Specialist_Hepatologist">
+        <md:value>Hepatologist</md:value>
+        <rdfs:label xml:lang="en">Hepatologist</rdfs:label>
+      </md:Specialist>
+    </md:treatedBy>
+    <md:treatedBy rdf:resource="http://example.org/mediguide#Specialist_Gastroenterologist"/>
+    <rdfs:label xml:lang="en">Jaundice</rdfs:label>
+    <md:name>Jaundice</md:name>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Hepatitis_Panel">
+        <md:value>Hepatitis Panel</md:value>
+        <rdfs:label xml:lang="en">Hepatitis Panel</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Liver_Function_Test">
+        <md:value>Liver Function Test</md:value>
+        <rdfs:label xml:lang="en">Liver Function Test</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Rest_and_avoid_alcohol">
+        <md:value>Rest and avoid alcohol</md:value>
+        <rdfs:label xml:lang="en">Rest and avoid alcohol</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:availableAt>
+      <md:Hospital rdf:about="http://example.org/mediguide#Hospital_Fortis_Liver_Institute">
+        <md:value>Fortis Liver Institute</md:value>
+        <rdfs:label xml:lang="en">Fortis Liver Institute</rdfs:label>
+      </md:Hospital>
+    </md:availableAt>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Apollo_Hospitals"/>
+    <md:hasPrecaution rdf:resource="http://example.org/mediguide#Precaution_Eat_light_easily_digestible_food"/>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Avoid_fatty_foods">
+        <md:value>Avoid fatty foods</md:value>
+        <rdfs:label xml:lang="en">Avoid fatty foods</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+  </md:Disease>
+  <md:Disease rdf:about="http://example.org/mediguide#Disease_Pneumonia">
+    <md:hasPrecaution rdf:resource="http://example.org/mediguide#Precaution_Avoid_smoking"/>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Fortis_Healthcare"/>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_AIIMS"/>
+    <md:hasPrecaution rdf:resource="http://example.org/mediguide#Precaution_Use_a_humidifier"/>
+    <md:hasPrecaution rdf:resource="http://example.org/mediguide#Precaution_Rest_and_stay_hydrated"/>
+    <md:treatedBy rdf:resource="http://example.org/mediguide#Specialist_Pulmonologist"/>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Apollo_Hospitals"/>
+    <md:requiresTest rdf:resource="http://example.org/mediguide#Test_Chest_X_Ray"/>
+    <md:requiresTest rdf:resource="http://example.org/mediguide#Test_CBC"/>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Complete_the_full_antibiotic_course">
+        <md:value>Complete the full antibiotic course</md:value>
+        <rdfs:label xml:lang="en">Complete the full antibiotic course</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <rdfs:label xml:lang="en">Pneumonia</rdfs:label>
+    <md:treatedBy rdf:resource="http://example.org/mediguide#Specialist_General_Physician"/>
+    <md:requiresTest rdf:resource="http://example.org/mediguide#Test_Blood_Culture"/>
+    <md:name>Pneumonia</md:name>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Sputum_Culture">
+        <md:value>Sputum Culture</md:value>
+        <rdfs:label xml:lang="en">Sputum Culture</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+  </md:Disease>
+  <md:Disease rdf:about="http://example.org/mediguide#Disease_Arthritis">
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_ESR_Test">
+        <md:value>ESR Test</md:value>
+        <rdfs:label xml:lang="en">ESR Test</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Apollo_Hospitals"/>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Manipal_Hospitals"/>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Apply_hot_cold_packs">
+        <md:value>Apply hot/cold packs</md:value>
+        <rdfs:label xml:lang="en">Apply hot/cold packs</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_RA_Factor_Test">
+        <md:value>RA Factor Test</md:value>
+        <rdfs:label xml:lang="en">RA Factor Test</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Take_anti_inflammatory_medication">
+        <md:value>Take anti-inflammatory medication</md:value>
+        <rdfs:label xml:lang="en">Take anti-inflammatory medication</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:availableAt>
+      <md:Hospital rdf:about="http://example.org/mediguide#Hospital_Fortis_Orthopedics">
+        <md:value>Fortis Orthopedics</md:value>
+        <rdfs:label xml:lang="en">Fortis Orthopedics</rdfs:label>
+      </md:Hospital>
+    </md:availableAt>
+    <md:treatedBy>
+      <md:Specialist rdf:about="http://example.org/mediguide#Specialist_Rheumatologist">
+        <md:value>Rheumatologist</md:value>
+        <rdfs:label xml:lang="en">Rheumatologist</rdfs:label>
+      </md:Specialist>
+    </md:treatedBy>
+    <rdfs:label xml:lang="en">Arthritis</rdfs:label>
+    <md:treatedBy>
+      <md:Specialist rdf:about="http://example.org/mediguide#Specialist_Orthopedic_Surgeon">
+        <md:value>Orthopedic Surgeon</md:value>
+        <rdfs:label xml:lang="en">Orthopedic Surgeon</rdfs:label>
+      </md:Specialist>
+    </md:treatedBy>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_X_Ray_Joints">
+        <md:value>X-Ray Joints</md:value>
+        <rdfs:label xml:lang="en">X-Ray Joints</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Anti_CCP_Test">
+        <md:value>Anti-CCP Test</md:value>
+        <rdfs:label xml:lang="en">Anti-CCP Test</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Maintain_healthy_weight">
+        <md:value>Maintain healthy weight</md:value>
+        <rdfs:label xml:lang="en">Maintain healthy weight</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Do_low_impact_exercises">
+        <md:value>Do low-impact exercises</md:value>
+        <rdfs:label xml:lang="en">Do low-impact exercises</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:name>Arthritis</md:name>
+  </md:Disease>
+  <md:Disease rdf:about="http://example.org/mediguide#Disease_Hypertension">
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Kidney_Function_Test">
+        <md:value>Kidney Function Test</md:value>
+        <rdfs:label xml:lang="en">Kidney Function Test</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Reduce_salt_intake">
+        <md:value>Reduce salt intake</md:value>
+        <rdfs:label xml:lang="en">Reduce salt intake</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Avoid_stress">
+        <md:value>Avoid stress</md:value>
+        <rdfs:label xml:lang="en">Avoid stress</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Exercise_regularly">
+        <md:value>Exercise regularly</md:value>
+        <rdfs:label xml:lang="en">Exercise regularly</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:treatedBy>
+      <md:Specialist rdf:about="http://example.org/mediguide#Specialist_Cardiologist">
+        <md:value>Cardiologist</md:value>
+        <rdfs:label xml:lang="en">Cardiologist</rdfs:label>
+      </md:Specialist>
+    </md:treatedBy>
+    <rdfs:label xml:lang="en">Hypertension</rdfs:label>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Fortis_Healthcare"/>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Blood_Pressure_Monitoring">
+        <md:value>Blood Pressure Monitoring</md:value>
+        <rdfs:label xml:lang="en">Blood Pressure Monitoring</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:name>Hypertension</md:name>
+    <md:treatedBy rdf:resource="http://example.org/mediguide#Specialist_General_Physician"/>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Take_prescribed_medications">
+        <md:value>Take prescribed medications</md:value>
+        <rdfs:label xml:lang="en">Take prescribed medications</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_ECG">
+        <md:value>ECG</md:value>
+        <rdfs:label xml:lang="en">ECG</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Apollo_Hospitals"/>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Manipal_Hospitals"/>
+  </md:Disease>
+  <md:Disease rdf:about="http://example.org/mediguide#Disease_Irritable_Bowel_Syndrome">
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Food_Intolerance_Test">
+        <md:value>Food Intolerance Test</md:value>
+        <rdfs:label xml:lang="en">Food Intolerance Test</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:name>Irritable Bowel Syndrome</md:name>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Manipal_Hospitals"/>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Eat_high_fiber_diet">
+        <md:value>Eat high-fiber diet</md:value>
+        <rdfs:label xml:lang="en">Eat high-fiber diet</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <rdfs:label xml:lang="en">Irritable Bowel Syndrome</rdfs:label>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Colonoscopy">
+        <md:value>Colonoscopy</md:value>
+        <rdfs:label xml:lang="en">Colonoscopy</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Fortis_Healthcare"/>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Take_prescribed_medication">
+        <md:value>Take prescribed medication</md:value>
+        <rdfs:label xml:lang="en">Take prescribed medication</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:requiresTest rdf:resource="http://example.org/mediguide#Test_CBC"/>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Avoid_trigger_foods">
+        <md:value>Avoid trigger foods</md:value>
+        <rdfs:label xml:lang="en">Avoid trigger foods</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:treatedBy rdf:resource="http://example.org/mediguide#Specialist_Gastroenterologist"/>
+    <md:treatedBy rdf:resource="http://example.org/mediguide#Specialist_General_Physician"/>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Stool_Test">
+        <md:value>Stool Test</md:value>
+        <rdfs:label xml:lang="en">Stool Test</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Apollo_Hospitals"/>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Manage_stress">
+        <md:value>Manage stress</md:value>
+        <rdfs:label xml:lang="en">Manage stress</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+  </md:Disease>
+  <md:Disease rdf:about="http://example.org/mediguide#Disease_Heart_Attack">
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Follow_up_with_cardiologist">
+        <md:value>Follow up with cardiologist</md:value>
+        <rdfs:label xml:lang="en">Follow up with cardiologist</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Chew_aspirin_if_not_allergic">
+        <md:value>Chew aspirin if not allergic</md:value>
+        <rdfs:label xml:lang="en">Chew aspirin if not allergic</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Troponin_Test">
+        <md:value>Troponin Test</md:value>
+        <rdfs:label xml:lang="en">Troponin Test</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:availableAt>
+      <md:Hospital rdf:about="http://example.org/mediguide#Hospital_Fortis_Heart_Institute">
+        <md:value>Fortis Heart Institute</md:value>
+        <rdfs:label xml:lang="en">Fortis Heart Institute</rdfs:label>
+      </md:Hospital>
+    </md:availableAt>
+    <md:treatedBy rdf:resource="http://example.org/mediguide#Specialist_Cardiologist"/>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Rest_and_avoid_exertion">
+        <md:value>Rest and avoid exertion</md:value>
+        <rdfs:label xml:lang="en">Rest and avoid exertion</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:availableAt>
+      <md:Hospital rdf:about="http://example.org/mediguide#Hospital_AIIMS_Cardiology">
+        <md:value>AIIMS Cardiology</md:value>
+        <rdfs:label xml:lang="en">AIIMS Cardiology</rdfs:label>
+      </md:Hospital>
+    </md:availableAt>
+    <md:requiresTest rdf:resource="http://example.org/mediguide#Test_ECG"/>
+    <rdfs:label xml:lang="en">Heart Attack</rdfs:label>
+    <md:treatedBy>
+      <md:Specialist rdf:about="http://example.org/mediguide#Specialist_Cardiac_Surgeon">
+        <md:value>Cardiac Surgeon</md:value>
+        <rdfs:label xml:lang="en">Cardiac Surgeon</rdfs:label>
+      </md:Specialist>
+    </md:treatedBy>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Apollo_Hospitals"/>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Call_emergency_services_immediately">
+        <md:value>Call emergency services immediately</md:value>
+        <rdfs:label xml:lang="en">Call emergency services immediately</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:name>Heart Attack</md:name>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Angiography">
+        <md:value>Angiography</md:value>
+        <rdfs:label xml:lang="en">Angiography</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Echocardiogram">
+        <md:value>Echocardiogram</md:value>
+        <rdfs:label xml:lang="en">Echocardiogram</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+  </md:Disease>
+  <md:Disease rdf:about="http://example.org/mediguide#Disease_Anxiety">
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_GAD_7_Assessment">
+        <md:value>GAD-7 Assessment</md:value>
+        <rdfs:label xml:lang="en">GAD-7 Assessment</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:name>Anxiety</md:name>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_NIMHANS"/>
+    <md:treatedBy>
+      <md:Specialist rdf:about="http://example.org/mediguide#Specialist_Psychiatrist">
+        <md:value>Psychiatrist</md:value>
+        <rdfs:label xml:lang="en">Psychiatrist</rdfs:label>
+      </md:Specialist>
+    </md:treatedBy>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Practice_deep_breathing_exercises">
+        <md:value>Practice deep breathing exercises</md:value>
+        <rdfs:label xml:lang="en">Practice deep breathing exercises</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:hasPrecaution rdf:resource="http://example.org/mediguide#Precaution_Take_prescribed_medication"/>
+    <md:requiresTest rdf:resource="http://example.org/mediguide#Test_CBC"/>
+    <md:treatedBy>
+      <md:Specialist rdf:about="http://example.org/mediguide#Specialist_Psychologist">
+        <md:value>Psychologist</md:value>
+        <rdfs:label xml:lang="en">Psychologist</rdfs:label>
+      </md:Specialist>
+    </md:treatedBy>
+    <rdfs:label xml:lang="en">Anxiety</rdfs:label>
+    <md:availableAt>
+      <md:Hospital rdf:about="http://example.org/mediguide#Hospital_Apollo_Mental_Health">
+        <md:value>Apollo Mental Health</md:value>
+        <rdfs:label xml:lang="en">Apollo Mental Health</rdfs:label>
+      </md:Hospital>
+    </md:availableAt>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Seek_therapy_or_counseling">
+        <md:value>Seek therapy or counseling</md:value>
+        <rdfs:label xml:lang="en">Seek therapy or counseling</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Thyroid_Function_Test">
+        <md:value>Thyroid Function Test</md:value>
+        <rdfs:label xml:lang="en">Thyroid Function Test</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Avoid_caffeine_and_alcohol">
+        <md:value>Avoid caffeine and alcohol</md:value>
+        <rdfs:label xml:lang="en">Avoid caffeine and alcohol</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:availableAt>
+      <md:Hospital rdf:about="http://example.org/mediguide#Hospital_Fortis_Mental_Health">
+        <md:value>Fortis Mental Health</md:value>
+        <rdfs:label xml:lang="en">Fortis Mental Health</rdfs:label>
+      </md:Hospital>
+    </md:availableAt>
+  </md:Disease>
+  <md:Disease rdf:about="http://example.org/mediguide#Disease_Gastritis">
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Fortis_Healthcare"/>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_H_Pylori_Test">
+        <md:value>H. Pylori Test</md:value>
+        <rdfs:label xml:lang="en">H. Pylori Test</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Take_antacids_as_prescribed">
+        <md:value>Take antacids as prescribed</md:value>
+        <rdfs:label xml:lang="en">Take antacids as prescribed</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Eat_small_frequent_meals">
+        <md:value>Eat small frequent meals</md:value>
+        <rdfs:label xml:lang="en">Eat small frequent meals</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Avoid_spicy_and_acidic_foods">
+        <md:value>Avoid spicy and acidic foods</md:value>
+        <rdfs:label xml:lang="en">Avoid spicy and acidic foods</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:treatedBy rdf:resource="http://example.org/mediguide#Specialist_Gastroenterologist"/>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Apollo_Hospitals"/>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Avoid_alcohol_and_smoking">
+        <md:value>Avoid alcohol and smoking</md:value>
+        <rdfs:label xml:lang="en">Avoid alcohol and smoking</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:name>Gastritis</md:name>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Endoscopy">
+        <md:value>Endoscopy</md:value>
+        <rdfs:label xml:lang="en">Endoscopy</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:requiresTest rdf:resource="http://example.org/mediguide#Test_CBC"/>
+    <rdfs:label xml:lang="en">Gastritis</rdfs:label>
+    <md:requiresTest rdf:resource="http://example.org/mediguide#Test_Stool_Test"/>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Manipal_Hospitals"/>
+    <md:treatedBy rdf:resource="http://example.org/mediguide#Specialist_General_Physician"/>
+  </md:Disease>
+  <md:Disease rdf:about="http://example.org/mediguide#Disease_Hepatitis">
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Hepatitis_C_Antibody">
+        <md:value>Hepatitis C Antibody</md:value>
+        <rdfs:label xml:lang="en">Hepatitis C Antibody</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Apollo_Hospitals"/>
+    <md:name>Hepatitis</md:name>
+    <md:treatedBy rdf:resource="http://example.org/mediguide#Specialist_Hepatologist"/>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Follow_up_regularly">
+        <md:value>Follow up regularly</md:value>
+        <rdfs:label xml:lang="en">Follow up regularly</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Hepatitis_B_Surface_Antigen">
+        <md:value>Hepatitis B Surface Antigen</md:value>
+        <rdfs:label xml:lang="en">Hepatitis B Surface Antigen</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:requiresTest rdf:resource="http://example.org/mediguide#Test_Liver_Function_Test"/>
+    <md:hasPrecaution rdf:resource="http://example.org/mediguide#Precaution_Take_antiviral_medication"/>
+    <rdfs:label xml:lang="en">Hepatitis</rdfs:label>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Ultrasound_Liver">
+        <md:value>Ultrasound Liver</md:value>
+        <rdfs:label xml:lang="en">Ultrasound Liver</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_AIIMS"/>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Avoid_alcohol_completely">
+        <md:value>Avoid alcohol completely</md:value>
+        <rdfs:label xml:lang="en">Avoid alcohol completely</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Fortis_Liver_Institute"/>
+    <md:treatedBy rdf:resource="http://example.org/mediguide#Specialist_Gastroenterologist"/>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Get_vaccinated_for_Hepatitis_A_and_B">
+        <md:value>Get vaccinated for Hepatitis A and B</md:value>
+        <rdfs:label xml:lang="en">Get vaccinated for Hepatitis A and B</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+  </md:Disease>
+  <md:Disease rdf:about="http://example.org/mediguide#Disease_Food_Poisoning">
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Stool_Culture">
+        <md:value>Stool Culture</md:value>
+        <rdfs:label xml:lang="en">Stool Culture</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:name>Food Poisoning</md:name>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Government_General_Hospital"/>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Fortis_Healthcare"/>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Electrolyte_Panel">
+        <md:value>Electrolyte Panel</md:value>
+        <rdfs:label xml:lang="en">Electrolyte Panel</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Seek_care_if_symptoms_persist_over_2_days">
+        <md:value>Seek care if symptoms persist over 2 days</md:value>
+        <rdfs:label xml:lang="en">Seek care if symptoms persist over 2 days</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <rdfs:label xml:lang="en">Food Poisoning</rdfs:label>
+    <md:requiresTest rdf:resource="http://example.org/mediguide#Test_CBC"/>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Avoid_solid_food_initially">
+        <md:value>Avoid solid food initially</md:value>
+        <rdfs:label xml:lang="en">Avoid solid food initially</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:availableAt>
+      <md:Hospital rdf:about="http://example.org/mediguide#Hospital_Apollo_Clinics">
+        <md:value>Apollo Clinics</md:value>
+        <rdfs:label xml:lang="en">Apollo Clinics</rdfs:label>
+      </md:Hospital>
+    </md:availableAt>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Maintain_food_hygiene">
+        <md:value>Maintain food hygiene</md:value>
+        <rdfs:label xml:lang="en">Maintain food hygiene</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Stay_hydrated_with_ORS">
+        <md:value>Stay hydrated with ORS</md:value>
+        <rdfs:label xml:lang="en">Stay hydrated with ORS</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:treatedBy rdf:resource="http://example.org/mediguide#Specialist_Gastroenterologist"/>
+    <md:treatedBy rdf:resource="http://example.org/mediguide#Specialist_General_Physician"/>
+  </md:Disease>
+  <md:Disease rdf:about="http://example.org/mediguide#Disease_Allergy">
+    <md:treatedBy>
+      <md:Specialist rdf:about="http://example.org/mediguide#Specialist_Allergist">
+        <md:value>Allergist</md:value>
+        <rdfs:label xml:lang="en">Allergist</rdfs:label>
+      </md:Specialist>
+    </md:treatedBy>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Fortis_Healthcare"/>
+    <md:treatedBy>
+      <md:Specialist rdf:about="http://example.org/mediguide#Specialist_Immunologist">
+        <md:value>Immunologist</md:value>
+        <rdfs:label xml:lang="en">Immunologist</rdfs:label>
+      </md:Specialist>
+    </md:treatedBy>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Identify_and_avoid_allergens">
+        <md:value>Identify and avoid allergens</md:value>
+        <rdfs:label xml:lang="en">Identify and avoid allergens</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_IgE_Blood_Test">
+        <md:value>IgE Blood Test</md:value>
+        <rdfs:label xml:lang="en">IgE Blood Test</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:name>Allergy</md:name>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Skin_Prick_Test">
+        <md:value>Skin Prick Test</md:value>
+        <rdfs:label xml:lang="en">Skin Prick Test</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_CBC_with_Eosinophils">
+        <md:value>CBC with Eosinophils</md:value>
+        <rdfs:label xml:lang="en">CBC with Eosinophils</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Manipal_Hospitals"/>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Apollo_Hospitals"/>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Consult_allergist_for_immunotherapy">
+        <md:value>Consult allergist for immunotherapy</md:value>
+        <rdfs:label xml:lang="en">Consult allergist for immunotherapy</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:treatedBy rdf:resource="http://example.org/mediguide#Specialist_ENT_Specialist"/>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Take_antihistamines_as_prescribed">
+        <md:value>Take antihistamines as prescribed</md:value>
+        <rdfs:label xml:lang="en">Take antihistamines as prescribed</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <rdfs:label xml:lang="en">Allergy</rdfs:label>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Carry_an_epinephrine_auto_injector">
+        <md:value>Carry an epinephrine auto-injector</md:value>
+        <rdfs:label xml:lang="en">Carry an epinephrine auto-injector</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+  </md:Disease>
+  <md:Disease rdf:about="http://example.org/mediguide#Disease_Depression">
+    <md:treatedBy rdf:resource="http://example.org/mediguide#Specialist_Psychologist"/>
+    <md:requiresTest rdf:resource="http://example.org/mediguide#Test_CBC"/>
+    <md:treatedBy rdf:resource="http://example.org/mediguide#Specialist_Psychiatrist"/>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Apollo_Mental_Health"/>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_NIMHANS"/>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Maintain_social_connections">
+        <md:value>Maintain social connections</md:value>
+        <rdfs:label xml:lang="en">Maintain social connections</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <rdfs:label xml:lang="en">Depression</rdfs:label>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Take_prescribed_antidepressants">
+        <md:value>Take prescribed antidepressants</md:value>
+        <rdfs:label xml:lang="en">Take prescribed antidepressants</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:name>Depression</md:name>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Seek_professional_counseling">
+        <md:value>Seek professional counseling</md:value>
+        <rdfs:label xml:lang="en">Seek professional counseling</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:requiresTest rdf:resource="http://example.org/mediguide#Test_Thyroid_Function_Test"/>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_PHQ_9_Assessment">
+        <md:value>PHQ-9 Assessment</md:value>
+        <rdfs:label xml:lang="en">PHQ-9 Assessment</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:hasPrecaution rdf:resource="http://example.org/mediguide#Precaution_Exercise_regularly"/>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Fortis_Mental_Health"/>
+  </md:Disease>
+  <md:Disease rdf:about="http://example.org/mediguide#Disease_Asthma">
+    <md:requiresTest rdf:resource="http://example.org/mediguide#Test_Spirometry"/>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Allergy_Test">
+        <md:value>Allergy Test</md:value>
+        <rdfs:label xml:lang="en">Allergy Test</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Avoid_triggers_like_dust_and_smoke">
+        <md:value>Avoid triggers like dust and smoke</md:value>
+        <rdfs:label xml:lang="en">Avoid triggers like dust and smoke</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:requiresTest rdf:resource="http://example.org/mediguide#Test_Chest_X_Ray"/>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Take_controller_medication_daily">
+        <md:value>Take controller medication daily</md:value>
+        <rdfs:label xml:lang="en">Take controller medication daily</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <rdfs:label xml:lang="en">Asthma</rdfs:label>
+    <md:name>Asthma</md:name>
+    <md:treatedBy rdf:resource="http://example.org/mediguide#Specialist_Pulmonologist"/>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Monitor_peak_flow_regularly">
+        <md:value>Monitor peak flow regularly</md:value>
+        <rdfs:label xml:lang="en">Monitor peak flow regularly</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Always_carry_your_inhaler">
+        <md:value>Always carry your inhaler</md:value>
+        <rdfs:label xml:lang="en">Always carry your inhaler</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:treatedBy rdf:resource="http://example.org/mediguide#Specialist_Allergist"/>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Apollo_Hospitals"/>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_AIIMS"/>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Peak_Flow_Test">
+        <md:value>Peak Flow Test</md:value>
+        <rdfs:label xml:lang="en">Peak Flow Test</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:availableAt>
+      <md:Hospital rdf:about="http://example.org/mediguide#Hospital_Fortis_Pulmonology">
+        <md:value>Fortis Pulmonology</md:value>
+        <rdfs:label xml:lang="en">Fortis Pulmonology</rdfs:label>
+      </md:Hospital>
+    </md:availableAt>
+  </md:Disease>
+  <md:Disease rdf:about="http://example.org/mediguide#Disease_Appendicitis">
+    <md:requiresTest rdf:resource="http://example.org/mediguide#Test_Ultrasound_Abdomen"/>
+    <rdfs:label xml:lang="en">Appendicitis</rdfs:label>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Apollo_Hospitals"/>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Seek_immediate_medical_attention">
+        <md:value>Seek immediate medical attention</md:value>
+        <rdfs:label xml:lang="en">Seek immediate medical attention</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Do_not_eat_or_drink_before_surgery">
+        <md:value>Do not eat or drink before surgery</md:value>
+        <rdfs:label xml:lang="en">Do not eat or drink before surgery</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:name>Appendicitis</md:name>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Follow_post_surgery_care">
+        <md:value>Follow post-surgery care</md:value>
+        <rdfs:label xml:lang="en">Follow post-surgery care</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Fortis_Healthcare"/>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_AIIMS"/>
+    <md:treatedBy rdf:resource="http://example.org/mediguide#Specialist_Gastroenterologist"/>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Rest_adequately">
+        <md:value>Rest adequately</md:value>
+        <rdfs:label xml:lang="en">Rest adequately</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:requiresTest rdf:resource="http://example.org/mediguide#Test_CBC"/>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_CT_Scan_Abdomen">
+        <md:value>CT Scan Abdomen</md:value>
+        <rdfs:label xml:lang="en">CT Scan Abdomen</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_CRP_Test">
+        <md:value>CRP Test</md:value>
+        <rdfs:label xml:lang="en">CRP Test</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:treatedBy>
+      <md:Specialist rdf:about="http://example.org/mediguide#Specialist_General_Surgeon">
+        <md:value>General Surgeon</md:value>
+        <rdfs:label xml:lang="en">General Surgeon</rdfs:label>
+      </md:Specialist>
+    </md:treatedBy>
+  </md:Disease>
+  <md:Disease rdf:about="http://example.org/mediguide#Disease_COVID_19">
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Fortis_Healthcare"/>
+    <md:treatedBy rdf:resource="http://example.org/mediguide#Specialist_General_Physician"/>
+    <rdfs:label xml:lang="en">COVID-19</rdfs:label>
+    <md:hasPrecaution rdf:resource="http://example.org/mediguide#Precaution_Stay_hydrated"/>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Seek_emergency_care_if_breathing_worsens">
+        <md:value>Seek emergency care if breathing worsens</md:value>
+        <rdfs:label xml:lang="en">Seek emergency care if breathing worsens</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Monitor_oxygen_levels">
+        <md:value>Monitor oxygen levels</md:value>
+        <rdfs:label xml:lang="en">Monitor oxygen levels</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_RT_PCR_Test">
+        <md:value>RT-PCR Test</md:value>
+        <rdfs:label xml:lang="en">RT-PCR Test</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:name>COVID-19</md:name>
+    <md:treatedBy rdf:resource="http://example.org/mediguide#Specialist_Infectious_Disease_Specialist"/>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Rapid_Antigen_Test">
+        <md:value>Rapid Antigen Test</md:value>
+        <rdfs:label xml:lang="en">Rapid Antigen Test</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_CT_Scan_Chest">
+        <md:value>CT Scan Chest</md:value>
+        <rdfs:label xml:lang="en">CT Scan Chest</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:treatedBy rdf:resource="http://example.org/mediguide#Specialist_Pulmonologist"/>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_AIIMS"/>
+    <md:availableAt>
+      <md:Hospital rdf:about="http://example.org/mediguide#Hospital_Apollo_COVID_Center">
+        <md:value>Apollo COVID Center</md:value>
+        <rdfs:label xml:lang="en">Apollo COVID Center</rdfs:label>
+      </md:Hospital>
+    </md:availableAt>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Isolate_immediately">
+        <md:value>Isolate immediately</md:value>
+        <rdfs:label xml:lang="en">Isolate immediately</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Oxygen_Saturation">
+        <md:value>Oxygen Saturation</md:value>
+        <rdfs:label xml:lang="en">Oxygen Saturation</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+  </md:Disease>
+  <md:Disease rdf:about="http://example.org/mediguide#Disease_Common_Cold">
+    <md:treatedBy rdf:resource="http://example.org/mediguide#Specialist_General_Physician"/>
+    <md:name>Common Cold</md:name>
+    <md:availableAt>
+      <md:Hospital rdf:about="http://example.org/mediguide#Hospital_Fortis_Clinics">
+        <md:value>Fortis Clinics</md:value>
+        <rdfs:label xml:lang="en">Fortis Clinics</rdfs:label>
+      </md:Hospital>
+    </md:availableAt>
+    <md:treatedBy rdf:resource="http://example.org/mediguide#Specialist_ENT_Specialist"/>
+    <rdfs:label xml:lang="en">Common Cold</rdfs:label>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Avoid_cold_exposure">
+        <md:value>Avoid cold exposure</md:value>
+        <rdfs:label xml:lang="en">Avoid cold exposure</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Use_saline_nasal_drops">
+        <md:value>Use saline nasal drops</md:value>
+        <rdfs:label xml:lang="en">Use saline nasal drops</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Take_OTC_cold_medication">
+        <md:value>Take OTC cold medication</md:value>
+        <rdfs:label xml:lang="en">Take OTC cold medication</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:hasPrecaution rdf:resource="http://example.org/mediguide#Precaution_Rest_and_stay_hydrated"/>
+    <md:availableAt>
+      <md:Hospital rdf:about="http://example.org/mediguide#Hospital_Local_Government_Hospital">
+        <md:value>Local Government Hospital</md:value>
+        <rdfs:label xml:lang="en">Local Government Hospital</rdfs:label>
+      </md:Hospital>
+    </md:availableAt>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Nasal_Swab_Test">
+        <md:value>Nasal Swab Test</md:value>
+        <rdfs:label xml:lang="en">Nasal Swab Test</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:requiresTest rdf:resource="http://example.org/mediguide#Test_CBC"/>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Apollo_Clinics"/>
+  </md:Disease>
+  <md:Disease rdf:about="http://example.org/mediguide#Disease_Diabetes">
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Take_prescribed_insulin_or_medication">
+        <md:value>Take prescribed insulin or medication</md:value>
+        <rdfs:label xml:lang="en">Take prescribed insulin or medication</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <rdfs:label xml:lang="en">Diabetes</rdfs:label>
+    <md:treatedBy rdf:resource="http://example.org/mediguide#Specialist_General_Physician"/>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_HbA1c_Test">
+        <md:value>HbA1c Test</md:value>
+        <rdfs:label xml:lang="en">HbA1c Test</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Apollo_Hospitals"/>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Fortis_Healthcare"/>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_AIIMS"/>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Fasting_Blood_Sugar">
+        <md:value>Fasting Blood Sugar</md:value>
+        <rdfs:label xml:lang="en">Fasting Blood Sugar</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:name>Diabetes</md:name>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Urine_Glucose_Test">
+        <md:value>Urine Glucose Test</md:value>
+        <rdfs:label xml:lang="en">Urine Glucose Test</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Monitor_blood_sugar_regularly">
+        <md:value>Monitor blood sugar regularly</md:value>
+        <rdfs:label xml:lang="en">Monitor blood sugar regularly</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Follow_a_low_sugar_diet">
+        <md:value>Follow a low-sugar diet</md:value>
+        <rdfs:label xml:lang="en">Follow a low-sugar diet</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:treatedBy>
+      <md:Specialist rdf:about="http://example.org/mediguide#Specialist_Endocrinologist">
+        <md:value>Endocrinologist</md:value>
+        <rdfs:label xml:lang="en">Endocrinologist</rdfs:label>
+      </md:Specialist>
+    </md:treatedBy>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Exercise_daily">
+        <md:value>Exercise daily</md:value>
+        <rdfs:label xml:lang="en">Exercise daily</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+  </md:Disease>
+  <md:Disease rdf:about="http://example.org/mediguide#Disease_Kidney_Stones">
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Ultrasound_Kidney">
+        <md:value>Ultrasound Kidney</md:value>
+        <rdfs:label xml:lang="en">Ultrasound Kidney</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Serum_Creatinine">
+        <md:value>Serum Creatinine</md:value>
+        <rdfs:label xml:lang="en">Serum Creatinine</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Drink_2_3_liters_of_water_daily">
+        <md:value>Drink 2-3 liters of water daily</md:value>
+        <rdfs:label xml:lang="en">Drink 2-3 liters of water daily</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Follow_up_with_urologist">
+        <md:value>Follow up with urologist</md:value>
+        <rdfs:label xml:lang="en">Follow up with urologist</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Apollo_Hospitals"/>
+    <md:name>Kidney Stones</md:name>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_AIIMS"/>
+    <rdfs:label xml:lang="en">Kidney Stones</rdfs:label>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Avoid_high_oxalate_foods">
+        <md:value>Avoid high-oxalate foods</md:value>
+        <rdfs:label xml:lang="en">Avoid high-oxalate foods</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:treatedBy>
+      <md:Specialist rdf:about="http://example.org/mediguide#Specialist_Nephrologist">
+        <md:value>Nephrologist</md:value>
+        <rdfs:label xml:lang="en">Nephrologist</rdfs:label>
+      </md:Specialist>
+    </md:treatedBy>
+    <md:treatedBy rdf:resource="http://example.org/mediguide#Specialist_Urologist"/>
+    <md:hasPrecaution rdf:resource="http://example.org/mediguide#Precaution_Take_prescribed_medication"/>
+    <md:availableAt>
+      <md:Hospital rdf:about="http://example.org/mediguide#Hospital_Fortis_Urology">
+        <md:value>Fortis Urology</md:value>
+        <rdfs:label xml:lang="en">Fortis Urology</rdfs:label>
+      </md:Hospital>
+    </md:availableAt>
+    <md:requiresTest rdf:resource="http://example.org/mediguide#Test_Urine_Routine_Test"/>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_CT_KUB">
+        <md:value>CT KUB</md:value>
+        <rdfs:label xml:lang="en">CT KUB</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+  </md:Disease>
+  <md:Disease rdf:about="http://example.org/mediguide#Disease_Anemia">
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Vitamin_B12_Test">
+        <md:value>Vitamin B12 Test</md:value>
+        <rdfs:label xml:lang="en">Vitamin B12 Test</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:treatedBy>
+      <md:Specialist rdf:about="http://example.org/mediguide#Specialist_Hematologist">
+        <md:value>Hematologist</md:value>
+        <rdfs:label xml:lang="en">Hematologist</rdfs:label>
+      </md:Specialist>
+    </md:treatedBy>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Fortis_Healthcare"/>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Apollo_Hospitals"/>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Serum_Iron_Test">
+        <md:value>Serum Iron Test</md:value>
+        <rdfs:label xml:lang="en">Serum Iron Test</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Take_iron_supplements_as_prescribed">
+        <md:value>Take iron supplements as prescribed</md:value>
+        <rdfs:label xml:lang="en">Take iron supplements as prescribed</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Eat_iron_rich_foods">
+        <md:value>Eat iron-rich foods</md:value>
+        <rdfs:label xml:lang="en">Eat iron-rich foods</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:requiresTest rdf:resource="http://example.org/mediguide#Test_CBC"/>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_AIIMS"/>
+    <rdfs:label xml:lang="en">Anemia</rdfs:label>
+    <md:treatedBy rdf:resource="http://example.org/mediguide#Specialist_General_Physician"/>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Get_regular_blood_tests">
+        <md:value>Get regular blood tests</md:value>
+        <rdfs:label xml:lang="en">Get regular blood tests</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Ferritin_Test">
+        <md:value>Ferritin Test</md:value>
+        <rdfs:label xml:lang="en">Ferritin Test</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:name>Anemia</md:name>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Avoid_tea_coffee_with_meals">
+        <md:value>Avoid tea/coffee with meals</md:value>
+        <rdfs:label xml:lang="en">Avoid tea/coffee with meals</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+  </md:Disease>
+  <md:Disease rdf:about="http://example.org/mediguide#Disease_Tuberculosis">
+    <md:requiresTest rdf:resource="http://example.org/mediguide#Test_Chest_X_Ray"/>
+    <md:name>Tuberculosis</md:name>
+    <md:availableAt>
+      <md:Hospital rdf:about="http://example.org/mediguide#Hospital_Government_TB_Hospital">
+        <md:value>Government TB Hospital</md:value>
+        <rdfs:label xml:lang="en">Government TB Hospital</rdfs:label>
+      </md:Hospital>
+    </md:availableAt>
+    <rdfs:label xml:lang="en">Tuberculosis</rdfs:label>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Apollo_Hospitals"/>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Sputum_AFB_Test">
+        <md:value>Sputum AFB Test</md:value>
+        <rdfs:label xml:lang="en">Sputum AFB Test</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Mantoux_Test">
+        <md:value>Mantoux Test</md:value>
+        <rdfs:label xml:lang="en">Mantoux Test</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Wear_a_mask">
+        <md:value>Wear a mask</md:value>
+        <rdfs:label xml:lang="en">Wear a mask</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_AIIMS"/>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_GeneXpert_Test">
+        <md:value>GeneXpert Test</md:value>
+        <rdfs:label xml:lang="en">GeneXpert Test</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:treatedBy rdf:resource="http://example.org/mediguide#Specialist_Pulmonologist"/>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Avoid_close_contact">
+        <md:value>Avoid close contact</md:value>
+        <rdfs:label xml:lang="en">Avoid close contact</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Complete_full_6_month_treatment">
+        <md:value>Complete full 6-month treatment</md:value>
+        <rdfs:label xml:lang="en">Complete full 6-month treatment</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:treatedBy rdf:resource="http://example.org/mediguide#Specialist_Infectious_Disease_Specialist"/>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Ensure_good_ventilation">
+        <md:value>Ensure good ventilation</md:value>
+        <rdfs:label xml:lang="en">Ensure good ventilation</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+  </md:Disease>
+  <md:Disease rdf:about="http://example.org/mediguide#Disease_Chickenpox">
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Stay_isolated_to_prevent_spread">
+        <md:value>Stay isolated to prevent spread</md:value>
+        <rdfs:label xml:lang="en">Stay isolated to prevent spread</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:requiresTest rdf:resource="http://example.org/mediguide#Test_Clinical_Diagnosis"/>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Apply_calamine_lotion">
+        <md:value>Apply calamine lotion</md:value>
+        <rdfs:label xml:lang="en">Apply calamine lotion</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Avoid_scratching_blisters">
+        <md:value>Avoid scratching blisters</md:value>
+        <rdfs:label xml:lang="en">Avoid scratching blisters</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <rdfs:label xml:lang="en">Chickenpox</rdfs:label>
+    <md:requiresTest>
+      <md:DiagnosticTest rdf:about="http://example.org/mediguide#Test_Varicella_PCR_Test">
+        <md:value>Varicella PCR Test</md:value>
+        <rdfs:label xml:lang="en">Varicella PCR Test</rdfs:label>
+      </md:DiagnosticTest>
+    </md:requiresTest>
+    <md:requiresTest rdf:resource="http://example.org/mediguide#Test_CBC"/>
+    <md:name>Chickenpox</md:name>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Government_General_Hospital"/>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Fortis_Healthcare"/>
+    <md:availableAt rdf:resource="http://example.org/mediguide#Hospital_Apollo_Clinics"/>
+    <md:treatedBy rdf:resource="http://example.org/mediguide#Specialist_General_Physician"/>
+    <md:hasPrecaution>
+      <md:Precaution rdf:about="http://example.org/mediguide#Precaution_Take_antiviral_medication_if_prescribed">
+        <md:value>Take antiviral medication if prescribed</md:value>
+        <rdfs:label xml:lang="en">Take antiviral medication if prescribed</rdfs:label>
+      </md:Precaution>
+    </md:hasPrecaution>
+    <md:treatedBy>
+      <md:Specialist rdf:about="http://example.org/mediguide#Specialist_Dermatologist">
+        <md:value>Dermatologist</md:value>
+        <rdfs:label xml:lang="en">Dermatologist</rdfs:label>
+      </md:Specialist>
+    </md:treatedBy>
+  </md:Disease>
+</rdf:RDF>

@@ -1,6 +1,8 @@
 package com.mediguide.exception;
 
+import com.mongodb.MongoException;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -67,6 +69,17 @@ public class GlobalExceptionHandler {
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.SERVICE_UNAVAILABLE.value())
                 .message(ex.getMessage())
+                .path(request.getRequestURI())
+                .build();
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(apiError);
+    }
+
+    @ExceptionHandler({MongoException.class, DataAccessResourceFailureException.class})
+    public ResponseEntity<ApiError> handleDatabaseUnavailable(RuntimeException ex, HttpServletRequest request) {
+        ApiError apiError = ApiError.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.SERVICE_UNAVAILABLE.value())
+                .message("Database unavailable. Check MongoDB Atlas network access and the local network connection.")
                 .path(request.getRequestURI())
                 .build();
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(apiError);

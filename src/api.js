@@ -9,6 +9,14 @@ const handleResponse = async (response) => {
     return body;
   }
 
+  if (response.status === 401 || response.status === 403) {
+    const message = body?.message || body?.error;
+    if (message) {
+      throw new Error(message);
+    }
+    throw new Error('Your session has expired. Please log out and log in again.');
+  }
+
   const message = body?.message || body?.error || response.statusText || 'Request failed';
   throw new Error(message);
 };
