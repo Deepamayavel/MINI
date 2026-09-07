@@ -12,6 +12,18 @@ export const LANG_SHORT_CODES = {
   'ar-SA': 'ar',
 };
 
+export const SUPPORTED_LANGUAGES = [
+  { code: 'en-IN', name: 'English (India)', native: 'English', flag: '🇮🇳' },
+  { code: 'ta-IN', name: 'Tamil', native: 'தமிழ்', flag: '🇮🇳' },
+  { code: 'hi-IN', name: 'Hindi', native: 'हिन्दी', flag: '🇮🇳' },
+  { code: 'te-IN', name: 'Telugu', native: 'తెలుగు', flag: '🇮🇳' },
+  { code: 'en-US', name: 'English (US)', native: 'English (US)', flag: '🇺🇸' },
+  { code: 'es-ES', name: 'Spanish', native: 'Español', flag: '🇪🇸' },
+  { code: 'fr-FR', name: 'French', native: 'Français', flag: '🇫🇷' },
+  { code: 'de-DE', name: 'German', native: 'Deutsch', flag: '🇩🇪' },
+  { code: 'ar-SA', name: 'Arabic', native: 'العربية', flag: '🇸🇦' },
+];
+
 // Automatic input language detector based on script unicode ranges and keywords
 export const detectInputLanguage = (text = '', preferredLang = 'en-IN') => {
   const t = text || '';

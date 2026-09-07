@@ -827,3 +827,162 @@
     justify-content: center;
   }
 }
+
+/* ── Multilingual Controls & Translation Indicators ──────────────────────── */
+.rec-lang-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.rec-lang-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--rec-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.rec-lang-select {
+  border: none;
+  background: transparent;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--rec-text);
+  cursor: pointer;
+  outline: none;
+}
+
+.rec-lang-select:focus {
+  outline: 2px solid var(--rec-green);
+  border-radius: 6px;
+}
+
+.rec-toggle-eng-btn {
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(16, 185, 129, 0.3);
+  background: #ffffff;
+  color: var(--rec-green);
+  font-weight: 700;
+  font-size: 0.84rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: inherit;
+}
+
+.rec-toggle-eng-btn:hover {
+  background: rgba(16, 185, 129, 0.08);
+  border-color: var(--rec-green);
+}
+
+.rec-toggle-eng-btn--active {
+  background: #10b981;
+  color: #ffffff;
+  border-color: #059669;
+  box-shadow: 0 2px 10px rgba(16, 185, 129, 0.3);
+}
+
+.rec-detail-lang-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 18px;
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+  border: 1.5px solid rgba(16, 185, 129, 0.3);
+  border-radius: 18px;
+  font-size: 0.9rem;
+  color: #065f46;
+  font-weight: 600;
+  flex-wrap: wrap;
+}
+
+.rec-detail-lang-text strong {
+  color: #047857;
+  font-weight: 800;
+}
+
+.rec-lang-toggle-btn {
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(16, 185, 129, 0.4);
+  background: #ffffff;
+  color: #047857;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  white-space: nowrap;
+  font-family: inherit;
+}
+
+.rec-lang-toggle-btn:hover {
+  background: #047857;
+  color: #ffffff;
+}
+
+.rec-disease-eng-badge {
+  display: inline-block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #047857;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  padding: 3px 10px;
+  border-radius: 999px;
+  margin-left: 10px;
+  vertical-align: middle;
+}
+
+.rec-sub-eng {
+  font-size: 0.82rem;
+  color: var(--rec-muted);
+  font-weight: 500;
+}
+
+.rec-tab-eng-sub {
+  font-size: 0.72rem;
+  color: var(--rec-muted);
+  font-weight: 600;
+  display: block;
+}
+
+.latest-diff-eng {
+  font-size: 0.72rem;
+  color: var(--rec-muted);
+  font-weight: 500;
+}
+
+.test-chip-eng {
+  font-size: 0.76rem;
+  opacity: 0.75;
+  font-weight: 500;
+}
+
+.rec-item-eng-sub {
+  font-size: 0.78rem;
+  color: var(--rec-muted);
+  font-weight: 500;
+}
+
+.latest-card-lang-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #047857;
+}

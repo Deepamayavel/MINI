@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import './HistoryPage.css';
 import { getHistory, deleteHistory, getHistoryDetail } from '../src/api.js';
+import {
+  detectInputLanguage,
+  translateMedicalTerm,
+  translateTriageLabel,
+  getUILabels,
+  SUPPORTED_LANGUAGES,
+} from '../src/medicalTranslations.js';
 
 const PAGE_SIZE = 5;
 
@@ -12,6 +19,14 @@ const HistoryPage = ({ userName = '', token, onLogout, onBack }) => {
   const [totalPages, setTotalPages] = useState(0);
   const [detail, setDetail] = useState(null);
   const [detailLoading, setDetailLoading] = useState(false);
+  const [langMode, setLangMode] = useState(() => {
+    try {
+      return localStorage.getItem('mediguide_user_lang') || 'auto';
+    } catch {
+      return 'auto';
+    }
+  });
+  const [showInEnglish, setShowInEnglish] = useState(false);
 
   const loadHistory = async (p = 0) => {
     setLoading(true);
@@ -71,6 +86,19 @@ const HistoryPage = ({ userName = '', token, onLogout, onBack }) => {
     precautions: detail.recommendation?.precautions
   } : null);
 
+  const getResolvedLang = (rawText = '') => {
+    if (langMode !== 'auto') return langMode;
+    const detected = detectInputLanguage(rawText, 'en-IN');
+    if (detected && !detected.startsWith('en')) return detected;
+    try {
+      const saved = localStorage.getItem('mediguide_user_lang');
+      if (saved && saved !== 'auto' && !saved.startsWith('en')) return saved;
+    } catch {
+      // ignore
+    }
+    return detected || 'en-IN';
+  };
+
   return (
     <div className="history-shell">
       <header className="history-topbar">
@@ -88,6 +116,42 @@ const HistoryPage = ({ userName = '', token, onLogout, onBack }) => {
           </div>
         </div>
         <div className="history-user-row">
+          <div className="history-lang-pill">
+            <span className="lang-icon" aria-hidden="true">🌐</span>
+            <label htmlFor="history-lang-select" className="history-lang-label">Language:</label>
+            <select
+              id="history-lang-select"
+              className="history-lang-select"
+              value={langMode}
+              onChange={(e) => {
+                const val = e.target.value;
+                setLangMode(val);
+                setShowInEnglish(false);
+                try {
+                  localStorage.setItem('mediguide_user_lang', val);
+                } catch {
+                  // ignore
+                }
+              }}
+            >
+              <option value="auto">✨ User Input Language (Auto)</option>
+              {SUPPORTED_LANGUAGES.map((lang) => (
+                <option key={lang.code} value={lang.code}>
+                  {lang.flag} {lang.native} ({lang.name})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <button
+            type="button"
+            className={`history-toggle-eng-btn ${showInEnglish ? 'history-toggle-eng-btn--active' : ''}`}
+            onClick={() => setShowInEnglish(!showInEnglish)}
+            title="Toggle between User Input Language and English"
+          >
+            {showInEnglish ? '🌐 View in User Language' : '🔄 Show in English'}
+          </button>
+
           <div className="history-user-pill">Welcome, {userName}</div>
           <button className="history-logout" type="button" onClick={onLogout}>Logout</button>
         </div>
@@ -102,117 +166,189 @@ const HistoryPage = ({ userName = '', token, onLogout, onBack }) => {
             </svg>
           </div>
           <h1>Search & Diagnosis History</h1>
-          <p>View your previously searched symptoms, Top-3 ($k=3$) differential diagnoses, and clinical recommendations</p>
+          <p>View your previously searched symptoms, Top-3 ($k=3$) differential diagnoses, and clinical recommendations in your input language.</p>
         </section>
 
-        {detail && activeModalCand && (
-          <div className="history-modal-overlay" onClick={() => setDetail(null)}>
-            <div className="history-modal" onClick={(e) => e.stopPropagation()}>
-              <div className="history-modal-header">
-                <div>
-                  <h3>Query Assessment Details</h3>
-                  <span className="history-modal-subtag">k=3 Clinical Differential Diagnosis</span>
+        {detail && activeModalCand && (() => {
+          const modalLang = getResolvedLang(detail.rawText);
+          const isModalNonEng = modalLang && !modalLang.startsWith('en');
+          const targetModalLang = showInEnglish ? 'en-IN' : modalLang;
+          const uiModal = getUILabels(targetModalLang);
+
+          const localizedModalDisease = (!showInEnglish && isModalNonEng)
+            ? translateMedicalTerm(activeModalCand.disease, modalLang)
+            : activeModalCand.disease;
+
+          const localizedModalSpecialist = (!showInEnglish && isModalNonEng)
+            ? translateMedicalTerm(activeModalCand.recommendedSpecialist || detail.recommendation?.specialist, modalLang)
+            : (activeModalCand.recommendedSpecialist || detail.recommendation?.specialist || 'General Physician');
+
+          const modalLangObj = SUPPORTED_LANGUAGES.find((l) => l.code === modalLang) || SUPPORTED_LANGUAGES[0];
+
+          return (
+            <div className="history-modal-overlay" onClick={() => setDetail(null)}>
+              <div className="history-modal" onClick={(e) => e.stopPropagation()}>
+                <div className="history-modal-header">
+                  <div>
+                    <h3>{uiModal?.activeClinicalAssessment || 'Query Assessment Details'}</h3>
+                    <span className="history-modal-subtag">
+                      {uiModal?.knnClassification || 'k=3 Clinical Differential Diagnosis'}
+                    </span>
+                  </div>
+                  <button type="button" className="history-modal-close" onClick={() => setDetail(null)} aria-label="Close modal">✕</button>
                 </div>
-                <button type="button" className="history-modal-close" onClick={() => setDetail(null)} aria-label="Close modal">✕</button>
-              </div>
-              <div className="history-modal-body">
-                <div className="modal-field-block">
-                  <p className="history-modal-label">Symptoms Entered</p>
-                  <p className="history-modal-value">{detail.rawText}</p>
-                </div>
 
-                {detail.extractedSymptoms?.length > 0 && (
-                  <div className="modal-field-block">
-                    <p className="history-modal-label">Extracted Symptom Vectors</p>
-                    <div className="symptom-tag-list">
-                      {detail.extractedSymptoms.map((sym, i) => (
-                        <span key={i} className="symptom-tag-chip">{sym}</span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Top 3 Differential Candidates Selector in Modal */}
-                {modalTopCands.length > 1 && (
-                  <div className="modal-field-block">
-                    <p className="history-modal-label">Top 3 Differential Conditions ($k=3$):</p>
-                    <div className="modal-cand-chips-grid">
-                      {modalTopCands.map((cand, idx) => {
-                        const isSel = modalCandIdx === idx;
-                        const rankMedals = ['🥇', '🥈', '🥉'];
-                        const matchPct = Math.round((cand.confidenceScore || 0) * 100);
-                        return (
-                          <button
-                            key={idx}
-                            type="button"
-                            className={`modal-cand-chip ${isSel ? 'modal-cand-chip--active' : ''}`}
-                            onClick={() => setModalCandIdx(idx)}
-                          >
-                            <span className="modal-cand-rank">{rankMedals[idx] || `#${idx + 1}`} Rank {idx + 1}</span>
-                            <strong>{cand.disease}</strong>
-                            <span className="modal-cand-score">{matchPct}% match</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-
-                <div className="modal-row-grid">
-                  <div className="modal-field-block">
-                    <p className="history-modal-label">Focused Condition (Rank #{activeModalCand.rank || (modalCandIdx + 1)})</p>
-                    <p className="history-modal-value history-modal-disease">🩺 {activeModalCand.disease}</p>
-                  </div>
-                  {activeModalCand.confidenceScore != null && (
-                    <div className="modal-field-block">
-                      <p className="history-modal-label">Confidence</p>
-                      <span className="confidence-pill">{Math.round(activeModalCand.confidenceScore * 100)}%</span>
+                <div className="history-modal-body">
+                  {/* Modal Language Notice & Toggle */}
+                  {isModalNonEng && (
+                    <div className="history-modal-lang-banner">
+                      <div className="modal-lang-info">
+                        <span>🌐</span>
+                        <span>
+                          {showInEnglish
+                            ? 'Viewing assessment in standard English terminology.'
+                            : `Results presented in User Input Language: ${modalLangObj.native} (${modalLangObj.name})`}
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        className="modal-lang-toggle-btn"
+                        onClick={() => setShowInEnglish(!showInEnglish)}
+                      >
+                        {showInEnglish
+                          ? `🌐 View in ${modalLangObj.native}`
+                          : '🔄 Show in English'}
+                      </button>
                     </div>
                   )}
-                </div>
 
-                <div className="modal-field-block">
-                  <p className="history-modal-label">Date & Time</p>
-                  <p className="history-modal-value">{new Date(detail.timestamp).toLocaleString()}</p>
-                </div>
+                  <div className="modal-field-block">
+                    <p className="history-modal-label">Symptoms Entered</p>
+                    <p className="history-modal-value">{detail.rawText}</p>
+                  </div>
 
-                {/* Active Candidate Guidance */}
-                <div className="modal-field-block">
-                  <p className="history-modal-label">Recommended Specialist</p>
-                  <p className="history-modal-value">
-                    👨‍⚕️ {activeModalCand.recommendedSpecialist || detail.recommendation?.specialist || 'General Physician'}
-                  </p>
-                </div>
-
-                <div className="modal-field-block">
-                  <p className="history-modal-label">Recommended Diagnostic Lab Tests</p>
-                  <p className="history-modal-value">
-                    🧪 {(activeModalCand.recommendedTests && activeModalCand.recommendedTests.length > 0)
-                      ? activeModalCand.recommendedTests.join(', ')
-                      : detail.recommendation?.diagnosticTests?.join(', ') || 'Clinical Evaluation'}
-                  </p>
-                </div>
-
-                <div className="modal-field-block">
-                  <p className="history-modal-label">Precautions & Self-Care</p>
-                  <div className="precaution-list">
-                    {((activeModalCand.precautions && activeModalCand.precautions.length > 0)
-                      ? activeModalCand.precautions
-                      : detail.recommendation?.precautions
-                    )?.map((p, idx) => (
-                      <div key={idx} className="precaution-item">
-                        <span className="precaution-bullet">✓</span>
-                        <span className="precaution-text">{p}</span>
+                  {detail.extractedSymptoms?.length > 0 && (
+                    <div className="modal-field-block">
+                      <p className="history-modal-label">Extracted Symptom Vectors</p>
+                      <div className="symptom-tag-list">
+                        {detail.extractedSymptoms.map((sym, i) => (
+                          <span key={i} className="symptom-tag-chip">{sym}</span>
+                        ))}
                       </div>
-                    )) || (
-                      <p className="history-modal-value">Stay hydrated and consult a physician.</p>
+                    </div>
+                  )}
+
+                  {/* Top 3 Differential Candidates Selector in Modal */}
+                  {modalTopCands.length > 1 && (
+                    <div className="modal-field-block">
+                      <p className="history-modal-label">
+                        {uiModal?.differentialHeader || 'Top 3 Differential Conditions (k=3):'}
+                      </p>
+                      <div className="modal-cand-chips-grid">
+                        {modalTopCands.map((cand, idx) => {
+                          const isSel = modalCandIdx === idx;
+                          const rankMedals = ['🥇', '🥈', '🥉'];
+                          const matchPct = Math.round((cand.confidenceScore || 0) * 100);
+                          const localizedCand = (!showInEnglish && isModalNonEng)
+                            ? translateMedicalTerm(cand.disease, modalLang)
+                            : cand.disease;
+                          return (
+                            <button
+                              key={idx}
+                              type="button"
+                              className={`modal-cand-chip ${isSel ? 'modal-cand-chip--active' : ''}`}
+                              onClick={() => setModalCandIdx(idx)}
+                            >
+                              <span className="modal-cand-rank">
+                                {rankMedals[idx] || `#${idx + 1}`} Rank {idx + 1}
+                              </span>
+                              <strong>{localizedCand}</strong>
+                              {!showInEnglish && isModalNonEng && localizedCand !== cand.disease && (
+                                <span className="modal-cand-eng-sub">({cand.disease})</span>
+                              )}
+                              <span className="modal-cand-score">{matchPct}% match</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="modal-row-grid">
+                    <div className="modal-field-block">
+                      <p className="history-modal-label">
+                        {uiModal?.colCondition || 'Focused Condition'} (Rank #{activeModalCand.rank || (modalCandIdx + 1)})
+                      </p>
+                      <p className="history-modal-value history-modal-disease">
+                        🩺 {localizedModalDisease}
+                        {!showInEnglish && isModalNonEng && localizedModalDisease !== activeModalCand.disease && (
+                          <span className="modal-disease-eng-badge">({activeModalCand.disease})</span>
+                        )}
+                      </p>
+                    </div>
+                    {activeModalCand.confidenceScore != null && (
+                      <div className="modal-field-block">
+                        <p className="history-modal-label">{uiModal?.confidence || 'Confidence'}</p>
+                        <span className="confidence-pill">{Math.round(activeModalCand.confidenceScore * 100)}%</span>
+                      </div>
                     )}
+                  </div>
+
+                  <div className="modal-field-block">
+                    <p className="history-modal-label">Date & Time</p>
+                    <p className="history-modal-value">{new Date(detail.timestamp).toLocaleString()}</p>
+                  </div>
+
+                  {/* Active Candidate Guidance */}
+                  <div className="modal-field-block">
+                    <p className="history-modal-label">{uiModal?.recommendedSpecialist || 'Recommended Specialist'}</p>
+                    <p className="history-modal-value">
+                      👨‍⚕️ {localizedModalSpecialist}
+                      {!showInEnglish && isModalNonEng && localizedModalSpecialist !== (activeModalCand.recommendedSpecialist || detail.recommendation?.specialist) && (
+                        <span className="modal-disease-eng-badge">
+                          ({activeModalCand.recommendedSpecialist || detail.recommendation?.specialist || 'General Physician'})
+                        </span>
+                      )}
+                    </p>
+                  </div>
+
+                  <div className="modal-field-block">
+                    <p className="history-modal-label">{uiModal?.diagnosticTests || 'Recommended Diagnostic Lab Tests'}</p>
+                    <p className="history-modal-value">
+                      🧪 {((activeModalCand.recommendedTests && activeModalCand.recommendedTests.length > 0)
+                        ? activeModalCand.recommendedTests
+                        : detail.recommendation?.diagnosticTests || ['Clinical Evaluation']
+                      ).map(t => (!showInEnglish && isModalNonEng) ? translateMedicalTerm(t, modalLang) : t).join(', ')}
+                    </p>
+                  </div>
+
+                  <div className="modal-field-block">
+                    <p className="history-modal-label">{uiModal?.precautions || 'Precautions & Self-Care'}</p>
+                    <div className="precaution-list">
+                      {((activeModalCand.precautions && activeModalCand.precautions.length > 0)
+                        ? activeModalCand.precautions
+                        : detail.recommendation?.precautions
+                      )?.map((p, idx) => (
+                        <div key={idx} className="precaution-item">
+                          <span className="precaution-bullet">✓</span>
+                          <span className="precaution-text">
+                            {(!showInEnglish && isModalNonEng) ? translateMedicalTerm(p, modalLang) : p}
+                          </span>
+                        </div>
+                      )) || (
+                        <p className="history-modal-value">
+                          {(!showInEnglish && isModalNonEng)
+                            ? translateMedicalTerm('Stay hydrated and monitor your temperature.', modalLang)
+                            : 'Stay hydrated and consult a physician.'}
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
 
         <section className="history-card">
           <div className="history-card-header">
@@ -244,45 +380,66 @@ const HistoryPage = ({ userName = '', token, onLogout, onBack }) => {
           )}
 
           <div className="history-list">
-            {historyItems.map((item) => (
-              <div key={item.id} className="history-item">
-                <div className="history-item-left">
-                  <div className="history-item-icon" aria-hidden="true">🔍</div>
-                  <div>
-                    <p>{item.rawText}</p>
-                    <div className="history-item-meta-row">
-                      <span>{new Date(item.timestamp).toLocaleString()}</span>
-                      {item.topPredictions && item.topPredictions.length > 0 ? (
-                        <div className="history-item-cand-chips">
-                          {item.topPredictions.map((c, i) => (
-                            <span key={i} className="history-cand-mini-chip">
-                              #{c.rank || (i + 1)} {c.disease}
-                            </span>
-                          ))}
-                        </div>
-                      ) : item.predictedDisease ? (
-                        <span className="history-item-disease"> · 🩺 {item.predictedDisease}</span>
-                      ) : null}
+            {historyItems.map((item) => {
+              const itemLang = getResolvedLang(item.rawText);
+              const isItemNonEng = itemLang && !itemLang.startsWith('en');
+              const localizedItemDisease = (!showInEnglish && isItemNonEng)
+                ? translateMedicalTerm(item.predictedDisease, itemLang)
+                : item.predictedDisease;
+
+              return (
+                <div key={item.id} className="history-item">
+                  <div className="history-item-left">
+                    <div className="history-item-icon" aria-hidden="true">🔍</div>
+                    <div>
+                      <p>{item.rawText}</p>
+                      <div className="history-item-meta-row">
+                        <span>{new Date(item.timestamp).toLocaleString()}</span>
+                        {item.topPredictions && item.topPredictions.length > 0 ? (
+                          <div className="history-item-cand-chips">
+                            {item.topPredictions.map((c, i) => {
+                              const localizedCandDisease = (!showInEnglish && isItemNonEng)
+                                ? translateMedicalTerm(c.disease, itemLang)
+                                : c.disease;
+                              return (
+                                <span key={i} className="history-cand-mini-chip" title={c.disease}>
+                                  #{c.rank || (i + 1)} {localizedCandDisease}
+                                  {!showInEnglish && isItemNonEng && localizedCandDisease !== c.disease && (
+                                    <span className="history-cand-eng-ref"> ({c.disease})</span>
+                                  )}
+                                </span>
+                              );
+                            })}
+                          </div>
+                        ) : item.predictedDisease ? (
+                          <span className="history-item-disease">
+                            {' · 🩺 '}{localizedItemDisease}
+                            {!showInEnglish && isItemNonEng && localizedItemDisease !== item.predictedDisease && (
+                              <span className="history-cand-eng-ref"> ({item.predictedDisease})</span>
+                            )}
+                          </span>
+                        ) : null}
+                      </div>
                     </div>
                   </div>
+                  <div className="history-item-actions">
+                    <button type="button" className="history-view" onClick={() => handleViewDetail(item.id)} disabled={detailLoading}>
+                      View Top 3
+                    </button>
+                    <button type="button" className="history-delete" onClick={async () => {
+                      try {
+                        await deleteHistory(token, item.id);
+                        loadHistory(page);
+                      } catch (err) {
+                        setError(err.message || 'Failed to delete item');
+                      }
+                    }}>
+                      Delete
+                    </button>
+                  </div>
                 </div>
-                <div className="history-item-actions">
-                  <button type="button" className="history-view" onClick={() => handleViewDetail(item.id)} disabled={detailLoading}>
-                    View Top 3
-                  </button>
-                  <button type="button" className="history-delete" onClick={async () => {
-                    try {
-                      await deleteHistory(token, item.id);
-                      loadHistory(page);
-                    } catch (err) {
-                      setError(err.message || 'Failed to delete item');
-                    }
-                  }}>
-                    Delete
-                  </button>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {totalPages > 1 && (

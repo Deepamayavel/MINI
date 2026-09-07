@@ -177,6 +177,11 @@ const SearchPage = ({ userName = '', token, onLogout, onBack, startVoice = false
     const detected = detectInputLanguage(trimmed, selectedLangRef.current || selectedLang);
     setActiveInputLang(detected);
     setShowInOriginalEnglish(false);
+    try {
+      localStorage.setItem('mediguide_user_lang', detected);
+    } catch {
+      // ignore
+    }
 
     setError('');
     setLoading(true);
