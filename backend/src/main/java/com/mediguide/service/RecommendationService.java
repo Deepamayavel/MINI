@@ -43,15 +43,16 @@ public class RecommendationService {
     }
 
     private RecommendationDto toRecommendationDto(Recommendation recommendation) {
-        return new RecommendationDto(
-                recommendation.getId(),
-                recommendation.getQueryId(),
-                recommendation.getPredictedDisease(),
-                recommendation.getSpecialist(),
-                recommendation.getDiagnosticTests(),
-                recommendation.getHospitals(),
-                recommendation.getPrecautions(),
-                recommendation.getCreatedAt()
-        );
+        return RecommendationDto.builder()
+                .id(recommendation.getId())
+                .queryId(recommendation.getQueryId())
+                .predictedDisease(recommendation.getPredictedDisease())
+                .specialist(recommendation.getSpecialist())
+                .diagnosticTests(recommendation.getDiagnosticTests())
+                .hospitals(recommendation.getHospitals())
+                .precautions(recommendation.getPrecautions())
+                .topPredictions(recommendation.getTopPredictions())
+                .createdAt(recommendation.getCreatedAt())
+                .build();
     }
 }

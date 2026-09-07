@@ -1,5 +1,6 @@
 package com.mediguide.model;
 
+import com.mediguide.dto.TopPredictionDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,5 +24,7 @@ public class Query {
     private List<String> extractedSymptoms;
     private String predictedDisease;
     private Double confidenceScore;
+    private List<TopPredictionDto> topPredictions;
     private Instant timestamp;
 }
+

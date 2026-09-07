@@ -3,6 +3,8 @@ node_modules/
 .venv/
 __pycache__/
 *.pyc
+*/__pycache__/*
+*/*/__pycache__/*
 
 # Build outputs
 dist/
@@ -11,8 +13,7 @@ backend/target/
 target/
 
 # Local safety backups
-*.backup
-*.backup_v2
+*.backup*
 *.bak
 
 # IDE & OS files
@@ -21,3 +22,4 @@ Thumbs.db
 .vscode/
 .idea/
 *.log
+

@@ -28,11 +28,14 @@ const HistoryPage = ({ userName = '', token, onLogout, onBack }) => {
     }
   };
 
+  const [modalCandIdx, setModalCandIdx] = useState(0);
+
   const handleViewDetail = async (id) => {
     setDetailLoading(true);
     try {
       const data = await getHistoryDetail(token, id);
       setDetail(data);
+      setModalCandIdx(0);
     } catch (err) {
       setError(err.message || 'Unable to load details');
     } finally {
@@ -43,6 +46,30 @@ const HistoryPage = ({ userName = '', token, onLogout, onBack }) => {
   useEffect(() => {
     if (token) loadHistory(0);
   }, [token]);
+
+  const modalTopCands = detail?.topPredictions && detail.topPredictions.length > 0
+    ? detail.topPredictions
+    : detail?.recommendation?.topPredictions && detail.recommendation.topPredictions.length > 0
+    ? detail.recommendation.topPredictions
+    : detail ? [{
+        disease: detail.predictedDisease,
+        confidenceScore: detail.confidenceScore || 0.9,
+        rank: 1,
+        recommendedSpecialist: detail.recommendation?.specialist,
+        recommendedTests: detail.recommendation?.diagnosticTests,
+        recommendedHospitals: detail.recommendation?.hospitals,
+        precautions: detail.recommendation?.precautions
+      }] : [];
+
+  const activeModalCand = modalTopCands[modalCandIdx] || modalTopCands[0] || (detail ? {
+    disease: detail.predictedDisease,
+    confidenceScore: detail.confidenceScore || 0.9,
+    rank: 1,
+    recommendedSpecialist: detail.recommendation?.specialist,
+    recommendedTests: detail.recommendation?.diagnosticTests,
+    recommendedHospitals: detail.recommendation?.hospitals,
+    precautions: detail.recommendation?.precautions
+  } : null);
 
   return (
     <div className="history-shell">
@@ -74,15 +101,18 @@ const HistoryPage = ({ userName = '', token, onLogout, onBack }) => {
               <path d="M4 12A8 8 0 1 1 12 20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             </svg>
           </div>
-          <h1>Search History</h1>
-          <p>View your previously searched symptoms and clinical recommendations</p>
+          <h1>Search & Diagnosis History</h1>
+          <p>View your previously searched symptoms, Top-3 ($k=3$) differential diagnoses, and clinical recommendations</p>
         </section>
 
-        {detail && (
+        {detail && activeModalCand && (
           <div className="history-modal-overlay" onClick={() => setDetail(null)}>
             <div className="history-modal" onClick={(e) => e.stopPropagation()}>
               <div className="history-modal-header">
-                <h3>Query Details</h3>
+                <div>
+                  <h3>Query Assessment Details</h3>
+                  <span className="history-modal-subtag">k=3 Clinical Differential Diagnosis</span>
+                </div>
                 <button type="button" className="history-modal-close" onClick={() => setDetail(null)} aria-label="Close modal">✕</button>
               </div>
               <div className="history-modal-body">
@@ -93,7 +123,7 @@ const HistoryPage = ({ userName = '', token, onLogout, onBack }) => {
 
                 {detail.extractedSymptoms?.length > 0 && (
                   <div className="modal-field-block">
-                    <p className="history-modal-label">Extracted Symptoms</p>
+                    <p className="history-modal-label">Extracted Symptom Vectors</p>
                     <div className="symptom-tag-list">
                       {detail.extractedSymptoms.map((sym, i) => (
                         <span key={i} className="symptom-tag-chip">{sym}</span>
@@ -102,17 +132,41 @@ const HistoryPage = ({ userName = '', token, onLogout, onBack }) => {
                   </div>
                 )}
 
-                <div className="modal-row-grid">
-                  {detail.predictedDisease && (
-                    <div className="modal-field-block">
-                      <p className="history-modal-label">Predicted Condition</p>
-                      <p className="history-modal-value history-modal-disease">🩺 {detail.predictedDisease}</p>
+                {/* Top 3 Differential Candidates Selector in Modal */}
+                {modalTopCands.length > 1 && (
+                  <div className="modal-field-block">
+                    <p className="history-modal-label">Top 3 Differential Conditions ($k=3$):</p>
+                    <div className="modal-cand-chips-grid">
+                      {modalTopCands.map((cand, idx) => {
+                        const isSel = modalCandIdx === idx;
+                        const rankMedals = ['🥇', '🥈', '🥉'];
+                        const matchPct = Math.round((cand.confidenceScore || 0) * 100);
+                        return (
+                          <button
+                            key={idx}
+                            type="button"
+                            className={`modal-cand-chip ${isSel ? 'modal-cand-chip--active' : ''}`}
+                            onClick={() => setModalCandIdx(idx)}
+                          >
+                            <span className="modal-cand-rank">{rankMedals[idx] || `#${idx + 1}`} Rank {idx + 1}</span>
+                            <strong>{cand.disease}</strong>
+                            <span className="modal-cand-score">{matchPct}% match</span>
+                          </button>
+                        );
+                      })}
                     </div>
-                  )}
-                  {detail.confidenceScore != null && (
+                  </div>
+                )}
+
+                <div className="modal-row-grid">
+                  <div className="modal-field-block">
+                    <p className="history-modal-label">Focused Condition (Rank #{activeModalCand.rank || (modalCandIdx + 1)})</p>
+                    <p className="history-modal-value history-modal-disease">🩺 {activeModalCand.disease}</p>
+                  </div>
+                  {activeModalCand.confidenceScore != null && (
                     <div className="modal-field-block">
                       <p className="history-modal-label">Confidence</p>
-                      <span className="confidence-pill">{Math.round(detail.confidenceScore * 100)}%</span>
+                      <span className="confidence-pill">{Math.round(activeModalCand.confidenceScore * 100)}%</span>
                     </div>
                   )}
                 </div>
@@ -122,35 +176,39 @@ const HistoryPage = ({ userName = '', token, onLogout, onBack }) => {
                   <p className="history-modal-value">{new Date(detail.timestamp).toLocaleString()}</p>
                 </div>
 
-                {detail.recommendation && (
-                  <>
-                    <div className="modal-field-block">
-                      <p className="history-modal-label">Recommended Specialist</p>
-                      <p className="history-modal-value">👨‍⚕️ {detail.recommendation.specialist || 'General Physician'}</p>
-                    </div>
+                {/* Active Candidate Guidance */}
+                <div className="modal-field-block">
+                  <p className="history-modal-label">Recommended Specialist</p>
+                  <p className="history-modal-value">
+                    👨‍⚕️ {activeModalCand.recommendedSpecialist || detail.recommendation?.specialist || 'General Physician'}
+                  </p>
+                </div>
 
-                    <div className="modal-field-block">
-                      <p className="history-modal-label">Recommended Tests</p>
-                      <p className="history-modal-value">🧪 {detail.recommendation.diagnosticTests?.join(', ') || 'Clinical Evaluation'}</p>
-                    </div>
+                <div className="modal-field-block">
+                  <p className="history-modal-label">Recommended Diagnostic Lab Tests</p>
+                  <p className="history-modal-value">
+                    🧪 {(activeModalCand.recommendedTests && activeModalCand.recommendedTests.length > 0)
+                      ? activeModalCand.recommendedTests.join(', ')
+                      : detail.recommendation?.diagnosticTests?.join(', ') || 'Clinical Evaluation'}
+                  </p>
+                </div>
 
-                    <div className="modal-field-block">
-                      <p className="history-modal-label">Precautions & Care</p>
-                      <div className="precaution-list">
-                        {detail.recommendation.precautions && detail.recommendation.precautions.length > 0 ? (
-                          detail.recommendation.precautions.map((p, idx) => (
-                            <div key={idx} className="precaution-item">
-                              <span className="precaution-bullet">⚠️</span>
-                              <span className="precaution-text">{p}</span>
-                            </div>
-                          ))
-                        ) : (
-                          <p className="history-modal-value">Stay hydrated and consult a physician.</p>
-                        )}
+                <div className="modal-field-block">
+                  <p className="history-modal-label">Precautions & Self-Care</p>
+                  <div className="precaution-list">
+                    {((activeModalCand.precautions && activeModalCand.precautions.length > 0)
+                      ? activeModalCand.precautions
+                      : detail.recommendation?.precautions
+                    )?.map((p, idx) => (
+                      <div key={idx} className="precaution-item">
+                        <span className="precaution-bullet">✓</span>
+                        <span className="precaution-text">{p}</span>
                       </div>
-                    </div>
-                  </>
-                )}
+                    )) || (
+                      <p className="history-modal-value">Stay hydrated and consult a physician.</p>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -159,7 +217,7 @@ const HistoryPage = ({ userName = '', token, onLogout, onBack }) => {
         <section className="history-card">
           <div className="history-card-header">
             <div>
-              <h2>Recent Searches</h2>
+              <h2>Recent Search History</h2>
             </div>
             <button className="history-clear" type="button" onClick={async () => {
               if (window.confirm('Clear all history items on this page?')) {
@@ -192,13 +250,25 @@ const HistoryPage = ({ userName = '', token, onLogout, onBack }) => {
                   <div className="history-item-icon" aria-hidden="true">🔍</div>
                   <div>
                     <p>{item.rawText}</p>
-                    <span>{new Date(item.timestamp).toLocaleString()}</span>
-                    {item.predictedDisease && <span className="history-item-disease"> · {item.predictedDisease}</span>}
+                    <div className="history-item-meta-row">
+                      <span>{new Date(item.timestamp).toLocaleString()}</span>
+                      {item.topPredictions && item.topPredictions.length > 0 ? (
+                        <div className="history-item-cand-chips">
+                          {item.topPredictions.map((c, i) => (
+                            <span key={i} className="history-cand-mini-chip">
+                              #{c.rank || (i + 1)} {c.disease}
+                            </span>
+                          ))}
+                        </div>
+                      ) : item.predictedDisease ? (
+                        <span className="history-item-disease"> · 🩺 {item.predictedDisease}</span>
+                      ) : null}
+                    </div>
                   </div>
                 </div>
                 <div className="history-item-actions">
                   <button type="button" className="history-view" onClick={() => handleViewDetail(item.id)} disabled={detailLoading}>
-                    View
+                    View Top 3
                   </button>
                   <button type="button" className="history-delete" onClick={async () => {
                     try {

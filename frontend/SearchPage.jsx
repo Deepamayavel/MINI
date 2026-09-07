@@ -2,6 +2,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import './SearchPage.css';
 import { search } from '../src/api.js';
 import docIllustration from '../src/doc.png';
+import {
+  detectInputLanguage,
+  translateMedicalTerm,
+  translateTriageLabel,
+  getUILabels,
+  translateDynamicAsync,
+  LANG_SHORT_CODES,
+} from '../src/medicalTranslations.js';
 
 const SUPPORTED_LANGUAGES = [
   { code: 'en-IN', name: 'English (India)', native: 'English', flag: '🇮🇳' },
@@ -70,11 +78,14 @@ const getTriageSeverity = (diseaseName = '', confidence = 0.5) => {
 const SearchPage = ({ userName = '', token, onLogout, onBack, startVoice = false, initialQuery = '' }) => {
   const [query, setQuery] = useState(initialQuery);
   const [selectedLang, setSelectedLang] = useState('en-IN');
+  const [activeInputLang, setActiveInputLang] = useState('en-IN');
+  const [showInOriginalEnglish, setShowInOriginalEnglish] = useState(false);
   const [listening, setListening] = useState(false);
   const [audioLevel, setAudioLevel] = useState(0);
   const [liveTranscript, setLiveTranscript] = useState('');
   const [voiceUsed, setVoiceUsed] = useState(startVoice);
   const [result, setResult] = useState(null);
+  const [selectedPredictionIdx, setSelectedPredictionIdx] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [voiceStatusMessage, setVoiceStatusMessage] = useState('');
@@ -161,6 +172,11 @@ const SearchPage = ({ userName = '', token, onLogout, onBack, startVoice = false
       setError('You must be logged in to run search.');
       return;
     }
+
+    // Auto-detect input language from script or active language selector
+    const detected = detectInputLanguage(trimmed, selectedLangRef.current || selectedLang);
+    setActiveInputLang(detected);
+    setShowInOriginalEnglish(false);
 
     setError('');
     setLoading(true);
@@ -296,6 +312,8 @@ const SearchPage = ({ userName = '', token, onLogout, onBack, startVoice = false
     const newLang = e.target.value;
     setSelectedLang(newLang);
     selectedLangRef.current = newLang;
+    setActiveInputLang(newLang);
+    setShowInOriginalEnglish(false);
     if (listening) {
       startListening(newLang);
     }
@@ -332,15 +350,80 @@ const SearchPage = ({ userName = '', token, onLogout, onBack, startVoice = false
     queryRef.current = '';
     setLiveTranscript('');
     setResult(null);
+    setSelectedPredictionIdx(0);
     setError('');
     setVoiceStatusMessage('');
     setVoiceUsed(false);
+    setShowInOriginalEnglish(false);
     stopListening();
   };
 
   const samplePhrases = MULTILINGUAL_SAMPLE_PHRASES[selectedLang] || MULTILINGUAL_SAMPLE_PHRASES['en-IN'];
   const currentLangObj = SUPPORTED_LANGUAGES.find((l) => l.code === selectedLang) || SUPPORTED_LANGUAGES[0];
-  const triage = result ? getTriageSeverity(result.predictedDisease, result.confidenceScore) : null;
+
+  const isInputNonEnglish = activeInputLang && !activeInputLang.startsWith('en');
+  const targetLang = showInOriginalEnglish ? 'en-IN' : activeInputLang;
+  const uiLabels = getUILabels(targetLang);
+
+  const getLocalizedDisease = (disease) => {
+    if (!disease) return '';
+    if (showInOriginalEnglish || !isInputNonEnglish) return disease;
+    return translateMedicalTerm(disease, activeInputLang);
+  };
+
+  const getLocalizedSpecialist = (specialist) => {
+    if (!specialist) return 'General Physician';
+    if (showInOriginalEnglish || !isInputNonEnglish) return specialist;
+    return translateMedicalTerm(specialist, activeInputLang);
+  };
+
+  const getLocalizedTest = (test) => {
+    if (!test) return '';
+    if (showInOriginalEnglish || !isInputNonEnglish) return test;
+    return translateMedicalTerm(test, activeInputLang);
+  };
+
+  const getLocalizedPrecaution = (prec) => {
+    if (!prec) return '';
+    if (showInOriginalEnglish || !isInputNonEnglish) return prec;
+    return translateMedicalTerm(prec, activeInputLang);
+  };
+
+  const getLocalizedTriage = (disease, confidence) => {
+    const baseTriage = getTriageSeverity(disease, confidence);
+    if (showInOriginalEnglish || !isInputNonEnglish) {
+      return baseTriage;
+    }
+    const translatedLabel = translateTriageLabel(baseTriage.label, activeInputLang);
+    return {
+      ...baseTriage,
+      label: translatedLabel
+    };
+  };
+
+  const topPredictionsList = result?.topPredictions && result.topPredictions.length > 0
+    ? result.topPredictions
+    : result ? [{
+        disease: result.predictedDisease,
+        confidenceScore: result.confidenceScore,
+        rank: 1,
+        recommendedSpecialist: result.recommendedSpecialist,
+        recommendedTests: result.recommendedTests,
+        recommendedHospitals: result.recommendedHospitals,
+        precautions: result.precautions
+      }] : [];
+
+  const activeCandidate = topPredictionsList[selectedPredictionIdx] || topPredictionsList[0] || (result ? {
+    disease: result.predictedDisease,
+    confidenceScore: result.confidenceScore,
+    rank: 1,
+    recommendedSpecialist: result.recommendedSpecialist,
+    recommendedTests: result.recommendedTests,
+    recommendedHospitals: result.recommendedHospitals,
+    precautions: result.precautions
+  } : null);
+
+  const activeTriage = activeCandidate ? getLocalizedTriage(activeCandidate.disease || activeCandidate.predictedDisease, activeCandidate.confidenceScore) : null;
 
   return (
     <div className="search-shell">
@@ -396,7 +479,7 @@ const SearchPage = ({ userName = '', token, onLogout, onBack, startVoice = false
       <main className="search-content">
         <section className="search-intro">
           <div className="search-badge-pill">
-            <span className="badge-sparkle">✨</span> AI-Powered Clinical Intelligence
+            <span className="badge-sparkle">✨</span> AI-Powered Clinical Intelligence (k=3 kNN)
           </div>
           <h1>Search Your Symptoms</h1>
           <p>Describe what you are experiencing in <strong>{currentLangObj.name}</strong> or any language by voice or text.</p>
@@ -532,10 +615,10 @@ const SearchPage = ({ userName = '', token, onLogout, onBack, startVoice = false
                 <button className="primary-action" type="submit" disabled={loading}>
                   {loading ? (
                     <span className="btn-loading-content">
-                      <span className="spinner-dot"></span> Analyzing Symptoms…
+                      <span className="spinner-dot"></span> Analyzing Symptoms (k=3)…
                     </span>
                   ) : (
-                    '⚡ Analyze Symptoms'
+                    '⚡ Analyze Symptoms (Top 3 kNN)'
                   )}
                 </button>
                 <button className="secondary-action" type="button" onClick={handleClear}>
@@ -586,58 +669,179 @@ const SearchPage = ({ userName = '', token, onLogout, onBack, startVoice = false
             <div className="pulse-loader">
               <span></span><span></span><span></span>
             </div>
-            <p>Analyzing clinical vectors and fetching Jena ontology recommendations…</p>
+            <p>Analyzing clinical vectors and calculating Top-3 (k=3) kNN candidate diagnoses…</p>
           </div>
         )}
 
         {error && <div className="search-error">⚠️ {error}</div>}
 
-        {result && (
+        {result && activeCandidate && (
           <section className="clinical-report-card">
-            {/* Report Header Hero */}
+            {/* ── Input Language Result Banner ────────────────────────────── */}
+            {isInputNonEnglish && (
+              <div className="output-language-banner">
+                <div className="output-language-info">
+                  <span className="output-lang-icon">🌐</span>
+                  <div>
+                    <strong>
+                      {showInOriginalEnglish
+                        ? 'Clinical Results shown in: English (US/Global)'
+                        : (uiLabels?.outputInLangNotice || `Results translated to input language: ${currentLangObj.native} (${currentLangObj.name})`)}
+                    </strong>
+                    <p className="output-lang-desc">
+                      {showInOriginalEnglish
+                        ? 'Viewing standard clinical English terminology.'
+                        : 'All diagnosed conditions, specialists, lab tests, and precautions are presented in your input language.'}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className="output-lang-toggle-btn"
+                  onClick={() => setShowInOriginalEnglish(!showInOriginalEnglish)}
+                  title="Toggle language presentation"
+                >
+                  {showInOriginalEnglish
+                    ? `🔄 ${uiLabels?.toggleToInputLang || `View in ${currentLangObj.native}`}`
+                    : `🔄 ${uiLabels?.toggleToEnglish || 'Show in English'}`}
+                </button>
+              </div>
+            )}
+
+            {/* ── Top 3 (k=3) Differential Diagnosis Selector ─────────────── */}
+            <div className="knn-section-header">
+              <div className="knn-header-left">
+                <span className="knn-pill-badge">{uiLabels?.knnClassification || '🧬 k=3 kNN CLASSIFICATION'}</span>
+                <h3 className="knn-section-title">{uiLabels?.differentialHeader || 'Top 3 Clinical Differential Diagnoses'}</h3>
+                <p className="knn-section-subtitle">
+                  {uiLabels?.differentialSub || 'Sorted by similarity vector match. Select any candidate to explore its specific care pathway.'}
+                </p>
+              </div>
+              <div className="knn-status-pill">
+                <span>🎯 {topPredictionsList.length} {uiLabels?.candidatesEvaluated || 'Candidates Evaluated'}</span>
+              </div>
+            </div>
+
+            <div className="knn-candidates-grid">
+              {topPredictionsList.map((cand, idx) => {
+                const candTriage = getLocalizedTriage(cand.disease, cand.confidenceScore);
+                const isSelected = selectedPredictionIdx === idx;
+                const matchPct = Math.round((cand.confidenceScore || 0) * 100);
+                const rankMedals = ['🥇', '🥈', '🥉'];
+                const rankLabels = uiLabels
+                  ? [uiLabels.primaryMatch, uiLabels.diff2, uiLabels.diff3]
+                  : ['Primary Match', 'Differential #2', 'Differential #3'];
+
+                const localizedDisease = getLocalizedDisease(cand.disease);
+                const showEnglishTag = isInputNonEnglish && !showInOriginalEnglish && localizedDisease !== cand.disease;
+
+                return (
+                  <button
+                    key={idx}
+                    type="button"
+                    className={`knn-candidate-card ${isSelected ? 'knn-candidate-card--active' : ''}`}
+                    onClick={() => setSelectedPredictionIdx(idx)}
+                  >
+                    <div className="knn-card-top-row">
+                      <span className={`knn-rank-badge knn-rank-badge--${idx + 1}`}>
+                        {rankMedals[idx] || `#${idx + 1}`} {uiLabels?.colRank || 'Rank'} {idx + 1}
+                      </span>
+                      <span className="knn-rank-sublabel">{rankLabels[idx] || `Candidate ${idx + 1}`}</span>
+                    </div>
+
+                    <h4 className="knn-disease-name">{localizedDisease}</h4>
+                    {showEnglishTag && (
+                      <span className="knn-english-badge">({cand.disease})</span>
+                    )}
+
+                    <div className="knn-score-row">
+                      <span className="knn-score-label">{uiLabels?.confidence || 'Confidence:'}</span>
+                      <strong className="knn-score-val">{matchPct}%</strong>
+                    </div>
+
+                    <div className="knn-meter-bar-track">
+                      <div
+                        className={`knn-meter-bar-fill knn-meter-bar-fill--${idx + 1}`}
+                        style={{ width: `${Math.max(8, matchPct)}%` }}
+                      ></div>
+                    </div>
+
+                    <div className="knn-card-footer">
+                      <span className={`triage-badge-sm ${candTriage.badgeClass}`}>
+                        {candTriage.icon} {candTriage.level.toUpperCase()}
+                      </span>
+                      <span className="knn-select-cta">
+                        {isSelected ? (uiLabels?.activeView || '● Active View') : (uiLabels?.inspectDetails || 'Inspect Details →')}
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* ── Active Candidate Report Hero ────────────────────────────── */}
             <div className="report-hero">
               <div className="report-hero-left">
                 <div className="condition-icon-badge">🩺</div>
                 <div>
                   <div className="report-tag-row">
-                    <span className="report-sublabel">CLINICAL PREDICTION</span>
-                    {triage && (
-                      <span className={`triage-badge ${triage.badgeClass}`}>
-                        {triage.icon} {triage.label}
+                    <span className="report-sublabel">
+                      {uiLabels?.activeClinicalAssessment || 'ACTIVE CLINICAL ASSESSMENT'} · {uiLabels?.colRank || 'RANK'} #{activeCandidate.rank || (selectedPredictionIdx + 1)}
+                    </span>
+                    {activeTriage && (
+                      <span className={`triage-badge ${activeTriage.badgeClass}`}>
+                        {activeTriage.icon} {activeTriage.label}
                       </span>
                     )}
                   </div>
-                  <h2 className="predicted-disease-title">{result.predictedDisease}</h2>
+                  <h2 className="predicted-disease-title">
+                    {getLocalizedDisease(activeCandidate.disease)}
+                  </h2>
+                  {isInputNonEnglish && !showInOriginalEnglish && (
+                    <div className="disease-english-ref-tag">
+                      <span className="ref-label">{uiLabels?.englishMedicalTerm || 'English Clinical Term:'}</span>
+                      <strong className="ref-val">{activeCandidate.disease}</strong>
+                    </div>
+                  )}
                 </div>
               </div>
 
               <div className="report-hero-right">
                 <div className="confidence-metric-card">
-                  <span className="confidence-metric-label">MATCH STRENGTH</span>
+                  <span className="confidence-metric-label">{uiLabels?.matchStrength || 'MATCH STRENGTH'}</span>
                   <div className="confidence-metric-value">
-                    <span>{Math.round((result.confidenceScore || 0) * 100)}%</span>
+                    <span>{Math.round((activeCandidate.confidenceScore || 0) * 100)}%</span>
                   </div>
-                  <span className="confidence-metric-sub">Cosine similarity</span>
+                  <span className="confidence-metric-sub">
+                    {uiLabels?.rankOf3 || 'Rank #'} {activeCandidate.rank || (selectedPredictionIdx + 1)}
+                  </span>
                 </div>
               </div>
             </div>
 
-            {/* 4 Segmented Clinical Cards */}
+            {/* ── 4 Segmented Clinical Cards ──────────────────────────────── */}
             <div className="clinical-grid">
               {/* Specialist Card */}
               <div className="clinical-card clinical-card--specialist">
                 <div className="clinical-card-header">
                   <span className="clinical-icon">👨‍⚕️</span>
                   <div>
-                    <h4>Recommended Specialist</h4>
-                    <span className="clinical-card-sub">Medical Practitioner</span>
+                    <h4>{uiLabels?.recommendedSpecialist || 'Recommended Specialist'}</h4>
+                    <span className="clinical-card-sub">{uiLabels?.specialistSub || 'Medical Practitioner'}</span>
                   </div>
                 </div>
                 <div className="clinical-card-body">
                   <div className="specialist-highlight">
-                    {result.recommendedSpecialist || 'General Physician'}
+                    {getLocalizedSpecialist(activeCandidate.recommendedSpecialist || result.recommendedSpecialist)}
                   </div>
-                  <p className="card-guidance-text">Consult for clinical evaluation and prescription treatment.</p>
+                  {isInputNonEnglish && !showInOriginalEnglish && (
+                    <div className="specialist-english-sub">
+                      ({activeCandidate.recommendedSpecialist || result.recommendedSpecialist || 'General Physician'})
+                    </div>
+                  )}
+                  <p className="card-guidance-text">
+                    {uiLabels?.specialistGuidance || 'Consult for clinical evaluation and prescription treatment.'}
+                  </p>
                 </div>
               </div>
 
@@ -646,20 +850,28 @@ const SearchPage = ({ userName = '', token, onLogout, onBack, startVoice = false
                 <div className="clinical-card-header">
                   <span className="clinical-icon">🧪</span>
                   <div>
-                    <h4>Diagnostic Tests</h4>
-                    <span className="clinical-card-sub">Recommended Labs</span>
+                    <h4>{uiLabels?.diagnosticTests || 'Diagnostic Tests'}</h4>
+                    <span className="clinical-card-sub">{uiLabels?.testsSub || 'Recommended Labs'}</span>
                   </div>
                 </div>
                 <div className="clinical-card-body">
                   <div className="clinical-pill-list">
-                    {result.recommendedTests && result.recommendedTests.length > 0 ? (
+                    {(activeCandidate.recommendedTests && activeCandidate.recommendedTests.length > 0) ? (
+                      activeCandidate.recommendedTests.map((t, idx) => (
+                        <span key={idx} className="clinical-pill clinical-pill--test">
+                          🔬 {getLocalizedTest(t)}
+                        </span>
+                      ))
+                    ) : (result.recommendedTests && result.recommendedTests.length > 0) ? (
                       result.recommendedTests.map((t, idx) => (
                         <span key={idx} className="clinical-pill clinical-pill--test">
-                          🔬 {t}
+                          🔬 {getLocalizedTest(t)}
                         </span>
                       ))
                     ) : (
-                      <p className="card-guidance-text">Clinical evaluation by physician</p>
+                      <p className="card-guidance-text">
+                        {uiLabels ? translateMedicalTerm('Clinical evaluation by physician', activeInputLang) : 'Clinical evaluation by physician'}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -670,26 +882,27 @@ const SearchPage = ({ userName = '', token, onLogout, onBack, startVoice = false
                 <div className="clinical-card-header">
                   <span className="clinical-icon">🏥</span>
                   <div>
-                    <h4>Nearby Hospitals & Clinics</h4>
-                    <span className="clinical-card-sub">GPS-Aware Navigation</span>
+                    <h4>{uiLabels?.nearbyHospitals || 'Nearby Hospitals & Clinics'}</h4>
+                    <span className="clinical-card-sub">{uiLabels?.hospitalsSub || 'GPS-Aware Navigation'}</span>
                   </div>
                 </div>
                 <div className="clinical-card-body">
                   <div className="clinical-pill-list">
-                    {result.recommendedHospitals && result.recommendedHospitals.length > 0 ? (
-                      result.recommendedHospitals.map((h, idx) => (
-                        <a
-                          key={idx}
-                          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(h + ' near me')}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="clinical-pill clinical-pill--hospital"
-                          title="Click to view live directions on Google Maps"
-                        >
-                          📍 {h} <span className="pill-link-icon">↗</span>
-                        </a>
-                      ))
-                    ) : (
+                    {((activeCandidate.recommendedHospitals && activeCandidate.recommendedHospitals.length > 0)
+                      ? activeCandidate.recommendedHospitals
+                      : result.recommendedHospitals
+                    )?.map((h, idx) => (
+                      <a
+                        key={idx}
+                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(h + ' near me')}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="clinical-pill clinical-pill--hospital"
+                        title="Click to view live directions on Google Maps"
+                      >
+                        📍 {h} <span className="pill-link-icon">↗</span>
+                      </a>
+                    )) || (
                       <a
                         href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('Hospitals near me')}`}
                         target="_blank"
@@ -701,12 +914,12 @@ const SearchPage = ({ userName = '', token, onLogout, onBack, startVoice = false
                     )}
                   </div>
                   <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((result.recommendedSpecialist || 'Hospital') + ' near me')}`}
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((activeCandidate.recommendedSpecialist || result.recommendedSpecialist || 'Hospital') + ' near me')}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="maps-locate-btn"
                   >
-                    🗺️ Find {result.recommendedSpecialist || 'Hospitals'} Near Me on Google Maps →
+                    🗺️ {uiLabels?.findNearMe || `Find ${activeCandidate.recommendedSpecialist || result.recommendedSpecialist || 'Hospitals'} Near Me on Google Maps →`}
                   </a>
                 </div>
               </div>
@@ -716,32 +929,119 @@ const SearchPage = ({ userName = '', token, onLogout, onBack, startVoice = false
                 <div className="clinical-card-header">
                   <span className="clinical-icon">🛡️</span>
                   <div>
-                    <h4>Precautions & Care Guidelines</h4>
-                    <span className="clinical-card-sub">Self-Care & Safety</span>
+                    <h4>{uiLabels?.precautions || 'Precautions & Care Guidelines'}</h4>
+                    <span className="clinical-card-sub">{uiLabels?.precautionsSub || 'Self-Care & Safety'}</span>
                   </div>
                 </div>
                 <div className="clinical-card-body">
                   <div className="precaution-checklist">
-                    {result.precautions && result.precautions.length > 0 ? (
-                      result.precautions.map((p, idx) => (
-                        <div key={idx} className="precaution-check-item">
-                          <span className="check-icon">✓</span>
-                          <span>{p}</span>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="card-guidance-text">Stay hydrated and monitor your temperature.</p>
+                    {((activeCandidate.precautions && activeCandidate.precautions.length > 0)
+                      ? activeCandidate.precautions
+                      : result.precautions
+                    )?.map((p, idx) => (
+                      <div key={idx} className="precaution-check-item">
+                        <span className="check-icon">✓</span>
+                        <span>{getLocalizedPrecaution(p)}</span>
+                      </div>
+                    )) || (
+                      <p className="card-guidance-text">
+                        {uiLabels ? translateMedicalTerm('Stay hydrated and monitor your temperature.', activeInputLang) : 'Stay hydrated and monitor your temperature.'}
+                      </p>
                     )}
                   </div>
                 </div>
               </div>
             </div>
 
+            {/* ── Top-3 Differential Comparison Matrix ────────────────────── */}
+            {topPredictionsList.length > 1 && (
+              <div className="knn-matrix-container">
+                <div className="knn-matrix-header">
+                  <h4>{uiLabels?.comparisonMatrix || '📊 Differential Diagnosis Comparison Matrix (k=3)'}</h4>
+                  <span className="knn-matrix-note">
+                    {uiLabels?.matrixSub || 'Comparative breakdown of all 3 candidate conditions'}
+                  </span>
+                </div>
+                <div className="knn-matrix-table-wrap">
+                  <table className="knn-matrix-table">
+                    <thead>
+                      <tr>
+                        <th>{uiLabels?.colRank || 'Rank'}</th>
+                        <th>{uiLabels?.colCondition || 'Condition'}</th>
+                        <th>{uiLabels?.colMatch || 'Match %'}</th>
+                        <th>{uiLabels?.colTriage || 'Triage Urgency'}</th>
+                        <th>{uiLabels?.colSpecialist || 'Primary Specialist'}</th>
+                        <th>{uiLabels?.colTests || 'Key Lab Tests'}</th>
+                        <th>{uiLabels?.colAction || 'Action'}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {topPredictionsList.map((item, idx) => {
+                        const itmTriage = getLocalizedTriage(item.disease, item.confidenceScore);
+                        const isCurr = selectedPredictionIdx === idx;
+                        const matchPct = Math.round((item.confidenceScore || 0) * 100);
+                        const localizedItemDisease = getLocalizedDisease(item.disease);
+
+                        return (
+                          <tr key={idx} className={isCurr ? 'knn-row--active' : ''}>
+                            <td>
+                              <span className={`knn-matrix-rank-pill knn-matrix-rank-pill--${idx + 1}`}>
+                                #{item.rank || (idx + 1)}
+                              </span>
+                            </td>
+                            <td>
+                              <strong>{localizedItemDisease}</strong>
+                              {isInputNonEnglish && !showInOriginalEnglish && localizedItemDisease !== item.disease && (
+                                <div className="matrix-sub-english">({item.disease})</div>
+                              )}
+                            </td>
+                            <td>
+                              <div className="knn-matrix-score-cell">
+                                <span>{matchPct}%</span>
+                                <div className="knn-mini-bar-track">
+                                  <div
+                                    className="knn-mini-bar-fill"
+                                    style={{ width: `${Math.max(10, matchPct)}%` }}
+                                  ></div>
+                                </div>
+                              </div>
+                            </td>
+                            <td>
+                              <span className={`triage-badge-sm ${itmTriage.badgeClass}`}>
+                                {itmTriage.icon} {itmTriage.label.split(' ')[0]}
+                              </span>
+                            </td>
+                            <td>{getLocalizedSpecialist(item.recommendedSpecialist)}</td>
+                            <td>
+                              <span className="knn-matrix-tests">
+                                {item.recommendedTests && item.recommendedTests.length > 0
+                                  ? item.recommendedTests.slice(0, 2).map(t => getLocalizedTest(t)).join(', ')
+                                  : 'Routine Evaluation'}
+                              </span>
+                            </td>
+                            <td>
+                              <button
+                                type="button"
+                                className={`knn-matrix-action-btn ${isCurr ? 'knn-matrix-action-btn--active' : ''}`}
+                                onClick={() => setSelectedPredictionIdx(idx)}
+                              >
+                                {isCurr ? (uiLabels?.viewing || '✓ Viewing') : (uiLabels?.viewPlan || 'View Plan')}
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
             {/* Medical Disclaimer Footer */}
             <div className="report-disclaimer-card">
               <span className="disclaimer-icon">⚠️</span>
               <p>
-                <strong>Important Notice:</strong> This assessment is generated using AI knowledge reasoning and is intended for clinical decision support and triage. It is not a definitive diagnosis. Please consult a registered medical doctor.
+                <strong>Important Notice:</strong> {uiLabels?.disclaimer || 'This assessment evaluates the Top-3 candidate conditions (k=3) using AI cosine similarity and Jena ontology clinical reasoning for decision support and triage. It is not a definitive medical diagnosis. Please consult a registered medical doctor.'}
               </p>
             </div>
           </section>
@@ -752,3 +1052,4 @@ const SearchPage = ({ userName = '', token, onLogout, onBack, startVoice = false
 };
 
 export default SearchPage;
+

@@ -1151,9 +1151,367 @@
   line-height: 1.55;
 }
 
+/* ── Top-3 (k=3) KNN Classification Styles ────────────────────────────────── */
+.knn-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding-bottom: 6px;
+}
+
+.knn-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.knn-pill-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #047857;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  width: fit-content;
+}
+
+.knn-section-title {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  letter-spacing: -0.01em;
+}
+
+.knn-section-subtitle {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.knn-status-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.knn-candidates-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin: 4px 0 10px;
+}
+
+.knn-candidate-card {
+  padding: 20px;
+  border-radius: 20px;
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  font-family: inherit;
+}
+
+.knn-candidate-card:hover {
+  transform: translateY(-3px);
+  background: #ffffff;
+  border-color: rgba(16, 185, 129, 0.4);
+  box-shadow: 0 10px 24px -6px rgba(15, 23, 42, 0.1);
+}
+
+.knn-candidate-card--active {
+  background: #ffffff;
+  border-color: #10b981;
+  box-shadow: 0 12px 30px -6px rgba(16, 185, 129, 0.25), 0 0 0 2px rgba(16, 185, 129, 0.2);
+  transform: translateY(-2px);
+}
+
+.knn-card-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.knn-rank-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.knn-rank-badge--1 {
+  background: #fef9c3;
+  color: #854d0e;
+  border: 1px solid #fde047;
+}
+
+.knn-rank-badge--2 {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+}
+
+.knn-rank-badge--3 {
+  background: #ffedd5;
+  color: #9a3412;
+  border: 1px solid #fed7aa;
+}
+
+.knn-rank-sublabel {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.knn-disease-name {
+  margin: 0;
+  font-size: 1.18rem;
+  font-weight: 800;
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  line-height: 1.25;
+}
+
+.knn-score-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.84rem;
+}
+
+.knn-score-label {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.knn-score-val {
+  color: #047857;
+  font-size: 1.05rem;
+  font-weight: 900;
+  font-family: 'Outfit', sans-serif;
+}
+
+.knn-meter-bar-track {
+  width: 100%;
+  height: 7px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.knn-meter-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.knn-meter-bar-fill--1 {
+  background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+}
+
+.knn-meter-bar-fill--2 {
+  background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.knn-meter-bar-fill--3 {
+  background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+}
+
+.knn-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 6px;
+  border-top: 1px solid #f1f5f9;
+  margin-top: 4px;
+}
+
+.triage-badge-sm {
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.knn-select-cta {
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: #059669;
+}
+
+/* ── Top-3 Differential Comparison Matrix ────────────────────────────────── */
+.knn-matrix-container {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.knn-matrix-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.knn-matrix-header h4 {
+  margin: 0;
+  font-size: 1.08rem;
+  font-weight: 800;
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+}
+
+.knn-matrix-note {
+  font-size: 0.8rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.knn-matrix-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.knn-matrix-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.knn-matrix-table th {
+  text-align: left;
+  padding: 10px 14px;
+  background: #ffffff;
+  color: var(--muted);
+  font-weight: 800;
+  font-size: 0.76rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.knn-matrix-table td {
+  padding: 14px;
+  border-bottom: 1px solid #e2e8f0;
+  color: var(--text);
+  vertical-align: middle;
+}
+
+.knn-row--active {
+  background: #f0fdf4;
+}
+
+.knn-matrix-rank-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-weight: 800;
+  font-size: 0.76rem;
+}
+
+.knn-matrix-rank-pill--1 {
+  background: #fef9c3;
+  color: #854d0e;
+}
+
+.knn-matrix-rank-pill--2 {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.knn-matrix-rank-pill--3 {
+  background: #ffedd5;
+  color: #9a3412;
+}
+
+.knn-matrix-score-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+  color: #047857;
+}
+
+.knn-mini-bar-track {
+  width: 70px;
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.knn-mini-bar-fill {
+  height: 100%;
+  background: #10b981;
+  border-radius: 999px;
+}
+
+.knn-matrix-tests {
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.knn-matrix-action-btn {
+  padding: 6px 12px;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: var(--text);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.knn-matrix-action-btn:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+.knn-matrix-action-btn--active {
+  background: #10b981;
+  color: white;
+  border-color: #059669;
+}
+
 /* ── Responsive Adjustments ──────────────────────────────────────────────── */
 @media (max-width: 1080px) {
   .search-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .knn-candidates-grid {
     grid-template-columns: 1fr;
   }
 }
@@ -1182,3 +1540,118 @@
     justify-content: space-between;
   }
 }
+
+/* ── Multilingual Result Banner & Localized Presentation ───────────────────── */
+.output-language-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 20px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(6, 95, 70, 0.08) 100%);
+  border: 1.5px solid rgba(16, 185, 129, 0.28);
+  border-radius: 16px;
+  margin-bottom: 22px;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.08);
+}
+
+.output-language-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.output-lang-icon {
+  font-size: 1.6rem;
+  background: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  flex-shrink: 0;
+}
+
+.output-language-info strong {
+  font-size: 0.98rem;
+  color: #065f46;
+  font-weight: 700;
+  display: block;
+}
+
+.output-lang-desc {
+  margin: 2px 0 0;
+  font-size: 0.82rem;
+  color: #047857;
+}
+
+.output-lang-toggle-btn {
+  padding: 8px 16px;
+  background: white;
+  border: 1.5px solid #10b981;
+  border-radius: 20px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #065f46;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.18s ease;
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.15);
+  flex-shrink: 0;
+}
+
+.output-lang-toggle-btn:hover {
+  background: #059669;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);
+}
+
+.knn-english-badge {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #64748b;
+  margin-top: -2px;
+  margin-bottom: 6px;
+  font-style: italic;
+}
+
+.disease-english-ref-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 4px 12px;
+  background: rgba(15, 23, 42, 0.05);
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-radius: 8px;
+  font-size: 0.82rem;
+}
+
+.disease-english-ref-tag .ref-label {
+  color: #64748b;
+  font-weight: 600;
+}
+
+.disease-english-ref-tag .ref-val {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.specialist-english-sub {
+  font-size: 0.82rem;
+  color: #64748b;
+  margin-top: 2px;
+  font-style: italic;
+}
+
+.matrix-sub-english {
+  font-size: 0.78rem;
+  color: #64748b;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+

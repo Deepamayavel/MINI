@@ -11,13 +11,12 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class SearchResponse {
-    private String predictedDisease;
+public class TopPredictionDto {
+    private String disease;
     private Double confidenceScore;
+    private Integer rank;
     private String recommendedSpecialist;
     private List<String> recommendedTests;
     private List<String> recommendedHospitals;
     private List<String> precautions;
-    private List<TopPredictionDto> topPredictions;
 }
-

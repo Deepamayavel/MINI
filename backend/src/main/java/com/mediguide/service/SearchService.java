@@ -44,16 +44,40 @@ public class SearchService {
         String predictedDisease = (String) prediction.getOrDefault("predictedDisease", "Unknown");
         Double confidenceScore = ((Number) prediction.getOrDefault("confidenceScore", 0)).doubleValue();
 
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> rawTopList = (List<Map<String, Object>>) prediction.get("topPredictions");
+        java.util.List<com.mediguide.dto.TopPredictionDto> topPredictions = new java.util.ArrayList<>();
+
+        if (rawTopList != null && !rawTopList.isEmpty()) {
+            for (Map<String, Object> item : rawTopList) {
+                String dis = (String) item.get("disease");
+                Double conf = ((Number) item.getOrDefault("confidenceScore", 0.0)).doubleValue();
+                Integer rank = ((Number) item.getOrDefault("rank", 1)).intValue();
+
+                OntologyService.OntologyResult disOntology = ontologyService.fetchRecommendations(dis);
+                topPredictions.add(com.mediguide.dto.TopPredictionDto.builder()
+                        .disease(dis)
+                        .confidenceScore(conf)
+                        .rank(rank)
+                        .recommendedSpecialist(disOntology.getSpecialists().stream().findFirst().orElse("General Physician"))
+                        .recommendedTests(disOntology.getTests())
+                        .recommendedHospitals(disOntology.getHospitals())
+                        .precautions(disOntology.getPrecautions())
+                        .build());
+            }
+        }
+
         OntologyService.OntologyResult ontologyResult = ontologyService.fetchRecommendations(predictedDisease);
 
-        SearchResponse response = new SearchResponse(
-                predictedDisease,
-                confidenceScore,
-                ontologyResult.getSpecialists().stream().findFirst().orElse("General Physician"),
-                ontologyResult.getTests(),
-                ontologyResult.getHospitals(),
-                ontologyResult.getPrecautions()
-        );
+        SearchResponse response = SearchResponse.builder()
+                .predictedDisease(predictedDisease)
+                .confidenceScore(confidenceScore)
+                .recommendedSpecialist(ontologyResult.getSpecialists().stream().findFirst().orElse("General Physician"))
+                .recommendedTests(ontologyResult.getTests())
+                .recommendedHospitals(ontologyResult.getHospitals())
+                .precautions(ontologyResult.getPrecautions())
+                .topPredictions(topPredictions)
+                .build();
 
         Query query = Query.builder()
                 .userId(userId)
@@ -61,6 +85,7 @@ public class SearchService {
                 .extractedSymptoms(extractedSymptoms)
                 .predictedDisease(predictedDisease)
                 .confidenceScore(confidenceScore)
+                .topPredictions(topPredictions)
                 .timestamp(Instant.now())
                 .build();
 
@@ -74,6 +99,7 @@ public class SearchService {
                 .diagnosticTests(response.getRecommendedTests())
                 .hospitals(response.getRecommendedHospitals())
                 .precautions(response.getPrecautions())
+                .topPredictions(topPredictions)
                 .createdAt(Instant.now())
                 .build();
 

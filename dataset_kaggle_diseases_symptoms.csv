@@ -1,0 +1,31 @@
+ID,Disease / Prognosis,Associated Clinical Symptoms,Total Symptoms
+1,Common Cold,"runny nose, sneezing, sore throat, cough, mild fever, congestion, headache, cold",8
+2,Influenza,"fever, chills, muscle aches, fatigue, headache, cough, sore throat, body pain, flu",9
+3,COVID-19,"fever, cough, shortness of breath, loss of taste, loss of smell, fatigue, body pain, covid",8
+4,Pneumonia,"chest pain, cough, fever, shortness of breath, difficulty breathing, chills, fatigue",7
+5,Bronchitis,"cough, mucus, fatigue, shortness of breath, chest discomfort, mild fever, wheezing",7
+6,Asthma,"wheezing, shortness of breath, chest tightness, cough, difficulty breathing",5
+7,Tuberculosis,"persistent cough, blood in cough, chest pain, weight loss, night sweats, fever, fatigue",7
+8,Dengue Fever,"high fever, severe headache, pain behind eyes, joint pain, muscle pain, rash, nausea, dengue",8
+9,Malaria,"fever, chills, sweating, headache, nausea, vomiting, muscle pain, malaria",8
+10,Typhoid,"sustained fever, weakness, stomach pain, headache, loss of appetite, constipation, rash, typhoid",8
+11,Gastritis,"stomach pain, nausea, vomiting, bloating, indigestion, loss of appetite, abdominal pain",7
+12,Appendicitis,"severe abdominal pain, nausea, vomiting, fever, loss of appetite, abdominal pain",6
+13,Irritable Bowel Syndrome,"abdominal pain, bloating, diarrhea, constipation, cramping, gas",6
+14,Diabetes,"frequent urination, excessive thirst, fatigue, blurred vision, slow healing, weight loss, diabetes",7
+15,Hypertension,"headache, dizziness, blurred vision, chest pain, shortness of breath, high blood pressure",6
+16,Heart Attack,"chest pain, shortness of breath, nausea, sweating, arm pain, jaw pain, heart attack",7
+17,Migraine,"severe headache, nausea, vomiting, sensitivity to light, sensitivity to sound, migraine",6
+18,Anemia,"fatigue, weakness, pale skin, shortness of breath, dizziness, cold hands, anemia",7
+19,Urinary Tract Infection,"burning urination, frequent urination, cloudy urine, pelvic pain, uti, urinary",6
+20,Kidney Stones,"severe back pain, side pain, painful urination, blood in urine, nausea, vomiting",6
+21,Arthritis,"joint pain, stiffness, swelling, reduced range of motion, arthritis",5
+22,Chickenpox,"itchy rash, blisters, fever, fatigue, headache, chickenpox",6
+23,Measles,"fever, cough, runny nose, red eyes, rash, measles",6
+24,Jaundice,"yellow skin, yellow eyes, dark urine, fatigue, abdominal pain, jaundice",6
+25,Hepatitis,"fatigue, nausea, abdominal pain, yellow skin, dark urine, loss of appetite, hepatitis",7
+26,Allergy,"sneezing, runny nose, itchy eyes, rash, hives, swelling, allergy",7
+27,Food Poisoning,"nausea, vomiting, diarrhea, stomach cramps, fever, food poisoning",6
+28,Vertigo,"dizziness, spinning sensation, nausea, balance problems, vertigo",5
+29,Depression,"sadness, fatigue, loss of interest, sleep problems, hopelessness, depression",6
+30,Anxiety,"worry, restlessness, rapid heartbeat, sweating, trembling, anxiety",6

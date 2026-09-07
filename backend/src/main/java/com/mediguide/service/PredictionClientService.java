@@ -80,27 +80,44 @@ public class PredictionClientService {
             symptomSet.add(s.toLowerCase());
         }
 
-        String bestDisease = "General Illness";
-        double bestScore = 0.0;
+        List<Map.Entry<String, Double>> scoredDiseases = new java.util.ArrayList<>();
 
         for (Map.Entry<String, List<String>> entry : DISEASE_SYMPTOMS.entrySet()) {
             Set<String> diseaseWords = new HashSet<>(entry.getValue());
             long intersection = symptomSet.stream().filter(diseaseWords::contains).count();
             long union = symptomSet.size() + diseaseWords.size() - intersection;
             double score = union > 0 ? (double) intersection / union : 0.0;
-
-            if (score > bestScore) {
-                bestScore = score;
-                bestDisease = entry.getKey();
-            }
+            scoredDiseases.add(Map.entry(entry.getKey(), score));
         }
 
-        double confidence = Math.min(bestScore * 2.5, 0.99);
-        if (confidence < 0.10) confidence = 0.40; // minimum confidence
+        scoredDiseases.sort((a, b) -> Double.compare(b.getValue(), a.getValue()));
+
+        List<Map<String, Object>> topPredictions = new java.util.ArrayList<>();
+        for (int i = 0; i < Math.min(3, scoredDiseases.size()); i++) {
+            Map.Entry<String, Double> entry = scoredDiseases.get(i);
+            double rawScore = entry.getValue();
+            double confidence;
+            if (rawScore > 0) {
+                confidence = Math.min(rawScore * 2.5, 0.99);
+            } else {
+                confidence = i == 0 ? 0.40 : Math.max(0.10, 0.40 * Math.pow(0.5, i));
+            }
+            confidence = Math.round(confidence * 100.0) / 100.0;
+
+            Map<String, Object> item = new HashMap<>();
+            item.put("disease", entry.getKey());
+            item.put("confidenceScore", confidence);
+            item.put("rank", i + 1);
+            topPredictions.add(item);
+        }
+
+        String bestDisease = topPredictions.isEmpty() ? "General Illness" : (String) topPredictions.get(0).get("disease");
+        double bestScore = topPredictions.isEmpty() ? 0.40 : ((Number) topPredictions.get(0).get("confidenceScore")).doubleValue();
 
         Map<String, Object> result = new HashMap<>();
         result.put("predictedDisease", bestDisease);
-        result.put("confidenceScore", Math.round(confidence * 100.0) / 100.0);
+        result.put("confidenceScore", bestScore);
+        result.put("topPredictions", topPredictions);
         return result;
     }
 }

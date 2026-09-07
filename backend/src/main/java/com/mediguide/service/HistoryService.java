@@ -13,9 +13,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Service
 public class HistoryService {
 
@@ -45,15 +42,16 @@ public class HistoryService {
                 .map(this::toRecommendationDto)
                 .orElse(null);
 
-        return new HistoryDetailDto(
-                query.getId(),
-                query.getRawText(),
-                query.getExtractedSymptoms(),
-                query.getPredictedDisease(),
-                query.getConfidenceScore(),
-                query.getTimestamp(),
-                recommendation
-        );
+        return HistoryDetailDto.builder()
+                .id(query.getId())
+                .rawText(query.getRawText())
+                .extractedSymptoms(query.getExtractedSymptoms())
+                .predictedDisease(query.getPredictedDisease())
+                .confidenceScore(query.getConfidenceScore())
+                .topPredictions(query.getTopPredictions())
+                .timestamp(query.getTimestamp())
+                .recommendation(recommendation)
+                .build();
     }
 
     public void deleteHistory(String userId, String queryId) {
@@ -69,25 +67,27 @@ public class HistoryService {
     }
 
     private HistoryItemDto toHistoryItemDto(Query query) {
-        return new HistoryItemDto(
-                query.getId(),
-                query.getRawText(),
-                query.getExtractedSymptoms(),
-                query.getPredictedDisease(),
-                query.getTimestamp()
-        );
+        return HistoryItemDto.builder()
+                .id(query.getId())
+                .rawText(query.getRawText())
+                .extractedSymptoms(query.getExtractedSymptoms())
+                .predictedDisease(query.getPredictedDisease())
+                .topPredictions(query.getTopPredictions())
+                .timestamp(query.getTimestamp())
+                .build();
     }
 
     private RecommendationDto toRecommendationDto(com.mediguide.model.Recommendation recommendation) {
-        return new RecommendationDto(
-                recommendation.getId(),
-                recommendation.getQueryId(),
-                recommendation.getPredictedDisease(),
-                recommendation.getSpecialist(),
-                recommendation.getDiagnosticTests(),
-                recommendation.getHospitals(),
-                recommendation.getPrecautions(),
-                recommendation.getCreatedAt()
-        );
+        return RecommendationDto.builder()
+                .id(recommendation.getId())
+                .queryId(recommendation.getQueryId())
+                .predictedDisease(recommendation.getPredictedDisease())
+                .specialist(recommendation.getSpecialist())
+                .diagnosticTests(recommendation.getDiagnosticTests())
+                .hospitals(recommendation.getHospitals())
+                .precautions(recommendation.getPrecautions())
+                .topPredictions(recommendation.getTopPredictions())
+                .createdAt(recommendation.getCreatedAt())
+                .build();
     }
 }

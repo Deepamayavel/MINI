@@ -193,9 +193,16 @@ class PredictRequest(BaseModel):
     symptoms: List[str]
 
 
+class TopPredictionItem(BaseModel):
+    disease: str
+    confidenceScore: float
+    rank: int
+
+
 class PredictResponse(BaseModel):
     predictedDisease: str
     confidenceScore: float
+    topPredictions: List[TopPredictionItem] = []
 
 
 def extract_symptom_phrases(text: str) -> List[str]:
@@ -236,7 +243,7 @@ def extract_symptom_phrases(text: str) -> List[str]:
 
 
 def predict_disease_knn(symptoms: List[str]) -> tuple:
-    """Cosine-similarity based disease prediction against symptom vectors."""
+    """Cosine/Jaccard similarity based disease prediction returning Top-3 (k=3) candidate diagnoses."""
     symptom_set = set(s.lower() for s in symptoms)
 
     # Expand symptom set with individual words from multi-word symptoms
@@ -256,12 +263,35 @@ def predict_disease_knn(symptoms: List[str]) -> tuple:
         union = len(symptom_set | disease_words)
         scores[disease] = intersection / union if union > 0 else 0.0
 
-    if not scores or max(scores.values()) == 0:
-        return "General Illness", 0.40
+    # Sort all candidate diseases by score in descending order
+    sorted_candidates = sorted(scores.items(), key=lambda x: x[1], reverse=True)
 
-    best_disease = max(scores, key=scores.get)
-    confidence = min(scores[best_disease] * 2.5, 0.99)  # scale up for readability
-    return best_disease, round(confidence, 2)
+    # If no match or all zeros, return sensible defaults
+    if not sorted_candidates or sorted_candidates[0][1] == 0:
+        default_top = [
+            {"disease": "General Illness", "confidenceScore": 0.40, "rank": 1},
+            {"disease": "Common Cold", "confidenceScore": 0.25, "rank": 2},
+            {"disease": "Viral Infection", "confidenceScore": 0.15, "rank": 3}
+        ]
+        return "General Illness", 0.40, default_top
+
+    # Pick top 3 (k=3)
+    top_3 = []
+    for rank_idx, (dis, raw_score) in enumerate(sorted_candidates[:3], start=1):
+        if raw_score > 0:
+            # Scale score: Rank 1 up to 0.99, subsequent ranks proportional
+            conf = min(raw_score * 2.5, 0.99)
+        else:
+            conf = max(0.10, round(top_3[0]["confidenceScore"] * (0.5 ** (rank_idx - 1)), 2))
+        top_3.append({
+            "disease": dis,
+            "confidenceScore": round(conf, 2),
+            "rank": rank_idx
+        })
+
+    best_disease = top_3[0]["disease"]
+    best_confidence = top_3[0]["confidenceScore"]
+    return best_disease, best_confidence, top_3
 
 
 @app.post("/extract-symptoms", response_model=ExtractResponse)
@@ -277,5 +307,9 @@ def extract_symptoms(request: ExtractRequest):
 def predict(request: PredictRequest):
     if not request.symptoms:
         raise HTTPException(status_code=400, detail="Symptoms are required")
-    disease, confidence = predict_disease_knn(request.symptoms)
-    return PredictResponse(predictedDisease=disease, confidenceScore=confidence)
+    disease, confidence, top_predictions = predict_disease_knn(request.symptoms)
+    return PredictResponse(
+        predictedDisease=disease,
+        confidenceScore=confidence,
+        topPredictions=[TopPredictionItem(**p) for p in top_predictions]
+    )

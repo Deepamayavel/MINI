@@ -8,6 +8,7 @@ const RecommendationPage = ({ userName = '', token, onLogout, onBack }) => {
   const [latest, setLatest] = useState(null);
   const [previous, setPrevious] = useState([]);
   const [selectedRecommendation, setSelectedRecommendation] = useState(null);
+  const [selectedCandIdx, setSelectedCandIdx] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [page, setPage] = useState(0);
@@ -45,6 +46,7 @@ const RecommendationPage = ({ userName = '', token, onLogout, onBack }) => {
     try {
       const recommendation = await getRecommendationById(token, id);
       setSelectedRecommendation(recommendation);
+      setSelectedCandIdx(0);
       window.scrollTo({ top: 300, behavior: 'smooth' });
     } catch (err) {
       setError(err.message || 'Unable to load details');
@@ -61,6 +63,29 @@ const RecommendationPage = ({ userName = '', token, onLogout, onBack }) => {
     }
     return { badge: 'triage-mild', label: '🟢 Routine / Primary Care' };
   };
+
+  // Derive active candidate for detailed view
+  const detailCands = selectedRecommendation?.topPredictions && selectedRecommendation.topPredictions.length > 0
+    ? selectedRecommendation.topPredictions
+    : selectedRecommendation ? [{
+        disease: selectedRecommendation.predictedDisease,
+        confidenceScore: 0.9,
+        rank: 1,
+        recommendedSpecialist: selectedRecommendation.specialist,
+        recommendedTests: selectedRecommendation.diagnosticTests,
+        recommendedHospitals: selectedRecommendation.hospitals,
+        precautions: selectedRecommendation.precautions
+      }] : [];
+
+  const activeDetailCand = detailCands[selectedCandIdx] || detailCands[0] || (selectedRecommendation ? {
+    disease: selectedRecommendation.predictedDisease,
+    confidenceScore: 0.9,
+    rank: 1,
+    recommendedSpecialist: selectedRecommendation.specialist,
+    recommendedTests: selectedRecommendation.diagnosticTests,
+    recommendedHospitals: selectedRecommendation.hospitals,
+    precautions: selectedRecommendation.precautions
+  } : null);
 
   return (
     <div className="recommendation-shell">
@@ -94,10 +119,10 @@ const RecommendationPage = ({ userName = '', token, onLogout, onBack }) => {
         {/* Hero Title */}
         <section className="recommendation-hero-card">
           <div className="hero-pill-tag">
-            <span>🧬</span> Apache Jena Knowledge Graph + spaCy NLP Pathways
+            <span>🧬</span> Apache Jena Knowledge Graph + Top-3 (k=3) Clinical Pathways
           </div>
           <h1>Clinical Care Recommendations</h1>
-          <p>Verified medical specialists, diagnostic tests, healthcare facilities, and preventive guidelines based on your symptom history.</p>
+          <p>Verified medical specialists, diagnostic tests, healthcare facilities, and preventive guidelines based on your Top-3 symptom diagnoses.</p>
         </section>
 
         {error && <div className="recommendation-error-box">{error}</div>}
@@ -109,7 +134,7 @@ const RecommendationPage = ({ userName = '', token, onLogout, onBack }) => {
             <div className="latest-card-top">
               <div className="latest-card-tag">
                 <span className="sparkle-dot"></span>
-                <span>LATEST AI ASSESSMENT</span>
+                <span>LATEST AI ASSESSMENT (k=3)</span>
               </div>
               <span className="latest-card-date">{new Date(latest.createdAt).toLocaleString()}</span>
             </div>
@@ -121,8 +146,19 @@ const RecommendationPage = ({ userName = '', token, onLogout, onBack }) => {
                 </span>
                 <h2>{latest.predictedDisease}</h2>
                 <p className="latest-specialist-text">
-                  <strong>Recommended Specialist:</strong> {latest.specialist || 'General Physician'}
+                  <strong>Primary Specialist:</strong> {latest.specialist || 'General Physician'}
                 </p>
+
+                {latest.topPredictions && latest.topPredictions.length > 1 && (
+                  <div className="latest-diff-chips-row">
+                    <span className="latest-diff-label">Top 3 Candidates:</span>
+                    {latest.topPredictions.map((cand, idx) => (
+                      <span key={idx} className="latest-diff-chip">
+                        #{cand.rank || (idx + 1)} {cand.disease} ({Math.round((cand.confidenceScore || 0) * 100)}%)
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <button
@@ -130,7 +166,7 @@ const RecommendationPage = ({ userName = '', token, onLogout, onBack }) => {
                 type="button"
                 onClick={() => handleViewDetails(latest.id)}
               >
-                <span>Explore Full Care Plan</span>
+                <span>Explore Top-3 Care Plan</span>
                 <span className="arrow">→</span>
               </button>
             </div>
@@ -138,12 +174,12 @@ const RecommendationPage = ({ userName = '', token, onLogout, onBack }) => {
         )}
 
         {/* ── Detailed Clinical Recommendation View ──────────────────────── */}
-        {selectedRecommendation && (
+        {selectedRecommendation && activeDetailCand && (
           <section className="detail-recommendation-section">
             <div className="detail-header-card">
               <div>
-                <span className="detail-tag">DETAILED CLINICAL CARE PATHWAY</span>
-                <h2>{selectedRecommendation.predictedDisease}</h2>
+                <span className="detail-tag">DETAILED CLINICAL CARE PATHWAY · TOP 3 CANDIDATE EVALUATION</span>
+                <h2>{activeDetailCand.disease}</h2>
                 <p className="detail-date">Analyzed on {new Date(selectedRecommendation.createdAt).toLocaleString()}</p>
               </div>
               <button
@@ -155,6 +191,27 @@ const RecommendationPage = ({ userName = '', token, onLogout, onBack }) => {
               </button>
             </div>
 
+            {/* Candidate Selector Tabs if Top Predictions Exist */}
+            {detailCands.length > 1 && (
+              <div className="rec-cand-tabs-bar">
+                {detailCands.map((cand, idx) => {
+                  const isSel = selectedCandIdx === idx;
+                  const rankMedals = ['🥇', '🥈', '🥉'];
+                  return (
+                    <button
+                      key={idx}
+                      type="button"
+                      className={`rec-cand-tab-btn ${isSel ? 'rec-cand-tab-btn--active' : ''}`}
+                      onClick={() => setSelectedCandIdx(idx)}
+                    >
+                      <span>{rankMedals[idx] || `#${idx + 1}`} Rank {idx + 1}: <strong>{cand.disease}</strong></span>
+                      <span className="rec-cand-tab-score">{Math.round((cand.confidenceScore || 0) * 100)}%</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
             {/* 2x2 Clinical Cards Grid */}
             <div className="clinical-details-grid">
               {/* Card 1: Specialist */}
@@ -165,7 +222,7 @@ const RecommendationPage = ({ userName = '', token, onLogout, onBack }) => {
                 </div>
                 <div className="card-body">
                   <div className="specialist-badge">
-                    <strong>{selectedRecommendation.specialist || 'General Practitioner'}</strong>
+                    <strong>{activeDetailCand.recommendedSpecialist || selectedRecommendation.specialist || 'General Practitioner'}</strong>
                     <span>Primary Medical Consultant</span>
                   </div>
                   <p className="card-note">Schedule a consultation for formal diagnostic validation and clinical prescription.</p>
@@ -180,13 +237,14 @@ const RecommendationPage = ({ userName = '', token, onLogout, onBack }) => {
                 </div>
                 <div className="card-body">
                   <div className="tests-chips-list">
-                    {selectedRecommendation.diagnosticTests && selectedRecommendation.diagnosticTests.length > 0 ? (
-                      selectedRecommendation.diagnosticTests.map((t, idx) => (
-                        <span key={idx} className="test-chip">
-                          🔬 {t}
-                        </span>
-                      ))
-                    ) : (
+                    {((activeDetailCand.recommendedTests && activeDetailCand.recommendedTests.length > 0)
+                      ? activeDetailCand.recommendedTests
+                      : selectedRecommendation.diagnosticTests
+                    )?.map((t, idx) => (
+                      <span key={idx} className="test-chip">
+                        🔬 {t}
+                      </span>
+                    )) || (
                       <span className="test-chip">🔬 Routine Blood Panel / CBC</span>
                     )}
                   </div>
@@ -202,20 +260,21 @@ const RecommendationPage = ({ userName = '', token, onLogout, onBack }) => {
                 </div>
                 <div className="card-body">
                   <div className="hospitals-chips-list">
-                    {selectedRecommendation.hospitals && selectedRecommendation.hospitals.length > 0 ? (
-                      selectedRecommendation.hospitals.map((h, idx) => (
-                        <a
-                          key={idx}
-                          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(h + ' near me')}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="hospital-chip hospital-chip--link"
-                          title="Click to view live directions on Google Maps"
-                        >
-                          📍 {h} <span className="chip-arrow">↗</span>
-                        </a>
-                      ))
-                    ) : (
+                    {((activeDetailCand.recommendedHospitals && activeDetailCand.recommendedHospitals.length > 0)
+                      ? activeDetailCand.recommendedHospitals
+                      : selectedRecommendation.hospitals
+                    )?.map((h, idx) => (
+                      <a
+                        key={idx}
+                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(h + ' near me')}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hospital-chip hospital-chip--link"
+                        title="Click to view live directions on Google Maps"
+                      >
+                        📍 {h} <span className="chip-arrow">↗</span>
+                      </a>
+                    )) || (
                       <a
                         href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('Hospitals near me')}`}
                         target="_blank"
@@ -227,12 +286,12 @@ const RecommendationPage = ({ userName = '', token, onLogout, onBack }) => {
                     )}
                   </div>
                   <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((selectedRecommendation.specialist || 'Hospital') + ' near me')}`}
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((activeDetailCand.recommendedSpecialist || selectedRecommendation.specialist || 'Hospital') + ' near me')}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="rec-maps-locate-btn"
                   >
-                    🗺️ Find {selectedRecommendation.specialist || 'Hospitals'} Near Me on Google Maps →
+                    🗺️ Find {activeDetailCand.recommendedSpecialist || selectedRecommendation.specialist || 'Hospitals'} Near Me on Google Maps →
                   </a>
                 </div>
               </div>
@@ -245,14 +304,15 @@ const RecommendationPage = ({ userName = '', token, onLogout, onBack }) => {
                 </div>
                 <div className="card-body">
                   <div className="precautions-checklist">
-                    {selectedRecommendation.precautions && selectedRecommendation.precautions.length > 0 ? (
-                      selectedRecommendation.precautions.map((p, idx) => (
-                        <div key={idx} className="precaution-item">
-                          <span className="check-icon">✓</span>
-                          <span>{p}</span>
-                        </div>
-                      ))
-                    ) : (
+                    {((activeDetailCand.precautions && activeDetailCand.precautions.length > 0)
+                      ? activeDetailCand.precautions
+                      : selectedRecommendation.precautions
+                    )?.map((p, idx) => (
+                      <div key={idx} className="precaution-item">
+                        <span className="check-icon">✓</span>
+                        <span>{p}</span>
+                      </div>
+                    )) || (
                       <div className="precaution-item">
                         <span className="check-icon">✓</span>
                         <span>Ensure proper hydration and adequate bed rest.</span>

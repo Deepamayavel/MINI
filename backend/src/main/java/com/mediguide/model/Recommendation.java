@@ -1,5 +1,6 @@
 package com.mediguide.model;
 
+import com.mediguide.dto.TopPredictionDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,5 +26,7 @@ public class Recommendation {
     private List<String> diagnosticTests;
     private List<String> hospitals;
     private List<String> precautions;
+    private List<TopPredictionDto> topPredictions;
     private Instant createdAt;
 }
+

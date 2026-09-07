@@ -122,18 +122,20 @@ const DashboardPage = ({ userName = 'User', userEmail, token, onLogout, onSearch
 
       {/* ── Main Dashboard Content ──────────────────────────────────────── */}
       <main className="dashboard-main">
-        {/* Top Header */}
+        {/* Top Header & Quick Launch Spotlight */}
         <header className="dashboard-header">
-          <div>
+          <div className="dashboard-header-left">
             <div className="dashboard-header-badge">
               <span className="live-sparkle">✨</span> AI Healthcare Assistant Online
             </div>
             <h1>Welcome back, {userName} 👋</h1>
-            <p className="dashboard-header-sub">Track your symptoms, explore AI recommendations, and monitor wellness.</p>
+            <p className="dashboard-header-sub">
+              Analyze your symptoms with AI, explore Top-3 clinical recommendations, and manage your health.
+            </p>
           </div>
 
           <div className="dashboard-header-right">
-            <div className="user-profile-badge">
+            <div className="user-profile-badge" onClick={onProfileClick} title="View Profile" style={{ cursor: 'pointer' }}>
               <div className="user-profile-avatar">
                 {userName ? userName.slice(0, 1).toUpperCase() : 'U'}
               </div>
@@ -180,63 +182,79 @@ const DashboardPage = ({ userName = 'User', userEmail, token, onLogout, onSearch
           </div>
         </section>
 
-        {/* Primary Quick Actions Grid */}
+        {/* Health Tools Grid with Solid Interactive Buttons */}
         <section className="quick-actions-section">
           <div className="section-title-wrap">
-            <h2>Quick Health Actions</h2>
-            <p>Select a tool to begin symptom analysis, view recommendations, or calculate BMI</p>
+            <h2>Explore Health Tools</h2>
+            <p>Direct access to all diagnostic, wellness, and medical history features</p>
           </div>
 
           <div className="quick-cards-grid">
-            <article className="action-card action-card--search" onClick={onSearchClick}>
+            {/* Card 1: Search Symptoms */}
+            <article className="action-card action-card--search">
               <div className="action-card-header">
                 <div className="action-icon-circle">🔍</div>
                 <span className="action-tag">Voice & Text</span>
               </div>
               <h3>AI Symptom Search</h3>
-              <p>Speak naturally in 9 native languages or type symptoms to receive AI diagnostic predictions.</p>
-              <button type="button" className="action-link-btn">
-                <span>Start Symptom Search</span>
-                <span className="arrow">→</span>
+              <p>Describe what you feel via speech or text to receive instant k=3 differential predictions.</p>
+              <button 
+                type="button" 
+                className="action-solid-btn action-solid-btn--emerald"
+                onClick={onSearchClick}
+              >
+                <span>🔍 Launch Search</span>
               </button>
             </article>
 
-            <article className="action-card action-card--recommendations" onClick={onRecommendationsClick}>
+            {/* Card 2: Clinical Recommendations */}
+            <article className="action-card action-card--recommendations">
               <div className="action-card-header">
                 <div className="action-icon-circle action-icon-circle--rec">🩺</div>
                 <span className="action-tag action-tag--rec">Clinical Care</span>
               </div>
-              <h3>Clinical Pathways</h3>
-              <p>Explore recommended medical specialists, diagnostic tests, hospitals, and precautions.</p>
-              <button type="button" className="action-link-btn">
-                <span>View Care Advice</span>
-                <span className="arrow">→</span>
+              <h3>Clinical Care Plans</h3>
+              <p>Access specialists, lab test recommendations, and preventive care guidelines.</p>
+              <button 
+                type="button" 
+                className="action-solid-btn action-solid-btn--teal"
+                onClick={onRecommendationsClick}
+              >
+                <span>📌 View Care Plans</span>
               </button>
             </article>
 
-            <article className="action-card action-card--vitals" onClick={() => setIsBmiOpen(true)}>
+            {/* Card 3: BMI Tracker */}
+            <article className="action-card action-card--vitals">
               <div className="action-card-header">
                 <div className="action-icon-circle action-icon-circle--vitals">⚖️</div>
                 <span className="action-tag action-tag--vitals">Health Metric</span>
               </div>
-              <h3>BMI & Vitals Tracker</h3>
-              <p>Calculate your Body Mass Index score and determine healthy weight categories in seconds.</p>
-              <button type="button" className="action-link-btn">
-                <span>Open Calculator</span>
-                <span className="arrow">→</span>
+              <h3>BMI & Vitals Calculator</h3>
+              <p>Calculate your Body Mass Index score and determine healthy weight categories instantly.</p>
+              <button 
+                type="button" 
+                className="action-solid-btn action-solid-btn--indigo"
+                onClick={() => setIsBmiOpen(true)}
+              >
+                <span>⚖️ Calculate BMI</span>
               </button>
             </article>
 
-            <article className="action-card action-card--history" onClick={onHistoryClick}>
+            {/* Card 4: Search History */}
+            <article className="action-card action-card--history">
               <div className="action-card-header">
                 <div className="action-icon-circle action-icon-circle--history">🕘</div>
                 <span className="action-tag action-tag--history">Timeline</span>
               </div>
-              <h3>Search History</h3>
-              <p>Review previously analyzed symptoms, confidence ratings, and recorded dates.</p>
-              <button type="button" className="action-link-btn">
-                <span>View Past History</span>
-                <span className="arrow">→</span>
+              <h3>Search & History Log</h3>
+              <p>Review previously recorded symptoms, differential match scores, and timestamp logs.</p>
+              <button 
+                type="button" 
+                className="action-solid-btn action-solid-btn--slate"
+                onClick={onHistoryClick}
+              >
+                <span>🕘 Open History</span>
               </button>
             </article>
           </div>
@@ -250,12 +268,12 @@ const DashboardPage = ({ userName = 'User', userEmail, token, onLogout, onSearch
               <div className="panel-header-left">
                 <span className="panel-icon">📋</span>
                 <div>
-                  <h3>Recent Searches</h3>
+                  <h3>Recent Search History</h3>
                   <span className="panel-sub">Your latest symptom assessments</span>
                 </div>
               </div>
-              <button type="button" className="panel-link-btn" onClick={onHistoryClick}>
-                View All →
+              <button type="button" className="panel-header-btn" onClick={onHistoryClick}>
+                View All History →
               </button>
             </div>
 
@@ -265,7 +283,7 @@ const DashboardPage = ({ userName = 'User', userEmail, token, onLogout, onSearch
                   <span className="empty-icon">🔍</span>
                   <p>No recent symptom searches recorded.</p>
                   <button type="button" className="empty-action-btn" onClick={onSearchClick}>
-                    Analyze your first symptom →
+                    🔍 Search Your Symptoms Now
                   </button>
                 </div>
               ) : (
@@ -278,11 +296,19 @@ const DashboardPage = ({ userName = 'User', userEmail, token, onLogout, onSearch
                         <span className="recent-date-text">{new Date(item.timestamp).toLocaleString()}</span>
                       </div>
                     </div>
-                    {item.predictedDisease && (
+                    {item.topPredictions && item.topPredictions.length > 0 ? (
+                      <div className="recent-condition-chips-list">
+                        {item.topPredictions.map((c, i) => (
+                          <span key={i} className="recent-condition-tag">
+                            #{c.rank || (i + 1)} {c.disease}
+                          </span>
+                        ))}
+                      </div>
+                    ) : item.predictedDisease ? (
                       <span className="recent-condition-tag">
                         {item.predictedDisease}
                       </span>
-                    )}
+                    ) : null}
                   </div>
                 ))
               )}
@@ -296,10 +322,10 @@ const DashboardPage = ({ userName = 'User', userEmail, token, onLogout, onSearch
                 <span className="panel-icon">💡</span>
                 <div className="tip-title-group">
                   <div className="tip-heading-row">
-                    <h3>Health Insight of the Day</h3>
+                    <h3>Daily Health Insight</h3>
                     <span className="tip-counter-badge">Tip {tipIndex + 1} of {HEALTH_TIPS.length}</span>
                   </div>
-                  <span className="panel-sub">Automatically refreshed daily · Preventive wellness</span>
+                  <span className="panel-sub">Preventive wellness guidance</span>
                 </div>
               </div>
             </div>
