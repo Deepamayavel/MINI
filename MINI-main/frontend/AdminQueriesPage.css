@@ -1,0 +1,122 @@
+:root {
+  --bg: #f4f6fb;
+  --panel: #ffffff;
+  --text: #111827;
+  --muted: #475569;
+  --border: #e2e8f0;
+  --danger: #dc2626;
+  --primary: #2563eb;
+}
+
+.admin-queries-shell {
+  min-height: 100vh;
+  padding: 24px;
+  background: var(--bg);
+  font-family: Inter, system-ui, sans-serif;
+}
+
+.admin-queries-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.admin-back-button,
+.admin-logout-button {
+  border: none;
+  background: none;
+  color: var(--primary);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.admin-queries-error,
+.admin-queries-loading {
+  margin-bottom: 16px;
+  padding: 14px 16px;
+  border-radius: 18px;
+}
+
+.admin-queries-error {
+  background: #fee2e2;
+  color: var(--danger);
+}
+
+.admin-queries-loading {
+  background: #eff6ff;
+  color: var(--primary);
+}
+
+.admin-queries-grid {
+  display: grid;
+  gap: 18px;
+}
+
+.admin-query-card {
+  padding: 20px;
+  border-radius: 24px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.05);
+}
+
+.admin-query-card-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.admin-query-card-header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.admin-query-card-header span {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.admin-query-delete {
+  border: none;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: #fee2e2;
+  color: var(--danger);
+  cursor: pointer;
+}
+
+.admin-query-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 14px;
+  color: var(--muted);
+}
+
+.admin-query-text {
+  margin: 0;
+  color: var(--text);
+  line-height: 1.7;
+}
+
+.admin-queries-empty {
+  margin-top: 30px;
+  padding: 32px;
+  border-radius: 24px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  text-align: center;
+}
+
+.admin-queries-empty h2 {
+  margin: 0 0 8px;
+}
+
+.admin-queries-empty p {
+  margin: 0;
+  color: var(--muted);
+}
