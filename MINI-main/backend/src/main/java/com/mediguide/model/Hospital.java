@@ -18,4 +18,7 @@ public class Hospital {
     private String name;
     private String address;
     private String contact;
+    private String city;
+    private String type;
+    private Boolean emergencyAvailable;
 }

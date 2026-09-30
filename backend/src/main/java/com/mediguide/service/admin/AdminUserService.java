@@ -19,6 +19,7 @@ public class AdminUserService {
 
     private final AdminUserRepository userRepository;
     private final AdminQueryRepository queryRepository;
+    private final org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder passwordEncoder = new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder();
 
     public AdminUserService(AdminUserRepository userRepository, AdminQueryRepository queryRepository) {
         this.userRepository = userRepository;
@@ -30,7 +31,8 @@ public class AdminUserService {
         List<User> users = userRepository.findAll();
         if (search != null && !search.isBlank()) {
             users = users.stream()
-                    .filter(user -> user.getName().toLowerCase().contains(search.toLowerCase()) || user.getEmail().toLowerCase().contains(search.toLowerCase()))
+                    .filter(user -> (user.getName() != null && user.getName().toLowerCase().contains(search.toLowerCase())) ||
+                                    (user.getEmail() != null && user.getEmail().toLowerCase().contains(search.toLowerCase())))
                     .collect(Collectors.toList());
         }
         List<AdminUserDto> dtos = users.stream()
@@ -38,7 +40,7 @@ public class AdminUserService {
                         user.getId(),
                         user.getName(),
                         user.getEmail(),
-                        user.getRole().name(),
+                        user.getRole() != null ? user.getRole().name() : "USER",
                         queryRepository.countByUserId(user.getId())
                 ))
                 .collect(Collectors.toList());
@@ -52,17 +54,47 @@ public class AdminUserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
+    public User create(User user) {
+        if (user.getEmail() == null || user.getEmail().isBlank()) {
+            throw new IllegalArgumentException("Email is required");
+        }
+        String cleanEmail = user.getEmail().trim().toLowerCase();
+        if (userRepository.findByEmail(cleanEmail).isPresent()) {
+            throw new com.mediguide.exception.DuplicateEmailException("Email already in use");
+        }
+        user.setEmail(cleanEmail);
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName("User");
+        }
+        if (user.getRole() == null) {
+            user.setRole(com.mediguide.model.Role.USER);
+        }
+        String rawPass = (user.getPasswordHash() != null && !user.getPasswordHash().isBlank())
+                ? user.getPasswordHash() : "User@1234";
+        user.setPasswordHash(passwordEncoder.encode(rawPass));
+        user.setCreatedAt(java.time.Instant.now());
+        return userRepository.save(user);
+    }
+
     public User update(String id, User user) {
         User existing = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        if (user.getName() != null) {
-            existing.setName(user.getName());
+        if (user.getName() != null && !user.getName().isBlank()) {
+            existing.setName(user.getName().trim());
         }
-        if (user.getEmail() != null) {
-            existing.setEmail(user.getEmail());
+        if (user.getEmail() != null && !user.getEmail().isBlank()) {
+            String newEmail = user.getEmail().trim().toLowerCase();
+            if (!newEmail.equalsIgnoreCase(existing.getEmail()) && userRepository.findByEmail(newEmail).isPresent()) {
+                throw new com.mediguide.exception.DuplicateEmailException("Email already in use");
+            }
+            existing.setEmail(newEmail);
         }
-        if (user.getPasswordHash() != null) {
-            existing.setPasswordHash(user.getPasswordHash());
+        if (user.getPasswordHash() != null && !user.getPasswordHash().isBlank()) {
+            String pass = user.getPasswordHash();
+            if (!pass.startsWith("$2a$") && !pass.startsWith("$2b$") && !pass.startsWith("$2y$")) {
+                pass = passwordEncoder.encode(pass);
+            }
+            existing.setPasswordHash(pass);
         }
         if (user.getRole() != null) {
             existing.setRole(user.getRole());

@@ -18,4 +18,8 @@ public class Specialist {
     private String name;
     private String specialty;
     private String hospitalId;
+    private String hospitalName;
+    private String contact;
+    private String experience;
+    private String consultationFee;
 }

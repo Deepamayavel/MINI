@@ -18,4 +18,8 @@ public class Disease {
     private String name;
     private String description;
     private Double severityScore;
+    private String category;
+    private String commonSymptoms;
+    private String recommendedSpecialist;
+    private String precautions;
 }
