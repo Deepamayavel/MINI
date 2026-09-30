@@ -21,5 +21,5 @@ echo ===================================================
 echo All services launched!
 echo Open your browser at: http://localhost:5173
 echo ===================================================
-timeout /t 5 >nul
+ping -n 5 127.0.0.1 >nul
 start http://localhost:5173
