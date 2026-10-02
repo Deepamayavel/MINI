@@ -1007,6 +1007,346 @@
   background: var(--admin-danger-hover);
 }
 
+/* ── Live Tab Count Badges ─────────────────────────────────────────────── */
+.admin-tab-count-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 0.74rem;
+  font-weight: 700;
+  margin-left: 6px;
+  border: 1px solid #e2e8f0;
+}
+
+.admin-tab-count-badge--active {
+  background: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+/* ── Clinical Presets Header Action ───────────────────────────────────── */
+.admin-presets-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border-radius: var(--admin-radius-md);
+  border: 1.5px solid #f0abfc;
+  background: #fdf4ff;
+  color: #a21caf;
+  font-weight: 700;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(168, 85, 247, 0.1);
+}
+
+.admin-presets-action-btn:hover {
+  background: #fae8ff;
+  border-color: #d946ef;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.2);
+}
+
+/* ── Quick-Fill Preset Banner (in Create Modal) ────────────────────────── */
+.admin-quick-preset-banner {
+  background: linear-gradient(135deg, #fdf4ff 0%, #fae8ff 100%);
+  border: 1.5px solid #e879f9;
+  border-radius: var(--admin-radius-md);
+  padding: 12px 18px;
+  margin-bottom: 22px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.admin-quick-preset-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.88rem;
+  color: #86198f;
+}
+
+.admin-preset-dropdown-picker {
+  flex: 1;
+  min-width: 240px;
+  padding: 8px 12px;
+  border-radius: var(--admin-radius-sm);
+  border: 1px solid #d946ef;
+  background: #ffffff;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #4a044e;
+  cursor: pointer;
+  outline: none;
+}
+
+.admin-preset-dropdown-picker:focus {
+  outline: 2px solid #a21caf;
+}
+
+/* ── Presets Modal ─────────────────────────────────────────────────────── */
+.admin-modal-card--presets {
+  max-width: 720px;
+  max-height: 85vh;
+}
+
+.admin-presets-list {
+  max-height: 52vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 0;
+}
+
+.admin-preset-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  background: #f8fafc;
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-md);
+  gap: 16px;
+  transition: all 0.15s ease;
+}
+
+.admin-preset-row:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.admin-preset-info strong {
+  font-size: 0.96rem;
+  color: var(--admin-text-main);
+}
+
+.admin-preset-tag {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  background: #e2e8f0;
+  color: #475569;
+  border-radius: 999px;
+}
+
+.admin-preset-desc {
+  margin: 4px 0 0;
+  font-size: 0.82rem;
+  color: var(--admin-text-muted);
+  line-height: 1.4;
+}
+
+.admin-import-chip-btn {
+  background: var(--admin-primary);
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.admin-import-chip-btn:hover {
+  background: var(--admin-primary-hover);
+  transform: scale(1.04);
+}
+
+.admin-modal-footer--between {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+/* ── Sorting Headers & Interactive Rows ────────────────────────────────── */
+.admin-th-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.admin-sort-caret {
+  font-size: 0.74rem;
+  color: var(--admin-primary);
+}
+
+.admin-table-row {
+  transition: background 0.12s ease;
+  cursor: pointer;
+}
+
+.admin-table-row:hover {
+  background: #f8fafc !important;
+}
+
+/* ── Pagination & Footer Toolbar ───────────────────────────────────────── */
+.admin-table-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-top: 1px solid var(--admin-border);
+  background: #fafafa;
+  border-radius: 0 0 var(--admin-radius-lg) var(--admin-radius-lg);
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.admin-footer-info {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  font-size: 0.86rem;
+  color: var(--admin-text-muted);
+}
+
+.admin-page-size-selector {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.admin-page-size-selector select {
+  padding: 4px 8px;
+  border-radius: var(--admin-radius-sm);
+  border: 1px solid var(--admin-border);
+  background: white;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--admin-text-main);
+  cursor: pointer;
+}
+
+.admin-pagination-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.admin-page-btn {
+  padding: 6px 12px;
+  border: 1px solid var(--admin-border);
+  background: white;
+  color: var(--admin-text-main);
+  border-radius: var(--admin-radius-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.admin-page-btn:hover:not(:disabled) {
+  background: var(--admin-primary-light);
+  color: var(--admin-primary);
+  border-color: var(--admin-primary);
+}
+
+.admin-page-btn--active {
+  background: var(--admin-primary) !important;
+  color: white !important;
+  border-color: var(--admin-primary) !important;
+}
+
+.admin-page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.admin-page-ellipsis {
+  padding: 0 4px;
+  color: var(--admin-text-muted);
+}
+
+/* ── Suggestion Chips & Quick Helpers ──────────────────────────────────── */
+.admin-field-suggestions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.suggestion-label {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--admin-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.admin-suggestion-chip {
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid #cbd5e1;
+  background: #f1f5f9;
+  color: #334155;
+  font-size: 0.74rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.admin-suggestion-chip:hover {
+  background: #e2e8f0;
+  border-color: #94a3b8;
+  color: var(--admin-text-main);
+  transform: translateY(-1px);
+}
+
+/* ── Export Buttons Group ──────────────────────────────────────────────── */
+.admin-export-btn-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.admin-utility-btn {
+  padding: 9px 14px;
+  border-radius: var(--admin-radius-sm);
+  border: 1px solid var(--admin-border);
+  background: #ffffff;
+  color: #475569;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.admin-utility-btn:hover {
+  background: #f8fafc;
+  color: var(--admin-primary);
+  border-color: var(--admin-primary);
+}
+
+/* ── Inline Form Error Styles ──────────────────────────────────────────── */
+.admin-form-control--error {
+  border-color: var(--admin-danger) !important;
+  background: #fef2f2 !important;
+}
+
+.admin-field-error-msg {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--admin-danger);
+  margin-top: 4px;
+  display: block;
+}
+
 /* Responsive */
 @media (max-width: 860px) {
   .admin-management-shell {
@@ -1021,3 +1361,4 @@
     grid-template-columns: 1fr;
   }
 }
+

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import './AdminManagementPage.css';
 import {
   createAdminResource,
@@ -12,14 +12,14 @@ const RESOURCE_CONFIG = {
     id: 'symptoms',
     icon: '📋',
     title: 'Symptom Management',
-    subtitle: 'Manage clinical symptom entities, severity weights, anatomical locations, and multilingual synonyms (Tamil, Hindi, English).',
+    subtitle: 'Manage clinical symptom entities, severity weights, anatomical locations, and multilingual synonyms (Tamil, Hindi, Telugu, English).',
     endpoint: 'symptoms',
     singular: 'Symptom',
     listFields: [
-      { key: 'name', label: 'Symptom Name', primary: true },
-      { key: 'category', label: 'Category', type: 'category' },
-      { key: 'severity', label: 'Severity', type: 'severity' },
-      { key: 'bodyLocation', label: 'Body Location' },
+      { key: 'name', label: 'Symptom Name', primary: true, sortable: true },
+      { key: 'category', label: 'Category', type: 'category', sortable: true },
+      { key: 'severity', label: 'Severity', type: 'severity', sortable: true },
+      { key: 'bodyLocation', label: 'Body Location', sortable: true },
       { key: 'synonyms', label: 'Multilingual Synonyms / Aliases', type: 'synonyms' },
       { key: 'description', label: 'Clinical Description', truncate: true },
     ],
@@ -50,7 +50,13 @@ const RESOURCE_CONFIG = {
         required: true,
         options: ['Mild', 'Moderate', 'Severe'],
       },
-      { name: 'bodyLocation', label: 'Body Location / Organ', type: 'text', placeholder: 'e.g. Whole Body, Chest / Lungs, Head, Throat' },
+      {
+        name: 'bodyLocation',
+        label: 'Body Location / Organ',
+        type: 'text',
+        placeholder: 'e.g. Whole Body, Chest / Lungs, Head, Throat',
+        suggestions: ['Whole Body', 'Head', 'Throat', 'Chest / Lungs', 'Abdomen', 'Limbs / Joints', 'Skin']
+      },
       {
         name: 'synonyms',
         label: 'Multilingual Synonyms & Spoken Aliases (Comma-separated)',
@@ -96,10 +102,10 @@ const RESOURCE_CONFIG = {
     endpoint: 'diseases',
     singular: 'Disease',
     listFields: [
-      { key: 'name', label: 'Disease Name', primary: true },
-      { key: 'category', label: 'Category', type: 'category' },
-      { key: 'severityScore', label: 'Severity Index', type: 'score' },
-      { key: 'recommendedSpecialist', label: 'Specialist' },
+      { key: 'name', label: 'Disease Name', primary: true, sortable: true },
+      { key: 'category', label: 'Category', type: 'category', sortable: true },
+      { key: 'severityScore', label: 'Severity Index', type: 'score', sortable: true },
+      { key: 'recommendedSpecialist', label: 'Specialist', sortable: true },
       { key: 'commonSymptoms', label: 'Key Symptoms' },
       { key: 'description', label: 'Description', truncate: true },
     ],
@@ -122,8 +128,23 @@ const RESOURCE_CONFIG = {
           'Other'
         ],
       },
-      { name: 'severityScore', label: 'Severity Score (0.00 to 1.00)', type: 'number', step: '0.01', min: '0', max: '1', required: true, placeholder: 'e.g. 0.85' },
-      { name: 'recommendedSpecialist', label: 'Recommended Medical Specialist', type: 'text', placeholder: 'e.g. Pulmonologist, Cardiologist' },
+      {
+        name: 'severityScore',
+        label: 'Severity Score (0.00 to 1.00)',
+        type: 'number',
+        step: '0.01',
+        min: '0',
+        max: '1',
+        required: true,
+        placeholder: 'e.g. 0.85',
+        scorePresets: [
+          { label: 'Mild (0.25)', value: 0.25 },
+          { label: 'Moderate (0.50)', value: 0.50 },
+          { label: 'High (0.75)', value: 0.75 },
+          { label: 'Critical (0.90)', value: 0.90 },
+        ]
+      },
+      { name: 'recommendedSpecialist', label: 'Recommended Medical Specialist', type: 'text', placeholder: 'e.g. Pulmonologist, Cardiologist', linkedList: 'specialists' },
       { name: 'commonSymptoms', label: 'Associated Symptoms (Comma-separated)', type: 'textarea', rows: 2, placeholder: 'e.g. High Fever, Headache, Joint Pain, Rash' },
       { name: 'precautions', label: 'Clinical Precautions & Care Advice', type: 'textarea', rows: 2, placeholder: 'e.g. Hydrate with fluids, monitor platelets, avoid aspirin' },
       { name: 'description', label: 'Pathological Overview & Clinical Profile', type: 'textarea', rows: 3, placeholder: 'Detailed description of disease etiology and characteristics' },
@@ -156,11 +177,11 @@ const RESOURCE_CONFIG = {
     endpoint: 'specialists',
     singular: 'Specialist',
     listFields: [
-      { key: 'name', label: 'Doctor / Specialist Name', primary: true },
-      { key: 'specialty', label: 'Specialty', type: 'category' },
-      { key: 'hospitalName', label: 'Hospital Affiliation' },
-      { key: 'experience', label: 'Experience' },
-      { key: 'consultationFee', label: 'Consultation Fee' },
+      { key: 'name', label: 'Doctor / Specialist Name', primary: true, sortable: true },
+      { key: 'specialty', label: 'Specialty', type: 'category', sortable: true },
+      { key: 'hospitalName', label: 'Hospital Affiliation', sortable: true },
+      { key: 'experience', label: 'Experience', sortable: true },
+      { key: 'consultationFee', label: 'Consultation Fee', sortable: true },
       { key: 'contact', label: 'Contact Helpline' },
     ],
     formFields: [
@@ -185,7 +206,7 @@ const RESOURCE_CONFIG = {
           'Urologist'
         ],
       },
-      { name: 'hospitalName', label: 'Hospital or Clinic Name', type: 'text', placeholder: 'e.g. Apollo Hospitals, Fortis Healthcare' },
+      { name: 'hospitalName', label: 'Hospital or Clinic Name', type: 'text', placeholder: 'e.g. Apollo Hospitals, Fortis Healthcare', linkedList: 'hospitals' },
       { name: 'experience', label: 'Years of Experience', type: 'text', placeholder: 'e.g. 15 Years' },
       { name: 'consultationFee', label: 'Standard Consultation Fee', type: 'text', placeholder: 'e.g. ₹600 or $50' },
       { name: 'contact', label: 'Direct Phone / Extension', type: 'text', placeholder: 'e.g. +91 98401 23456' },
@@ -217,10 +238,10 @@ const RESOURCE_CONFIG = {
     endpoint: 'tests',
     singular: 'Diagnostic Test',
     listFields: [
-      { key: 'name', label: 'Test Name', primary: true },
-      { key: 'category', label: 'Category', type: 'category' },
-      { key: 'turnaroundTime', label: 'Turnaround Time' },
-      { key: 'approxCost', label: 'Approx Cost (₹)', type: 'currency' },
+      { key: 'name', label: 'Test Name', primary: true, sortable: true },
+      { key: 'category', label: 'Category', type: 'category', sortable: true },
+      { key: 'turnaroundTime', label: 'Turnaround Time', sortable: true },
+      { key: 'approxCost', label: 'Approx Cost (₹)', type: 'currency', sortable: true },
       { key: 'description', label: 'Diagnostic Purpose', truncate: true },
     ],
     formFields: [
@@ -272,10 +293,10 @@ const RESOURCE_CONFIG = {
     endpoint: 'hospitals',
     singular: 'Hospital',
     listFields: [
-      { key: 'name', label: 'Hospital Name', primary: true },
-      { key: 'city', label: 'City' },
-      { key: 'type', label: 'Facility Type', type: 'category' },
-      { key: 'emergencyAvailable', label: '24/7 Emergency', type: 'boolean' },
+      { key: 'name', label: 'Hospital Name', primary: true, sortable: true },
+      { key: 'city', label: 'City', sortable: true },
+      { key: 'type', label: 'Facility Type', type: 'category', sortable: true },
+      { key: 'emergencyAvailable', label: '24/7 Emergency', type: 'boolean', sortable: true },
       { key: 'contact', label: 'Emergency Contact' },
       { key: 'address', label: 'Full Address', truncate: true },
     ],
@@ -333,10 +354,10 @@ const RESOURCE_CONFIG = {
     endpoint: 'users',
     singular: 'User Account',
     listFields: [
-      { key: 'name', label: 'User Name', primary: true },
-      { key: 'email', label: 'Email Address' },
-      { key: 'role', label: 'Role', type: 'role' },
-      { key: 'queryCount', label: 'Submitted Queries' },
+      { key: 'name', label: 'User Name', primary: true, sortable: true },
+      { key: 'email', label: 'Email Address', sortable: true },
+      { key: 'role', label: 'Role', type: 'role', sortable: true },
+      { key: 'queryCount', label: 'Submitted Queries', sortable: true },
     ],
     formFields: [
       { name: 'name', label: 'Full Name', type: 'text', required: true, placeholder: 'e.g. Dr. Ramesh Kumar, Deepa' },
@@ -356,13 +377,18 @@ const RESOURCE_CONFIG = {
       role: 'USER',
       password: '',
     }),
-    presets: [],
+    presets: [
+      { name: 'Dr. Ramesh Kumar', email: 'ramesh.kumar@mediguide.com', role: 'ADMIN', password: 'Admin@1234' },
+      { name: 'Nurse Priya V', email: 'priya.nurse@mediguide.com', role: 'USER', password: 'User@1234' },
+      { name: 'Patient Demo User', email: 'patient.demo@gmail.com', role: 'USER', password: 'User@1234' },
+    ],
   },
 };
 
 const AdminManagementPage = ({ token, resource: initialResource = 'symptoms', onBack, onLogout }) => {
   const [resource, setResource] = useState(initialResource);
   const [items, setItems] = useState([]);
+  const [counts, setCounts] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [successToast, setSuccessToast] = useState('');
@@ -370,19 +396,94 @@ const AdminManagementPage = ({ token, resource: initialResource = 'symptoms', on
   const [categoryFilter, setCategoryFilter] = useState('ALL');
   const [severityFilter, setSeverityFilter] = useState('ALL');
   const [showModal, setShowModal] = useState(false);
+  const [showPresetModal, setShowPresetModal] = useState(false);
   const [editItem, setEditItem] = useState(null);
   const [viewItem, setViewItem] = useState(null);
   const [deleteConfirmItem, setDeleteConfirmItem] = useState(null);
   const [formData, setFormData] = useState({});
+  const [formErrors, setFormErrors] = useState({});
+
+  // Sorting & Pagination States
+  const [sortField, setSortField] = useState('name');
+  const [sortAsc, setSortAsc] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  // Cross-reference data for suggestions
+  const [specialistNames, setSpecialistNames] = useState([]);
+  const [hospitalNames, setHospitalNames] = useState([]);
 
   const config = RESOURCE_CONFIG[resource] || RESOURCE_CONFIG.symptoms;
 
+  const showToast = (message) => {
+    setSuccessToast(message);
+    setTimeout(() => {
+      setSuccessToast('');
+    }, 4000);
+  };
+
+  // Close modals on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setShowModal(false);
+        setShowPresetModal(false);
+        setViewItem(null);
+        setDeleteConfirmItem(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  // Update resource from props if changed
   useEffect(() => {
     if (initialResource && RESOURCE_CONFIG[initialResource]) {
       setResource(initialResource);
     }
   }, [initialResource]);
 
+  // Load items for active resource
+  const loadItems = useCallback(async () => {
+    if (!token) return;
+    setLoading(true);
+    setError('');
+
+    try {
+      const data = await listAdminResources(token, config.endpoint, 0, 100);
+      const list = data?.content || (Array.isArray(data) ? data : []);
+      setItems(list);
+      setCounts((prev) => ({ ...prev, [resource]: list.length }));
+    } catch (err) {
+      setError(err.message || 'Unable to load records');
+    } finally {
+      setLoading(false);
+    }
+  }, [token, config.endpoint, resource]);
+
+  // Pre-load all tab counts and cross-reference suggestions on mount
+  useEffect(() => {
+    if (!token) return;
+    Object.keys(RESOURCE_CONFIG).forEach(async (resKey) => {
+      try {
+        const ep = RESOURCE_CONFIG[resKey].endpoint;
+        const res = await listAdminResources(token, ep, 0, 100);
+        const list = res?.content || (Array.isArray(res) ? res : []);
+        setCounts((prev) => ({ ...prev, [resKey]: list.length }));
+
+        if (resKey === 'specialists') {
+          setSpecialistNames(list.map((s) => s.name || s.specialty).filter(Boolean));
+        }
+        if (resKey === 'hospitals') {
+          setHospitalNames(list.map((h) => h.name).filter(Boolean));
+        }
+      } catch {
+        // silent fallback
+      }
+    });
+  }, [token]);
+
+  // Reset local state when resource changes
   useEffect(() => {
     setError('');
     setSearchQuery('');
@@ -392,35 +493,14 @@ const AdminManagementPage = ({ token, resource: initialResource = 'symptoms', on
     setViewItem(null);
     setDeleteConfirmItem(null);
     setShowModal(false);
+    setShowPresetModal(false);
     setFormData(config.empty());
-    if (token) {
-      loadItems();
-    }
-  }, [resource, token]);
+    setFormErrors({});
+    setCurrentPage(1);
+    loadItems();
+  }, [resource, loadItems, config]);
 
-  const showToast = (message) => {
-    setSuccessToast(message);
-    setTimeout(() => {
-      setSuccessToast('');
-    }, 4000);
-  };
-
-  const loadItems = async () => {
-    setLoading(true);
-    setError('');
-
-    try {
-      const data = await listAdminResources(token, config.endpoint, 0, 100);
-      const list = data?.content || (Array.isArray(data) ? data : []);
-      setItems(list);
-    } catch (err) {
-      setError(err.message || 'Unable to load records');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Extract distinct categories from current items
+  // Extract distinct categories
   const availableCategories = useMemo(() => {
     const set = new Set();
     items.forEach((item) => {
@@ -429,43 +509,66 @@ const AdminManagementPage = ({ token, resource: initialResource = 'symptoms', on
     return Array.from(set).sort();
   }, [items]);
 
-  // Client-side filtering across fields
-  const filteredItems = useMemo(() => {
+  // Client-side filtering & sorting
+  const filteredAndSortedItems = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
-    return items.filter((item) => {
-      // Category filter
-      if (categoryFilter !== 'ALL' && item.category !== categoryFilter) {
-        return false;
-      }
-      // Severity filter
-      if (severityFilter !== 'ALL' && item.severity !== severityFilter) {
-        return false;
-      }
-      // Search query across all keys
+    const filtered = items.filter((item) => {
+      if (categoryFilter !== 'ALL' && item.category !== categoryFilter) return false;
+      if (severityFilter !== 'ALL' && item.severity !== severityFilter) return false;
       if (!q) return true;
 
       return Object.values(item).some((val) => {
-        if (typeof val === 'string') {
-          return val.toLowerCase().includes(q);
-        }
-        if (typeof val === 'number') {
-          return val.toString().includes(q);
-        }
+        if (typeof val === 'string') return val.toLowerCase().includes(q);
+        if (typeof val === 'number') return val.toString().includes(q);
         return false;
       });
     });
-  }, [items, searchQuery, categoryFilter, severityFilter]);
+
+    return filtered.sort((a, b) => {
+      let valA = a[sortField] ?? '';
+      let valB = b[sortField] ?? '';
+
+      if (typeof valA === 'string') valA = valA.toLowerCase();
+      if (typeof valB === 'string') valB = valB.toLowerCase();
+
+      if (valA < valB) return sortAsc ? -1 : 1;
+      if (valA > valB) return sortAsc ? 1 : -1;
+      return 0;
+    });
+  }, [items, searchQuery, categoryFilter, severityFilter, sortField, sortAsc]);
+
+  // Paginated slice
+  const paginatedItems = useMemo(() => {
+    if (pageSize === 'ALL') return filteredAndSortedItems;
+    const start = (currentPage - 1) * pageSize;
+    return filteredAndSortedItems.slice(start, start + pageSize);
+  }, [filteredAndSortedItems, currentPage, pageSize]);
+
+  const totalPages = pageSize === 'ALL' ? 1 : Math.ceil(filteredAndSortedItems.length / pageSize) || 1;
+
+  const handleSort = (fieldKey) => {
+    if (sortField === fieldKey) {
+      setSortAsc(!sortAsc);
+    } else {
+      setSortField(fieldKey);
+      setSortAsc(true);
+    }
+  };
 
   const handleInputChange = (name, value) => {
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
+    if (formErrors[name]) {
+      setFormErrors((prev) => ({ ...prev, [name]: '' }));
+    }
   };
 
   const openCreateModal = () => {
     setEditItem(null);
     setFormData(config.empty());
+    setFormErrors({});
     setShowModal(true);
   };
 
@@ -476,20 +579,35 @@ const AdminManagementPage = ({ token, resource: initialResource = 'symptoms', on
       formVals.emergencyAvailable = item.emergencyAvailable ? 'Yes' : 'No';
     }
     setFormData(formVals);
+    setFormErrors({});
     setShowModal(true);
+  };
+
+  const handleQuickFill = (preset) => {
+    const vals = { ...preset };
+    if (resource === 'hospitals' && typeof preset.emergencyAvailable === 'boolean') {
+      vals.emergencyAvailable = preset.emergencyAvailable ? 'Yes' : 'No';
+    }
+    setFormData(vals);
+    setFormErrors({});
+    showToast(`Pre-filled form with preset "${preset.name}"!`);
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError('');
 
-    // Validation
+    // Validations
+    const errors = {};
     if (!formData.name || !formData.name.trim()) {
-      setError('Please provide a valid name');
-      return;
+      errors.name = 'Name is required';
     }
     if (resource === 'users' && !editItem && (!formData.email || !formData.email.trim())) {
-      setError('Email address is required for user creation');
+      errors.email = 'Email address is required for user creation';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
       return;
     }
 
@@ -501,7 +619,7 @@ const AdminManagementPage = ({ token, resource: initialResource = 'symptoms', on
       // Number coercion
       config.formFields.forEach((field) => {
         if (field.type === 'number') {
-          payload[field.name] = payload[field.name] === '' ? null : Number(payload[field.name]);
+          payload[field.name] = payload[field.name] === '' || payload[field.name] == null ? null : Number(payload[field.name]);
         }
       });
 
@@ -556,33 +674,96 @@ const AdminManagementPage = ({ token, resource: initialResource = 'symptoms', on
     }
   };
 
-  // Load sample preset records
-  const handleLoadPresets = async () => {
+  // Import single preset directly into DB
+  const handleImportSinglePreset = async (preset) => {
+    setLoading(true);
+    try {
+      await createAdminResource(token, config.endpoint, preset);
+      showToast(`Imported preset "${preset.name}" into ${config.title}!`);
+      await loadItems();
+    } catch (err) {
+      setError(err.message || 'Failed to import preset');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Load all presets in batch
+  const handleLoadAllPresets = async () => {
     if (!config.presets || config.presets.length === 0) return;
-    if (!window.confirm(`Load ${config.presets.length} recommended clinical preset records for ${config.title}?`)) {
+    if (!window.confirm(`Import ${config.presets.length} clinical presets for ${config.title}? Existing records with the same name will be skipped.`)) {
       return;
     }
 
     setLoading(true);
     setError('');
-    let count = 0;
+    let imported = 0;
 
     try {
+      const existingNames = new Set(items.map((i) => (i.name || '').toLowerCase()));
       for (const preset of config.presets) {
-        try {
-          await createAdminResource(token, config.endpoint, preset);
-          count++;
-        } catch {
-          // continue with remaining
+        if (!existingNames.has((preset.name || '').toLowerCase())) {
+          try {
+            await createAdminResource(token, config.endpoint, preset);
+            imported++;
+          } catch {
+            // continue
+          }
         }
       }
-      showToast(`Loaded ${count} standard clinical presets!`);
+      showToast(`Successfully imported ${imported} new clinical presets!`);
       await loadItems();
+      setShowPresetModal(false);
     } catch (err) {
       setError(err.message || 'Error populating presets');
     } finally {
       setLoading(false);
     }
+  };
+
+  // Export Table Data to CSV
+  const handleExportCSV = () => {
+    if (filteredAndSortedItems.length === 0) {
+      alert('No records available to export.');
+      return;
+    }
+
+    const headers = config.listFields.map((f) => f.label);
+    const keys = config.listFields.map((f) => f.key);
+
+    const rows = filteredAndSortedItems.map((item) =>
+      keys.map((k) => {
+        let val = item[k];
+        if (typeof val === 'boolean') val = val ? 'Yes' : 'No';
+        if (val == null) val = '';
+        const escaped = String(val).replace(/"/g, '""');
+        return `"${escaped}"`;
+      }).join(',')
+    );
+
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `mediguide_${config.endpoint}_export.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast(`Exported ${filteredAndSortedItems.length} records to CSV!`);
+  };
+
+  // Export Table Data to JSON
+  const handleExportJSON = () => {
+    if (filteredAndSortedItems.length === 0) {
+      alert('No records available to export.');
+      return;
+    }
+    const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(filteredAndSortedItems, null, 2));
+    const dlAnchorElem = document.createElement('a');
+    dlAnchorElem.setAttribute('href', dataStr);
+    dlAnchorElem.setAttribute('download', `mediguide_${config.endpoint}_export.json`);
+    dlAnchorElem.click();
+    showToast(`Exported ${filteredAndSortedItems.length} records to JSON!`);
   };
 
   // Severity pill color mapping
@@ -600,7 +781,7 @@ const AdminManagementPage = ({ token, resource: initialResource = 'symptoms', on
 
   // Synonyms pill render
   const renderSynonyms = (synonyms) => {
-    if (!synonyms) return <span className="admin-muted-text">None configured</span>;
+    if (!synonyms) return <span className="admin-muted-text">None</span>;
     const tags = synonyms.split(',').map((s) => s.trim()).filter(Boolean);
     const displayTags = tags.slice(0, 3);
     const remaining = tags.length - 3;
@@ -619,9 +800,9 @@ const AdminManagementPage = ({ token, resource: initialResource = 'symptoms', on
     if (score == null) return '-';
     const num = Number(score);
     const pct = Math.round(num * 100);
-    const color = pct > 70 ? '#ef4444' : pct > 40 ? '#f59e0b' : '#10b981';
+    const color = pct > 75 ? '#ef4444' : pct > 45 ? '#f59e0b' : '#10b981';
     return (
-      <div className="admin-score-chip" style={{ borderColor: color }}>
+      <div className="admin-score-chip" style={{ borderColor: color }} title={`Severity index: ${score}`}>
         <span className="admin-score-val" style={{ color }}>{score}</span>
         <div className="admin-score-bar-bg">
           <div className="admin-score-bar-fill" style={{ width: `${pct}%`, background: color }} />
@@ -634,21 +815,21 @@ const AdminManagementPage = ({ token, resource: initialResource = 'symptoms', on
     <div className="admin-management-shell">
       {/* Toast Feedback */}
       {successToast && (
-        <div className="admin-toast-banner">
-          <span>✅</span>
+        <div className="admin-toast-banner" role="status" aria-live="polite">
+          <span className="toast-sparkle">✨</span>
           <p>{successToast}</p>
-          <button type="button" onClick={() => setSuccessToast('')}>×</button>
+          <button type="button" onClick={() => setSuccessToast('')} aria-label="Dismiss toast">×</button>
         </div>
       )}
 
       {/* Main Top Header */}
       <header className="admin-management-header">
         <div className="admin-header-title-box">
-          <button type="button" className="admin-back-button" onClick={onBack}>
+          <button type="button" className="admin-back-button" onClick={onBack} title="Return to Administrator Dashboard">
             <svg viewBox="0 0 24 24" fill="none" width="18" height="18">
               <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-            <span>Back to Dashboard</span>
+            <span>Dashboard</span>
           </button>
           <div className="admin-header-main-titles">
             <span className="admin-header-icon">{config.icon}</span>
@@ -658,29 +839,48 @@ const AdminManagementPage = ({ token, resource: initialResource = 'symptoms', on
             </div>
           </div>
         </div>
+
         <div className="admin-header-actions">
-          <button type="button" className="admin-primary-create-btn" onClick={openCreateModal}>
+          {config.presets && config.presets.length > 0 && (
+            <button
+              type="button"
+              className="admin-presets-action-btn"
+              onClick={() => setShowPresetModal(true)}
+              title="Explore standard clinical presets for quick import"
+            >
+              <span>✨</span> Clinical Presets
+            </button>
+          )}
+
+          <button type="button" className="admin-primary-create-btn" onClick={openCreateModal} title={`Add a new ${config.singular}`}>
             <span>+</span> Add {config.singular}
           </button>
-          <button type="button" className="admin-logout-button" onClick={onLogout} title="Sign Out">
+
+          <button type="button" className="admin-logout-button" onClick={onLogout} title="Sign Out of Admin Console">
             Logout
           </button>
         </div>
       </header>
 
-      {/* Navigation Tabs */}
-      <section className="admin-management-tabs">
-        {Object.entries(RESOURCE_CONFIG).map(([key, item]) => (
-          <button
-            key={key}
-            type="button"
-            className={`admin-management-tab ${key === resource ? 'admin-management-tab--active' : ''}`}
-            onClick={() => setResource(key)}
-          >
-            <span className="admin-tab-icon">{item.icon}</span>
-            <span>{item.title.replace(' Management', '')}</span>
-          </button>
-        ))}
+      {/* Navigation Tabs with Live Counts */}
+      <section className="admin-management-tabs" aria-label="Entity Navigation Tabs">
+        {Object.entries(RESOURCE_CONFIG).map(([key, item]) => {
+          const tabCount = counts[key] ?? (key === resource ? items.length : '…');
+          return (
+            <button
+              key={key}
+              type="button"
+              className={`admin-management-tab ${key === resource ? 'admin-management-tab--active' : ''}`}
+              onClick={() => setResource(key)}
+            >
+              <span className="admin-tab-icon">{item.icon}</span>
+              <span className="admin-tab-title">{item.title.replace(' Management', '')}</span>
+              <span className={`admin-tab-count-badge ${key === resource ? 'admin-tab-count-badge--active' : ''}`}>
+                {tabCount}
+              </span>
+            </button>
+          );
+        })}
       </section>
 
       {/* Summary KPI Strip */}
@@ -688,24 +888,28 @@ const AdminManagementPage = ({ token, resource: initialResource = 'symptoms', on
         <div className="admin-kpi-card">
           <p className="admin-kpi-label">Total Records</p>
           <h3 className="admin-kpi-value">{items.length}</h3>
+          <span className="admin-kpi-sub">In database</span>
         </div>
         <div className="admin-kpi-card">
           <p className="admin-kpi-label">Filtered Matches</p>
-          <h3 className="admin-kpi-value">{filteredItems.length}</h3>
+          <h3 className="admin-kpi-value">{filteredAndSortedItems.length}</h3>
+          <span className="admin-kpi-sub">{searchQuery ? 'Matching search' : 'All viewable'}</span>
         </div>
         <div className="admin-kpi-card">
           <p className="admin-kpi-label">Active Entity</p>
           <h3 className="admin-kpi-value admin-kpi-value--active">{config.singular}</h3>
+          <span className="admin-kpi-sub">Endpoint: /api/admin/{config.endpoint}</span>
         </div>
         {availableCategories.length > 0 && (
           <div className="admin-kpi-card">
             <p className="admin-kpi-label">Categories Configured</p>
             <h3 className="admin-kpi-value">{availableCategories.length}</h3>
+            <span className="admin-kpi-sub">Clinical groupings</span>
           </div>
         )}
       </section>
 
-      {/* Control Bar: Search & Filters */}
+      {/* Control Bar: Search & Filters & Export Toolbar */}
       <section className="admin-controls-card">
         <div className="admin-search-wrapper">
           <svg className="admin-search-icon" viewBox="0 0 24 24" fill="none" width="18" height="18">
@@ -717,13 +921,19 @@ const AdminManagementPage = ({ token, resource: initialResource = 'symptoms', on
             className="admin-search-input"
             placeholder={`Search ${config.title.toLowerCase()} by name, category, symptoms, keywords...`}
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setCurrentPage(1);
+            }}
           />
           {searchQuery && (
             <button
               type="button"
               className="admin-clear-search-btn"
-              onClick={() => setSearchQuery('')}
+              onClick={() => {
+                setSearchQuery('');
+                setCurrentPage(1);
+              }}
               title="Clear search"
             >
               ×
@@ -736,7 +946,11 @@ const AdminManagementPage = ({ token, resource: initialResource = 'symptoms', on
             <select
               className="admin-filter-select"
               value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value)}
+              onChange={(e) => {
+                setCategoryFilter(e.target.value);
+                setCurrentPage(1);
+              }}
+              aria-label="Filter by category"
             >
               <option value="ALL">All Categories ({items.length})</option>
               {availableCategories.map((cat) => (
@@ -751,7 +965,11 @@ const AdminManagementPage = ({ token, resource: initialResource = 'symptoms', on
             <select
               className="admin-filter-select"
               value={severityFilter}
-              onChange={(e) => setSeverityFilter(e.target.value)}
+              onChange={(e) => {
+                setSeverityFilter(e.target.value);
+                setCurrentPage(1);
+              }}
+              aria-label="Filter by severity"
             >
               <option value="ALL">All Severities</option>
               <option value="Mild">Mild</option>
@@ -760,16 +978,25 @@ const AdminManagementPage = ({ token, resource: initialResource = 'symptoms', on
             </select>
           )}
 
-          {config.presets && config.presets.length > 0 && items.length === 0 && (
+          {/* Export Dropdown Group */}
+          <div className="admin-export-btn-group">
             <button
               type="button"
-              className="admin-preset-btn"
-              onClick={handleLoadPresets}
-              title="Populate recommended default dataset"
+              className="admin-utility-btn"
+              onClick={handleExportCSV}
+              title="Export visible table data as CSV file"
             >
-              ✨ Load Clinical Presets
+              📥 CSV
             </button>
-          )}
+            <button
+              type="button"
+              className="admin-utility-btn"
+              onClick={handleExportJSON}
+              title="Export visible table data as JSON file"
+            >
+              📥 JSON
+            </button>
+          </div>
 
           <button
             type="button"
@@ -784,7 +1011,7 @@ const AdminManagementPage = ({ token, resource: initialResource = 'symptoms', on
 
       {/* Global Error Banner */}
       {error && (
-        <div className="admin-error-banner">
+        <div className="admin-error-banner" role="alert">
           <span>⚠️</span>
           <p>{error}</p>
           <button type="button" onClick={() => setError('')}>Dismiss</button>
@@ -793,9 +1020,14 @@ const AdminManagementPage = ({ token, resource: initialResource = 'symptoms', on
 
       {/* Main Table Content */}
       <main className="admin-table-container">
-        {loading && <div className="admin-loading-indicator"><div className="admin-spinner" /> Loading {config.title}...</div>}
+        {loading && (
+          <div className="admin-loading-indicator">
+            <div className="admin-spinner" />
+            <span>Loading {config.title} from MongoDB Atlas...</span>
+          </div>
+        )}
 
-        {!loading && filteredItems.length === 0 && (
+        {!loading && filteredAndSortedItems.length === 0 && (
           <div className="admin-empty-state">
             <div className="admin-empty-icon">{config.icon}</div>
             <h3>No {config.title} Found</h3>
@@ -805,7 +1037,7 @@ const AdminManagementPage = ({ token, resource: initialResource = 'symptoms', on
                 : `There are currently no ${config.singular.toLowerCase()} records in the database.`}
             </p>
             <div className="admin-empty-actions">
-              {(searchQuery || categoryFilter !== 'ALL' || severityFilter !== 'ALL') ? (
+              {searchQuery || categoryFilter !== 'ALL' || severityFilter !== 'ALL' ? (
                 <button
                   type="button"
                   className="admin-secondary-btn"
@@ -813,6 +1045,7 @@ const AdminManagementPage = ({ token, resource: initialResource = 'symptoms', on
                     setSearchQuery('');
                     setCategoryFilter('ALL');
                     setSeverityFilter('ALL');
+                    setCurrentPage(1);
                   }}
                 >
                   Clear Filters
@@ -823,7 +1056,7 @@ const AdminManagementPage = ({ token, resource: initialResource = 'symptoms', on
                     + Create First {config.singular}
                   </button>
                   {config.presets && config.presets.length > 0 && (
-                    <button type="button" className="admin-preset-btn" onClick={handleLoadPresets}>
+                    <button type="button" className="admin-preset-btn" onClick={handleLoadAllPresets}>
                       ✨ Load Recommended Presets
                     </button>
                   )}
@@ -833,122 +1066,223 @@ const AdminManagementPage = ({ token, resource: initialResource = 'symptoms', on
           </div>
         )}
 
-        {filteredItems.length > 0 && (
+        {filteredAndSortedItems.length > 0 && (
           <div className="admin-table-wrapper">
             <table className="admin-table">
               <thead>
                 <tr>
-                  <th style={{ width: '40px' }}>#</th>
+                  <th style={{ width: '44px' }}>#</th>
                   {config.listFields.map((field) => (
-                    <th key={field.key}>{field.label}</th>
+                    <th
+                      key={field.key}
+                      onClick={() => field.sortable && handleSort(field.key)}
+                      style={{ cursor: field.sortable ? 'pointer' : 'default', userSelect: 'none' }}
+                      title={field.sortable ? `Click to sort by ${field.label}` : ''}
+                    >
+                      <div className="admin-th-content">
+                        <span>{field.label}</span>
+                        {field.sortable && sortField === field.key && (
+                          <span className="admin-sort-caret">{sortAsc ? ' ▲' : ' ▼'}</span>
+                        )}
+                      </div>
+                    </th>
                   ))}
-                  <th style={{ textAlign: 'right', minWidth: '160px' }}>Actions</th>
+                  <th style={{ textAlign: 'right', minWidth: '170px' }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredItems.map((item, index) => (
-                  <tr key={item.id || index}>
-                    <td className="admin-row-index">{index + 1}</td>
-                    {config.listFields.map((field) => {
-                      const val = item[field.key];
-                      if (field.primary) {
+                {paginatedItems.map((item, index) => {
+                  const globalIdx = pageSize === 'ALL' ? index + 1 : (currentPage - 1) * pageSize + index + 1;
+                  return (
+                    <tr
+                      key={item.id || index}
+                      className="admin-table-row"
+                      onDoubleClick={() => setViewItem(item)}
+                      title="Double-click to view complete details"
+                    >
+                      <td className="admin-row-index">{globalIdx}</td>
+                      {config.listFields.map((field) => {
+                        const val = item[field.key];
+                        if (field.primary) {
+                          return (
+                            <td key={field.key} className="admin-cell-primary">
+                              <strong>{val || 'Unnamed'}</strong>
+                            </td>
+                          );
+                        }
+                        if (field.type === 'category') {
+                          return (
+                            <td key={field.key}>
+                              {val ? <span className="admin-category-pill">{val}</span> : <span className="admin-muted-text">-</span>}
+                            </td>
+                          );
+                        }
+                        if (field.type === 'severity') {
+                          return (
+                            <td key={field.key}>
+                              {renderSeverityBadge(val)}
+                            </td>
+                          );
+                        }
+                        if (field.type === 'score') {
+                          return (
+                            <td key={field.key}>
+                              {renderScore(val)}
+                            </td>
+                          );
+                        }
+                        if (field.type === 'synonyms') {
+                          return (
+                            <td key={field.key}>
+                              {renderSynonyms(val)}
+                            </td>
+                          );
+                        }
+                        if (field.type === 'boolean') {
+                          return (
+                            <td key={field.key}>
+                              {val ? (
+                                <span className="admin-badge admin-badge--success">✓ Yes</span>
+                              ) : (
+                                <span className="admin-badge admin-badge--neutral">No</span>
+                              )}
+                            </td>
+                          );
+                        }
+                        if (field.type === 'role') {
+                          return (
+                            <td key={field.key}>
+                              <span className={`admin-role-badge admin-role-badge--${String(val).toLowerCase()}`}>
+                                {val || 'USER'}
+                              </span>
+                            </td>
+                          );
+                        }
+                        if (field.type === 'currency') {
+                          return (
+                            <td key={field.key} className="admin-cost-cell">
+                              {val ? `₹${val}` : '-'}
+                            </td>
+                          );
+                        }
                         return (
-                          <td key={field.key} className="admin-cell-primary">
-                            <strong>{val || 'Unnamed'}</strong>
+                          <td key={field.key} className={field.truncate ? 'admin-cell-truncate' : ''} title={typeof val === 'string' ? val : ''}>
+                            {val != null && val !== '' ? String(val) : <span className="admin-muted-text">-</span>}
                           </td>
                         );
-                      }
-                      if (field.type === 'category') {
-                        return (
-                          <td key={field.key}>
-                            {val ? <span className="admin-category-pill">{val}</span> : <span className="admin-muted-text">-</span>}
-                          </td>
-                        );
-                      }
-                      if (field.type === 'severity') {
-                        return (
-                          <td key={field.key}>
-                            {renderSeverityBadge(val)}
-                          </td>
-                        );
-                      }
-                      if (field.type === 'score') {
-                        return (
-                          <td key={field.key}>
-                            {renderScore(val)}
-                          </td>
-                        );
-                      }
-                      if (field.type === 'synonyms') {
-                        return (
-                          <td key={field.key}>
-                            {renderSynonyms(val)}
-                          </td>
-                        );
-                      }
-                      if (field.type === 'boolean') {
-                        return (
-                          <td key={field.key}>
-                            {val ? (
-                              <span className="admin-badge admin-badge--success">✓ Yes</span>
-                            ) : (
-                              <span className="admin-badge admin-badge--neutral">No</span>
-                            )}
-                          </td>
-                        );
-                      }
-                      if (field.type === 'role') {
-                        return (
-                          <td key={field.key}>
-                            <span className={`admin-role-badge admin-role-badge--${String(val).toLowerCase()}`}>
-                              {val || 'USER'}
-                            </span>
-                          </td>
-                        );
-                      }
-                      if (field.type === 'currency') {
-                        return (
-                          <td key={field.key} className="admin-cost-cell">
-                            {val ? `₹${val}` : '-'}
-                          </td>
-                        );
-                      }
-                      return (
-                        <td key={field.key} className={field.truncate ? 'admin-cell-truncate' : ''} title={typeof val === 'string' ? val : ''}>
-                          {val != null && val !== '' ? String(val) : <span className="admin-muted-text">-</span>}
-                        </td>
-                      );
-                    })}
-                    <td className="admin-cell-actions">
-                      <button
-                        type="button"
-                        className="admin-action-btn admin-view-btn"
-                        onClick={() => setViewItem(item)}
-                        title="View Complete Details"
-                      >
-                        👁️ View
-                      </button>
-                      <button
-                        type="button"
-                        className="admin-action-btn admin-edit-btn"
-                        onClick={() => openEditModal(item)}
-                        title="Edit Record"
-                      >
-                        ✏️ Edit
-                      </button>
-                      <button
-                        type="button"
-                        className="admin-action-btn admin-del-btn"
-                        onClick={() => setDeleteConfirmItem(item)}
-                        title="Delete Record"
-                      >
-                        🗑️
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                      })}
+                      <td className="admin-cell-actions">
+                        <button
+                          type="button"
+                          className="admin-action-btn admin-view-btn"
+                          onClick={() => setViewItem(item)}
+                          title="View Complete Details"
+                        >
+                          👁️ View
+                        </button>
+                        <button
+                          type="button"
+                          className="admin-action-btn admin-edit-btn"
+                          onClick={() => openEditModal(item)}
+                          title="Edit Record"
+                        >
+                          ✏️ Edit
+                        </button>
+                        <button
+                          type="button"
+                          className="admin-action-btn admin-del-btn"
+                          onClick={() => setDeleteConfirmItem(item)}
+                          title="Delete Record"
+                        >
+                          🗑️
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
+
+            {/* Pagination & Status Footer */}
+            <div className="admin-table-footer">
+              <div className="admin-footer-info">
+                <span>
+                  Showing{' '}
+                  <strong>
+                    {pageSize === 'ALL'
+                      ? filteredAndSortedItems.length
+                      : Math.min((currentPage - 1) * pageSize + 1, filteredAndSortedItems.length)}
+                  </strong>{' '}
+                  to{' '}
+                  <strong>
+                    {pageSize === 'ALL'
+                      ? filteredAndSortedItems.length
+                      : Math.min(currentPage * pageSize, filteredAndSortedItems.length)}
+                  </strong>{' '}
+                  of <strong>{filteredAndSortedItems.length}</strong> entries
+                </span>
+
+                <div className="admin-page-size-selector">
+                  <label htmlFor="admin-page-size">Per page:</label>
+                  <select
+                    id="admin-page-size"
+                    value={pageSize}
+                    onChange={(e) => {
+                      const val = e.target.value === 'ALL' ? 'ALL' : Number(e.target.value);
+                      setPageSize(val);
+                      setCurrentPage(1);
+                    }}
+                  >
+                    <option value={10}>10</option>
+                    <option value={25}>25</option>
+                    <option value={50}>50</option>
+                    <option value="ALL">All</option>
+                  </select>
+                </div>
+              </div>
+
+              {pageSize !== 'ALL' && totalPages > 1 && (
+                <div className="admin-pagination-nav">
+                  <button
+                    type="button"
+                    className="admin-page-btn"
+                    disabled={currentPage === 1}
+                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  >
+                    ← Prev
+                  </button>
+
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((pg) => {
+                    // Show first, last, and pages around current
+                    if (pg === 1 || pg === totalPages || (pg >= currentPage - 1 && pg <= currentPage + 1)) {
+                      return (
+                        <button
+                          key={pg}
+                          type="button"
+                          className={`admin-page-btn ${currentPage === pg ? 'admin-page-btn--active' : ''}`}
+                          onClick={() => setCurrentPage(pg)}
+                        >
+                          {pg}
+                        </button>
+                      );
+                    }
+                    if (pg === currentPage - 2 || pg === currentPage + 2) {
+                      return <span key={pg} className="admin-page-ellipsis">…</span>;
+                    }
+                    return null;
+                  })}
+
+                  <button
+                    type="button"
+                    className="admin-page-btn"
+                    disabled={currentPage === totalPages}
+                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                  >
+                    Next →
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         )}
       </main>
@@ -962,11 +1296,36 @@ const AdminManagementPage = ({ token, resource: initialResource = 'symptoms', on
                 <span className="admin-modal-icon">{config.icon}</span>
                 <div>
                   <h2>{editItem ? `Edit ${config.singular}` : `Create New ${config.singular}`}</h2>
-                  <p>{editItem ? 'Update properties and save changes to ontology repository' : 'Fill in the information below to add a new record'}</p>
+                  <p>{editItem ? `Update ${config.singular} attributes in MongoDB database` : 'Fill in the information below or select a clinical preset to pre-fill'}</p>
                 </div>
               </div>
               <button type="button" className="admin-modal-close-btn" onClick={() => setShowModal(false)}>×</button>
             </div>
+
+            {/* Quick-Fill Presets Dropdown for Create Mode */}
+            {!editItem && config.presets && config.presets.length > 0 && (
+              <div className="admin-quick-preset-banner">
+                <div className="admin-quick-preset-title">
+                  <span>⚡</span>
+                  <strong>Quick-Fill from Preset:</strong>
+                </div>
+                <select
+                  className="admin-preset-dropdown-picker"
+                  onChange={(e) => {
+                    const preset = config.presets.find((p) => p.name === e.target.value);
+                    if (preset) handleQuickFill(preset);
+                  }}
+                  defaultValue=""
+                >
+                  <option value="" disabled>-- Select a standard clinical preset --</option>
+                  {config.presets.map((p) => (
+                    <option key={p.name} value={p.name}>
+                      {p.name} ({p.category || p.specialty || p.type})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
 
             <form className="admin-modal-form" onSubmit={handleSubmit}>
               <div className="admin-modal-fields-grid">
@@ -979,6 +1338,40 @@ const AdminManagementPage = ({ token, resource: initialResource = 'symptoms', on
                       {field.label} {field.required && <strong className="admin-req-star">*</strong>}
                     </span>
                     {field.hint && <small className="admin-form-hint">{field.hint}</small>}
+
+                    {/* Quick suggestion tags for bodyLocation */}
+                    {field.suggestions && (
+                      <div className="admin-field-suggestions">
+                        <span className="suggestion-label">Quick select:</span>
+                        {field.suggestions.map((sug) => (
+                          <button
+                            key={sug}
+                            type="button"
+                            className="admin-suggestion-chip"
+                            onClick={() => handleInputChange(field.name, sug)}
+                          >
+                            {sug}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Quick score pills for disease severity */}
+                    {field.scorePresets && (
+                      <div className="admin-field-suggestions">
+                        <span className="suggestion-label">Quick score:</span>
+                        {field.scorePresets.map((sp) => (
+                          <button
+                            key={sp.label}
+                            type="button"
+                            className="admin-suggestion-chip"
+                            onClick={() => handleInputChange(field.name, sp.value)}
+                          >
+                            {sp.label}
+                          </button>
+                        ))}
+                      </div>
+                    )}
 
                     {field.type === 'select' ? (
                       <select
@@ -1003,17 +1396,39 @@ const AdminManagementPage = ({ token, resource: initialResource = 'symptoms', on
                         required={field.required}
                       />
                     ) : (
-                      <input
-                        type={field.type}
-                        step={field.step}
-                        min={field.min}
-                        max={field.max}
-                        className="admin-form-control"
-                        placeholder={field.placeholder || ''}
-                        value={formData[field.name] ?? ''}
-                        onChange={(e) => handleInputChange(field.name, e.target.value)}
-                        required={field.required}
-                      />
+                      <>
+                        <input
+                          type={field.type}
+                          step={field.step}
+                          min={field.min}
+                          max={field.max}
+                          list={field.linkedList ? `list-${field.name}` : undefined}
+                          className={`admin-form-control ${formErrors[field.name] ? 'admin-form-control--error' : ''}`}
+                          placeholder={field.placeholder || ''}
+                          value={formData[field.name] ?? ''}
+                          onChange={(e) => handleInputChange(field.name, e.target.value)}
+                          required={field.required}
+                        />
+                        {/* Dynamic datalist for linked resources */}
+                        {field.linkedList === 'specialists' && (
+                          <datalist id={`list-${field.name}`}>
+                            {specialistNames.map((n, i) => (
+                              <option key={i} value={n} />
+                            ))}
+                          </datalist>
+                        )}
+                        {field.linkedList === 'hospitals' && (
+                          <datalist id={`list-${field.name}`}>
+                            {hospitalNames.map((n, i) => (
+                              <option key={i} value={n} />
+                            ))}
+                          </datalist>
+                        )}
+                      </>
+                    )}
+
+                    {formErrors[field.name] && (
+                      <span className="admin-field-error-msg">{formErrors[field.name]}</span>
                     )}
                   </label>
                 ))}
@@ -1049,7 +1464,7 @@ const AdminManagementPage = ({ token, resource: initialResource = 'symptoms', on
                 <span className="admin-modal-icon">{config.icon}</span>
                 <div>
                   <h2>{viewItem.name || 'Record Details'}</h2>
-                  <p>{config.singular} Detailed Profile</p>
+                  <p>{config.singular} Detailed Clinical Profile</p>
                 </div>
               </div>
               <button type="button" className="admin-modal-close-btn" onClick={() => setViewItem(null)}>×</button>
@@ -1110,6 +1525,71 @@ const AdminManagementPage = ({ token, resource: initialResource = 'symptoms', on
         </div>
       )}
 
+      {/* PRESETS PREVIEW MODAL */}
+      {showPresetModal && (
+        <div className="admin-modal-overlay" onClick={() => setShowPresetModal(false)}>
+          <div className="admin-modal-card admin-modal-card--presets" onClick={(e) => e.stopPropagation()}>
+            <div className="admin-modal-header">
+              <div className="admin-modal-title-group">
+                <span className="admin-modal-icon">✨</span>
+                <div>
+                  <h2>Clinical Presets for {config.title}</h2>
+                  <p>Standard curated clinical entities verified by medical ontologies</p>
+                </div>
+              </div>
+              <button type="button" className="admin-modal-close-btn" onClick={() => setShowPresetModal(false)}>×</button>
+            </div>
+
+            <div className="admin-presets-list">
+              {config.presets.map((preset, idx) => {
+                const alreadyExists = items.some((it) => (it.name || '').toLowerCase() === (preset.name || '').toLowerCase());
+                return (
+                  <div key={idx} className="admin-preset-row">
+                    <div className="admin-preset-info">
+                      <strong>{preset.name}</strong>
+                      <span className="admin-preset-tag">{preset.category || preset.specialty || preset.type}</span>
+                      <p className="admin-preset-desc">{preset.description || preset.address || preset.experience || ''}</p>
+                    </div>
+                    <div className="admin-preset-action">
+                      {alreadyExists ? (
+                        <span className="admin-badge admin-badge--success">✓ In Database</span>
+                      ) : (
+                        <button
+                          type="button"
+                          className="admin-import-chip-btn"
+                          onClick={() => handleImportSinglePreset(preset)}
+                          disabled={loading}
+                        >
+                          + Import
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="admin-modal-footer admin-modal-footer--between">
+              <button
+                type="button"
+                className="admin-secondary-btn"
+                onClick={() => setShowPresetModal(false)}
+              >
+                Close
+              </button>
+              <button
+                type="button"
+                className="admin-primary-create-btn"
+                onClick={handleLoadAllPresets}
+                disabled={loading}
+              >
+                ✨ Import All Missing Presets
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* CONFIRM DELETE MODAL */}
       {deleteConfirmItem && (
         <div className="admin-modal-overlay" onClick={() => setDeleteConfirmItem(null)}>
@@ -1118,7 +1598,7 @@ const AdminManagementPage = ({ token, resource: initialResource = 'symptoms', on
             <h3>Delete {config.singular}?</h3>
             <p>
               Are you sure you want to permanently delete <strong>"{deleteConfirmItem.name || 'this record'}"</strong>?
-              This action cannot be undone and will remove it from the knowledge repository.
+              This action cannot be undone and will remove it from the database repository.
             </p>
             <div className="admin-modal-footer admin-modal-footer--center">
               <button
