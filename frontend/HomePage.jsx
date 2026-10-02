@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import './HomePage.css';
 import heroDoctorImg from '../src/hero_doctor.jpg';
+import { SUPPORTED_LANGUAGES } from '../src/medicalTranslations.js';
 
-const HomePage = ({ onSearch, onVoiceSearch, onLogin, onRegister }) => {
+const HomePage = ({ onSearch, onVoiceSearch, onLogin, onRegister, currentLanguage = 'en-IN', onLanguageChange }) => {
   const [query, setQuery] = useState('');
 
   const handleSubmit = (event) => {
@@ -76,6 +77,22 @@ const HomePage = ({ onSearch, onVoiceSearch, onLogin, onRegister }) => {
         </nav>
 
         <div className="home-nav-actions">
+          <div className="home-language-selector-wrapper" title="Choose Language">
+            <span className="lang-globe-icon" aria-hidden="true">🌐</span>
+            <select
+              className="home-language-dropdown"
+              value={currentLanguage}
+              onChange={(e) => onLanguageChange && onLanguageChange(e.target.value)}
+              aria-label="Display Language"
+            >
+              {SUPPORTED_LANGUAGES.map((lang) => (
+                <option key={lang.code} value={lang.code}>
+                  {lang.flag} {lang.native} ({lang.name})
+                </option>
+              ))}
+            </select>
+          </div>
+
           <button className="home-btn-ghost" type="button" onClick={onLogin}>
             Sign In
           </button>

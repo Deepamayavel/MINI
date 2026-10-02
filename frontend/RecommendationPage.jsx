@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './RecommendationPage.css';
 import { getLatestRecommendation, getRecommendations, getRecommendationById } from '../src/api.js';
+import SearchMetricsSection from './SearchMetricsSection.jsx';
 import {
   SUPPORTED_LANGUAGES,
   detectInputLanguage,
@@ -11,7 +12,7 @@ import {
 
 const PAGE_SIZE = 6;
 
-const RecommendationPage = ({ userName = '', token, onLogout, onBack }) => {
+const RecommendationPage = ({ userName = '', token, onLogout, onBack, currentLanguage = 'en-IN', onLanguageChange }) => {
   const [latest, setLatest] = useState(null);
   const [previous, setPrevious] = useState([]);
   const [selectedRecommendation, setSelectedRecommendation] = useState(null);
@@ -24,11 +25,18 @@ const RecommendationPage = ({ userName = '', token, onLogout, onBack }) => {
   // Language state: 'auto' or specific language code (e.g., 'ta', 'hi')
   const [langMode, setLangMode] = useState(() => {
     try {
-      return localStorage.getItem('mediguide_user_lang') || 'auto';
+      return currentLanguage || localStorage.getItem('mediguide_user_lang') || 'auto';
     } catch {
       return 'auto';
     }
   });
+
+  useEffect(() => {
+    if (currentLanguage) {
+      setLangMode(currentLanguage);
+    }
+  }, [currentLanguage]);
+
   const [showInEnglish, setShowInEnglish] = useState(false);
 
   const getResolvedLang = (rec) => {
@@ -498,6 +506,15 @@ const RecommendationPage = ({ userName = '', token, onLogout, onBack }) => {
                   </div>
                 </div>
               </div>
+
+              {/* ── AI Clinical Evaluation & Facility Metrics Section ────────── */}
+              <SearchMetricsSection
+                activeCandidate={activeDetailCand}
+                topPredictions={detailCands}
+                currentLanguage={detailLang}
+                onSelectCandidate={(idx) => setSelectedCandIdx(idx)}
+                selectedPredictionIdx={selectedCandIdx}
+              />
             </section>
           );
         })()}

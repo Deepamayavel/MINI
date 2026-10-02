@@ -19,4 +19,5 @@ public class TopPredictionDto {
     private List<String> recommendedTests;
     private List<String> recommendedHospitals;
     private List<String> precautions;
+    private java.util.Map<String, Object> metrics;
 }

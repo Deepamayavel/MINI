@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import './SearchPage.css';
 import { search } from '../src/api.js';
 import docIllustration from '../src/doc.png';
+import SearchMetricsSection from './SearchMetricsSection.jsx';
 import {
   detectInputLanguage,
   translateMedicalTerm,
@@ -75,10 +76,10 @@ const getTriageSeverity = (diseaseName = '', confidence = 0.5) => {
   return { level: 'mild', label: 'Mild / Home Care Guidance', badgeClass: 'triage-badge--mild', icon: '🟢' };
 };
 
-const SearchPage = ({ userName = '', token, onLogout, onBack, startVoice = false, initialQuery = '' }) => {
+const SearchPage = ({ userName = '', token, onLogout, onBack, startVoice = false, initialQuery = '', currentLanguage = 'en-IN', onLanguageChange }) => {
   const [query, setQuery] = useState(initialQuery);
-  const [selectedLang, setSelectedLang] = useState('en-IN');
-  const [activeInputLang, setActiveInputLang] = useState('en-IN');
+  const [selectedLang, setSelectedLang] = useState(currentLanguage || 'en-IN');
+  const [activeInputLang, setActiveInputLang] = useState(currentLanguage || 'en-IN');
   const [showInOriginalEnglish, setShowInOriginalEnglish] = useState(false);
   const [listening, setListening] = useState(false);
   const [audioLevel, setAudioLevel] = useState(0);
@@ -95,6 +96,14 @@ const SearchPage = ({ userName = '', token, onLogout, onBack, startVoice = false
   const animationFrameRef = useRef(null);
   const queryRef = useRef(query);
   const selectedLangRef = useRef(selectedLang);
+
+  useEffect(() => {
+    if (currentLanguage && currentLanguage !== selectedLang) {
+      setSelectedLang(currentLanguage);
+      selectedLangRef.current = currentLanguage;
+      setActiveInputLang(currentLanguage);
+    }
+  }, [currentLanguage]);
 
   useEffect(() => {
     queryRef.current = query;
@@ -319,6 +328,9 @@ const SearchPage = ({ userName = '', token, onLogout, onBack, startVoice = false
     selectedLangRef.current = newLang;
     setActiveInputLang(newLang);
     setShowInOriginalEnglish(false);
+    if (onLanguageChange) {
+      onLanguageChange(newLang);
+    }
     if (listening) {
       startListening(newLang);
     }
@@ -957,6 +969,15 @@ const SearchPage = ({ userName = '', token, onLogout, onBack, startVoice = false
                 </div>
               </div>
             </div>
+
+            {/* ── AI Model Evaluation & Performance Metrics Section ────────── */}
+            <SearchMetricsSection
+              activeCandidate={activeCandidate}
+              topPredictions={topPredictionsList}
+              currentLanguage={targetLang}
+              onSelectCandidate={(idx) => setSelectedPredictionIdx(idx)}
+              selectedPredictionIdx={selectedPredictionIdx}
+            />
 
             {/* ── Top-3 Differential Comparison Matrix ────────────────────── */}
             {topPredictionsList.length > 1 && (

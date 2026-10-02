@@ -19,5 +19,6 @@ public class SearchResponse {
     private List<String> recommendedHospitals;
     private List<String> precautions;
     private List<TopPredictionDto> topPredictions;
+    private java.util.Map<String, Object> metrics;
 }
 

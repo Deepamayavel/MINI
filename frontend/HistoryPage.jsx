@@ -11,7 +11,7 @@ import {
 
 const PAGE_SIZE = 5;
 
-const HistoryPage = ({ userName = '', token, onLogout, onBack }) => {
+const HistoryPage = ({ userName = '', token, onLogout, onBack, currentLanguage = 'en-IN', onLanguageChange }) => {
   const [historyItems, setHistoryItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -21,11 +21,18 @@ const HistoryPage = ({ userName = '', token, onLogout, onBack }) => {
   const [detailLoading, setDetailLoading] = useState(false);
   const [langMode, setLangMode] = useState(() => {
     try {
-      return localStorage.getItem('mediguide_user_lang') || 'auto';
+      return currentLanguage || localStorage.getItem('mediguide_user_lang') || 'auto';
     } catch {
       return 'auto';
     }
   });
+
+  useEffect(() => {
+    if (currentLanguage) {
+      setLangMode(currentLanguage);
+    }
+  }, [currentLanguage]);
+
   const [showInEnglish, setShowInEnglish] = useState(false);
 
   const loadHistory = async (p = 0) => {

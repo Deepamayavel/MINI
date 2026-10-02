@@ -26,6 +26,22 @@ function App() {
   const [voiceMode, setVoiceMode] = useState(false);
   const [pendingSearchQuery, setPendingSearchQuery] = useState('');
   const [adminResource, setAdminResource] = useState('diseases');
+  const [currentLanguage, setCurrentLanguage] = useState(() => {
+    try {
+      return localStorage.getItem('mediguide_user_lang') || 'en-IN';
+    } catch {
+      return 'en-IN';
+    }
+  });
+
+  const handleLanguageChange = (newLang) => {
+    setCurrentLanguage(newLang);
+    try {
+      localStorage.setItem('mediguide_user_lang', newLang);
+    } catch (e) {
+      console.warn('Failed to save language to localStorage:', e);
+    }
+  };
 
   const persistAuth = (auth, admin = false) => {
     const name = auth.name || auth.email || 'User';
@@ -167,6 +183,8 @@ function App() {
           onLogin={() => setView('login')}
           onRegister={() => setView('register')}
           onAdminClick={() => setView('admin')}
+          currentLanguage={currentLanguage}
+          onLanguageChange={handleLanguageChange}
         />
       )}
       {view === 'dashboard' && (
@@ -180,6 +198,8 @@ function App() {
           onHistoryClick={handleHistory}
           onRecommendationsClick={handleRecommendations}
           onProfileClick={() => setView('profile')}
+          currentLanguage={currentLanguage}
+          onLanguageChange={handleLanguageChange}
         />
       )}
       {view === 'search' && (
@@ -193,6 +213,8 @@ function App() {
             setVoiceMode(false);
           }}
           startVoice={voiceMode}
+          currentLanguage={currentLanguage}
+          onLanguageChange={handleLanguageChange}
         />
       )}
       {view === 'history' && (
@@ -204,6 +226,8 @@ function App() {
             setView('dashboard');
             setVoiceMode(false);
           }}
+          currentLanguage={currentLanguage}
+          onLanguageChange={handleLanguageChange}
         />
       )}
       {view === 'recommendations' && (
@@ -215,6 +239,8 @@ function App() {
             setView('dashboard');
             setVoiceMode(false);
           }}
+          currentLanguage={currentLanguage}
+          onLanguageChange={handleLanguageChange}
         />
       )}
       {view === 'profile' && (
@@ -227,6 +253,8 @@ function App() {
           onSearchClick={handleOpenSearch}
           onHistoryClick={handleHistory}
           onRecommendationsClick={handleRecommendations}
+          currentLanguage={currentLanguage}
+          onLanguageChange={handleLanguageChange}
         />
       )}
       {view === 'adminDashboard' && (

@@ -1,0 +1,772 @@
+/* ── SearchMetricsSection.css ───────────────────────────────────────────── */
+
+.search-metrics-section {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.96) 0%, rgba(248, 250, 252, 0.98) 100%);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 20px;
+  padding: 28px;
+  margin: 28px 0;
+  box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.07), 0 0 0 1px rgba(37, 99, 235, 0.05);
+  font-family: inherit;
+  color: #1e293b;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle background accent glow */
+.search-metrics-section::before {
+  content: '';
+  position: absolute;
+  top: -80px;
+  right: -80px;
+  width: 260px;
+  height: 260px;
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.08) 0%, rgba(16, 185, 129, 0) 70%);
+  pointer-events: none;
+  border-radius: 50%;
+}
+
+/* ── Section Header ──────────────────────────────────────────────────────── */
+.metrics-header-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 18px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.metrics-header-left {
+  max-width: 680px;
+}
+
+.metrics-live-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #2563eb;
+  background: rgba(37, 99, 235, 0.08);
+  border: 1px solid rgba(37, 99, 235, 0.2);
+  padding: 4px 10px;
+  border-radius: 9999px;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.live-pulse-dot {
+  width: 8px;
+  height: 8px;
+  background: #10b981;
+  border-radius: 50%;
+  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  animation: metricsPulse 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
+}
+
+@keyframes metricsPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+.metrics-main-title {
+  margin: 0 0 6px 0;
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+}
+
+.metrics-main-subtitle {
+  margin: 0;
+  font-size: 0.88rem;
+  color: #64748b;
+  line-height: 1.45;
+}
+
+.metrics-active-pill {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  padding: 8px 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.pill-rank-badge {
+  background: #2563eb;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 0.82rem;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.pill-text-wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.pill-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.pill-name {
+  font-size: 0.95rem;
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.pill-conf-badge {
+  background: #ecfdf5;
+  color: #059669;
+  font-weight: 700;
+  font-size: 0.82rem;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  border: 1px solid #a7f3d0;
+}
+
+/* ── Metrics Navigation Tabs & Controls ──────────────────────────────────── */
+.metrics-controls-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 18px;
+  margin-bottom: 22px;
+}
+
+.metrics-tabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.metric-tab-btn {
+  background: #f1f5f9;
+  border: 1px solid transparent;
+  color: #475569;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.metric-tab-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.metric-tab-btn--active {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #1d4ed8;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+}
+
+.metric-tab-btn--active:hover {
+  background: #1d4ed8;
+  color: #ffffff;
+}
+
+.metric-explain-btn {
+  background: transparent;
+  border: 1px solid #cbd5e1;
+  color: #2563eb;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 7px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.metric-explain-btn:hover {
+  background: rgba(37, 99, 235, 0.06);
+  border-color: #93c5fd;
+}
+
+/* ── Explanation Drawer ─────────────────────────────────────────────────── */
+.metrics-explanation-drawer {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid #2563eb;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  animation: drawerSlideDown 0.25s ease-out;
+}
+
+@keyframes drawerSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.explanation-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.explanation-header h4 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.explanation-tag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.explanation-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.explanation-item {
+  font-size: 0.82rem;
+  color: #475569;
+  line-height: 1.45;
+}
+
+.explanation-item strong {
+  color: #1e293b;
+  margin-right: 6px;
+}
+
+/* ── Metrics Group Container ─────────────────────────────────────────────── */
+.metrics-group-container {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 22px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+}
+
+.metrics-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.group-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.group-icon {
+  font-size: 1.5rem;
+  background: #f1f5f9;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+}
+
+.group-title-wrap h4 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.group-subtitle {
+  font-size: 0.78rem;
+  color: #64748b;
+}
+
+.group-overall-pill,
+.group-facility-count {
+  font-size: 0.8rem;
+  color: #334155;
+  background: #f8fafc;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  border: 1px solid #e2e8f0;
+}
+
+.group-overall-pill strong {
+  color: #059669;
+}
+
+/* ── 1. Circular KPI Grid (Accuracy, Precision, Recall, F1) ──────────────── */
+.metrics-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.metric-kpi-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 16px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.metric-kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.06);
+  border-color: #cbd5e1;
+}
+
+.metric-kpi-top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+
+.metric-gauge-wrapper {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.metric-gauge-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.metric-gauge-bg {
+  fill: none;
+  stroke: #f1f5f9;
+}
+
+.metric-gauge-bar {
+  fill: none;
+  transition: stroke-dashoffset 0.8s ease;
+}
+
+.metric-gauge-center {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.metric-gauge-number {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.metric-kpi-info {
+  flex: 1;
+}
+
+.metric-kpi-header-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.metric-kpi-label {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.25;
+}
+
+.metric-kpi-status-badge {
+  align-self: flex-start;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.metric-badge--excellent {
+  background: #ecfdf5;
+  color: #059669;
+  border: 1px solid #a7f3d0;
+}
+
+.metric-badge--good {
+  background: #fffbeb;
+  color: #d97706;
+  border: 1px solid #fde68a;
+}
+
+.metric-badge--moderate {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+.metric-kpi-subtext {
+  margin: 0;
+  font-size: 0.72rem;
+  color: #64748b;
+  line-height: 1.35;
+}
+
+.metric-kpi-track-wrap {
+  width: 100%;
+  padding-top: 4px;
+}
+
+.metric-linear-bar-bg {
+  width: 100%;
+  height: 5px;
+  background: #f1f5f9;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.metric-linear-bar-fill {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.7s ease-out;
+}
+
+/* ── 2. Hospital & Care Delivery Metrics Grid ────────────────────────────── */
+.hospital-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.hospital-metric-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.2s ease;
+}
+
+.hospital-metric-card:hover {
+  background: #ffffff;
+  box-shadow: 0 6px 16px -2px rgba(0, 0, 0, 0.05);
+  border-color: #cbd5e1;
+}
+
+.h-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.h-card-icon-title {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.h-icon {
+  font-size: 1.3rem;
+  background: #ffffff;
+  padding: 6px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.h-card-icon-title h5 {
+  margin: 0 0 2px 0;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.h-card-desc {
+  font-size: 0.72rem;
+  color: #64748b;
+  display: block;
+}
+
+.h-card-score-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.h-score-val {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.h-badge-pill {
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.h-card-bar-track {
+  width: 100%;
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 9999px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.h-card-bar-fill {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.7s ease;
+}
+
+.h-card-bar-fill--green {
+  background: linear-gradient(90deg, #10b981, #059669);
+}
+
+.h-card-bar-fill--blue {
+  background: linear-gradient(90deg, #3b82f6, #2563eb);
+}
+
+.h-card-bar-fill--purple {
+  background: linear-gradient(90deg, #a855f7, #7c3aed);
+}
+
+.h-card-bar-fill--cyan {
+  background: linear-gradient(90deg, #06b6d4, #0891b2);
+}
+
+.h-card-bar-fill--amber {
+  background: linear-gradient(90deg, #f59e0b, #d97706);
+}
+
+.h-card-bar-fill--rose {
+  background: linear-gradient(90deg, #f43f5e, #e11d48);
+}
+
+.h-card-footer {
+  font-size: 0.72rem;
+  color: #64748b;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 8px;
+}
+
+/* ── 3. Cross-Candidate Comparison Table ─────────────────────────────────── */
+.metrics-comparison-table-wrapper {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.metrics-comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  text-align: left;
+}
+
+.metrics-comparison-table th {
+  background: #f8fafc;
+  color: #475569;
+  font-weight: 700;
+  padding: 12px 14px;
+  border-bottom: 1px solid #e2e8f0;
+  white-space: nowrap;
+}
+
+.metrics-comparison-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #1e293b;
+  vertical-align: middle;
+}
+
+.metrics-comparison-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.metrics-row--active {
+  background: rgba(37, 99, 235, 0.04) !important;
+  border-left: 3px solid #2563eb;
+}
+
+.metrics-rank-pill {
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+.metrics-rank-pill--1 {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.metrics-rank-pill--2 {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.metrics-rank-pill--3 {
+  background: #f3e8ff;
+  color: #6b21a8;
+}
+
+.metrics-tbl-sub-eng {
+  font-size: 0.72rem;
+  color: #64748b;
+  font-weight: 400;
+}
+
+.metrics-tbl-score {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.metrics-cell-with-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 90px;
+}
+
+.metrics-tbl-micro-track {
+  width: 100%;
+  height: 4px;
+  background: #f1f5f9;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.metrics-tbl-micro-fill {
+  height: 100%;
+  border-radius: 9999px;
+}
+
+.f1-highlight {
+  color: #0284c7;
+  font-weight: 800;
+}
+
+.metrics-select-btn {
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  white-space: nowrap;
+}
+
+.metrics-select-btn:hover {
+  background: #1d4ed8;
+}
+
+.metrics-select-btn--active {
+  background: #10b981;
+}
+
+.metrics-select-btn--active:hover {
+  background: #059669;
+}
+
+.metrics-active-indicator {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #059669;
+}
+
+/* ── Responsive Adaptations ─────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .search-metrics-section {
+    padding: 18px;
+    border-radius: 14px;
+  }
+
+  .metrics-header-banner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .metrics-active-pill {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .metrics-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hospital-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .metrics-controls-bar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .metrics-tabs {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .metric-explain-btn {
+    width: 100%;
+    text-align: center;
+  }
+}
