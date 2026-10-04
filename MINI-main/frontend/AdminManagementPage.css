@@ -1362,3 +1362,160 @@
   }
 }
 
+/* ── All-in-One Clinical Pathway Bundle & Enriched Hospital Styles ────────── */
+.admin-bundle-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: #ffffff;
+  border: none;
+  padding: 11px 20px;
+  border-radius: var(--admin-radius-md);
+  font-weight: 700;
+  font-size: 0.92rem;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+  transition: all 0.2s ease;
+}
+
+.admin-bundle-action-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+}
+
+.admin-bundle-action-btn span {
+  font-size: 1.15rem;
+}
+
+.admin-rating-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #fef3c7;
+  color: #b45309;
+  border: 1px solid #fcd34d;
+  padding: 3px 9px;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 0.82rem;
+}
+
+.admin-link {
+  color: var(--admin-primary);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.15s ease;
+}
+
+.admin-link:hover {
+  text-decoration: underline;
+  color: var(--admin-primary-hover);
+}
+
+/* Bundle Modal Layout */
+.admin-modal-card--bundle {
+  max-width: 960px;
+  width: 95vw;
+  max-height: 92vh;
+  overflow-y: auto;
+  padding: 28px 32px;
+}
+
+.admin-bundle-templates-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 12px 18px;
+  margin: 16px 0 20px 0;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--admin-radius-md);
+}
+
+.admin-bundle-templates-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.admin-template-chip-btn {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #1e293b;
+  font-size: 0.84rem;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.admin-template-chip-btn:hover {
+  background: #eff6ff;
+  border-color: #3b82f6;
+  color: #1d4ed8;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(59, 130, 246, 0.2);
+}
+
+.admin-bundle-form-body {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.admin-bundle-section {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--admin-radius-md);
+  padding: 20px 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  transition: border-color 0.2s ease;
+}
+
+.admin-bundle-section:focus-within {
+  border-color: #93c5fd;
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.08);
+}
+
+.admin-bundle-section-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.admin-section-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+  background: #f8fafc;
+  padding: 8px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+}
+
+.admin-bundle-section-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.admin-bundle-section-header p {
+  margin: 3px 0 0 0;
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+

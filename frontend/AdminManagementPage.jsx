@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import './AdminManagementPage.css';
 import {
   createAdminResource,
+  createClinicalPathwayBundle,
   deleteAdminResource,
   listAdminResources,
   updateAdminResource,
@@ -289,20 +290,27 @@ const RESOURCE_CONFIG = {
     id: 'hospitals',
     icon: '🏥',
     title: 'Hospital Management',
-    subtitle: 'Manage accredited hospitals, medical centers, emergency capabilities, and contact details.',
+    subtitle: 'Manage accredited hospitals, medical centers, emergency capabilities, ICU capacity, and clinical services.',
     endpoint: 'hospitals',
     singular: 'Hospital',
     listFields: [
       { key: 'name', label: 'Hospital Name', primary: true, sortable: true },
       { key: 'city', label: 'City', sortable: true },
+      { key: 'state', label: 'State', sortable: true },
       { key: 'type', label: 'Facility Type', type: 'category', sortable: true },
-      { key: 'emergencyAvailable', label: '24/7 Emergency', type: 'boolean', sortable: true },
-      { key: 'contact', label: 'Emergency Contact' },
-      { key: 'address', label: 'Full Address', truncate: true },
+      { key: 'rating', label: 'Rating', type: 'rating', sortable: true },
+      { key: 'bedCapacity', label: 'Beds', sortable: true },
+      { key: 'emergencyAvailable', label: '24/7 ER', type: 'boolean', sortable: true },
+      { key: 'icuAvailable', label: 'ICU', type: 'boolean', sortable: true },
+      { key: 'contact', label: 'Helpline / Contact' },
+      { key: 'ambulanceContact', label: 'Ambulance' },
+      { key: 'accreditations', label: 'Accreditations', truncate: true },
     ],
     formFields: [
       { name: 'name', label: 'Hospital / Facility Name', type: 'text', required: true, placeholder: 'e.g. Apollo Hospitals' },
       { name: 'city', label: 'City / Metro Area', type: 'text', required: true, placeholder: 'e.g. Chennai, Bengaluru, Coimbatore' },
+      { name: 'state', label: 'State / Province', type: 'text', placeholder: 'e.g. Tamil Nadu, Karnataka' },
+      { name: 'pincode', label: 'Postal / PIN Code', type: 'text', placeholder: 'e.g. 600006' },
       {
         name: 'type',
         label: 'Facility Type',
@@ -311,12 +319,15 @@ const RESOURCE_CONFIG = {
         options: [
           'Super-Speciality',
           'Multi-Speciality',
+          'Apex Medical Institute',
           'Public / Government',
           'Teaching Multi-Speciality',
-          'Apex Medical Institute',
+          'Specialty Trauma Center',
           'Outpatient Clinic'
         ],
       },
+      { name: 'rating', label: 'Clinical Rating (1.0 to 5.0)', type: 'number', step: '0.1', min: '1.0', max: '5.0', placeholder: 'e.g. 4.8' },
+      { name: 'bedCapacity', label: 'Total Inpatient Beds', type: 'number', step: '1', min: '0', placeholder: 'e.g. 750' },
       {
         name: 'emergencyAvailable',
         label: '24/7 Emergency & Trauma Center',
@@ -324,26 +335,194 @@ const RESOURCE_CONFIG = {
         required: true,
         options: ['Yes', 'No'],
       },
-      { name: 'contact', label: 'Helpline / Emergency Telephone', type: 'text', required: true, placeholder: 'e.g. +91 44 2829 0200' },
-      { name: 'address', label: 'Full Street Address', type: 'textarea', rows: 2, required: true, placeholder: 'e.g. Greams Road, Thousand Lights, Chennai - 600006' },
+      {
+        name: 'icuAvailable',
+        label: 'Advanced Intensive Care Unit (ICU)',
+        type: 'select',
+        required: true,
+        options: ['Yes', 'No'],
+      },
+      { name: 'contact', label: 'Hospital Contact / Helpline', type: 'text', required: true, placeholder: 'e.g. +91 44 2829 0200' },
+      { name: 'ambulanceContact', label: 'Direct Ambulance Dispatch', type: 'text', placeholder: 'e.g. 1066 / +91 44 2829 1066' },
+      { name: 'departments', label: 'Key Clinical Departments (Comma-separated)', type: 'textarea', rows: 2, placeholder: 'e.g. Cardiology, Neurology, Pulmonology, Orthopedics, Nephrology, Oncology' },
+      { name: 'accreditations', label: 'Quality & Safety Accreditations', type: 'text', placeholder: 'e.g. JCI, NABH, NABL, ISO 9001' },
+      { name: 'operatingHours', label: 'Operating Hours', type: 'text', placeholder: 'e.g. 24 Hours / 7 Days a week' },
+      { name: 'insuranceAccepted', label: 'Accepted Health Insurance / TPAs (Comma-separated)', type: 'textarea', rows: 2, placeholder: 'e.g. Star Health, MediAssist, HDFC ERGO, Ayushman Bharat (PM-JAY)' },
+      { name: 'websiteUrl', label: 'Official Website URL', type: 'text', placeholder: 'e.g. https://www.apollohospitals.com' },
+      { name: 'address', label: 'Full Physical Address', type: 'textarea', rows: 2, required: true, placeholder: 'e.g. Greams Road, Thousand Lights, Chennai - 600006' },
     ],
     empty: () => ({
       name: '',
       city: '',
+      state: '',
+      pincode: '',
       type: 'Multi-Speciality',
+      rating: 4.5,
+      bedCapacity: 250,
       emergencyAvailable: 'Yes',
+      icuAvailable: 'Yes',
       contact: '',
+      ambulanceContact: '',
+      departments: 'Cardiology, General Medicine, Neurology, Orthopedics',
+      accreditations: 'NABH, NABL',
+      operatingHours: '24 Hours / 7 Days a week',
+      insuranceAccepted: 'All Major Cashless TPAs & Ayushman Bharat',
+      websiteUrl: '',
       address: '',
     }),
     presets: [
-      { name: 'Apollo Hospitals', city: 'Chennai', type: 'Super-Speciality', emergencyAvailable: true, contact: '+91 44 2829 0200', address: 'Greams Road, Thousand Lights, Chennai - 600006' },
-      { name: 'Fortis Healthcare', city: 'Bengaluru', type: 'Multi-Speciality', emergencyAvailable: true, contact: '+91 80 6621 4444', address: 'Bannerghatta Road, Opposite IIMB, Bengaluru - 560076' },
-      { name: 'Government General Hospital', city: 'Chennai', type: 'Public / Government', emergencyAvailable: true, contact: '+91 44 2530 5000', address: 'EVR Periyar Salai, Park Town, Chennai - 600003' },
-      { name: 'PSG Hospitals', city: 'Coimbatore', type: 'Teaching Multi-Speciality', emergencyAvailable: true, contact: '+91 422 257 0170', address: 'Peelamedu, Avinashi Road, Coimbatore - 641004' },
-      { name: 'AIIMS New Delhi', city: 'New Delhi', type: 'Apex Medical Institute', emergencyAvailable: true, contact: '+91 11 2658 8500', address: 'Sri Aurobindo Marg, Ansari Nagar, New Delhi - 110029' },
-      { name: 'Manipal Hospital', city: 'Bengaluru', type: 'Multi-Speciality', emergencyAvailable: true, contact: '+91 80 2502 4444', address: '98 HAL Airport Road, Kodihalli, Bengaluru - 560017' },
-      { name: 'Kauvery Hospital', city: 'Tiruchirappalli', type: 'Multi-Speciality', emergencyAvailable: true, contact: '+91 431 407 7777', address: 'Tennur High Road, Tennur, Tiruchirappalli - 620017' },
-      { name: 'City Care Multi-Speciality Clinic', city: 'Coimbatore', type: 'Outpatient Clinic', emergencyAvailable: false, contact: '+91 422 439 1234', address: 'Avinashi Road, Peelamedu, Coimbatore - 641004' },
+      {
+        name: 'Apollo Hospitals',
+        city: 'Chennai',
+        state: 'Tamil Nadu',
+        pincode: '600006',
+        type: 'Super-Speciality',
+        rating: 4.9,
+        bedCapacity: 750,
+        emergencyAvailable: true,
+        icuAvailable: true,
+        contact: '+91 44 2829 0200',
+        ambulanceContact: '1066',
+        departments: 'Cardiology, Pulmonology, Neurology, Oncology, Critical Care',
+        accreditations: 'JCI, NABH, NABL',
+        operatingHours: '24 Hours / 7 Days a week',
+        insuranceAccepted: 'Star Health, MediAssist, ICICI Lombard, Ayushman Bharat',
+        websiteUrl: 'https://www.apollohospitals.com',
+        address: 'Greams Road, Thousand Lights, Chennai - 600006',
+      },
+      {
+        name: 'Fortis Healthcare',
+        city: 'Bengaluru',
+        state: 'Karnataka',
+        pincode: '560076',
+        type: 'Multi-Speciality',
+        rating: 4.8,
+        bedCapacity: 400,
+        emergencyAvailable: true,
+        icuAvailable: true,
+        contact: '+91 80 6621 4444',
+        ambulanceContact: '105010',
+        departments: 'Cardiac Sciences, Orthopedics, Neurosciences, Nephrology',
+        accreditations: 'JCI, NABH',
+        operatingHours: '24 Hours / 7 Days a week',
+        insuranceAccepted: 'HDFC ERGO, Star Health, Vidal Health, Max Bupa',
+        websiteUrl: 'https://www.fortishealthcare.com',
+        address: 'Bannerghatta Road, Opposite IIMB, Bengaluru - 560076',
+      },
+      {
+        name: 'Government General Hospital (RGGGH)',
+        city: 'Chennai',
+        state: 'Tamil Nadu',
+        pincode: '600003',
+        type: 'Public / Government',
+        rating: 4.6,
+        bedCapacity: 2700,
+        emergencyAvailable: true,
+        icuAvailable: true,
+        contact: '+91 44 2530 5000',
+        ambulanceContact: '108',
+        departments: 'Trauma Care, Internal Medicine, Infectious Diseases, Surgery',
+        accreditations: 'NABH Pre-entry, ISO Certified',
+        operatingHours: '24 Hours / 7 Days a week',
+        insuranceAccepted: 'Chief Minister Comprehensive Health Insurance Scheme (CMCHIS), PM-JAY',
+        websiteUrl: 'https://www.mmc.tn.gov.in',
+        address: 'EVR Periyar Salai, Park Town, Chennai - 600003',
+      },
+      {
+        name: 'PSG Hospitals',
+        city: 'Coimbatore',
+        state: 'Tamil Nadu',
+        pincode: '641004',
+        type: 'Teaching Multi-Speciality',
+        rating: 4.7,
+        bedCapacity: 1400,
+        emergencyAvailable: true,
+        icuAvailable: true,
+        contact: '+91 422 257 0170',
+        ambulanceContact: '+91 422 257 0170',
+        departments: 'Pulmonology, Cardiology, Pediatrics, Critical Care',
+        accreditations: 'NABH, NABL',
+        operatingHours: '24 Hours / 7 Days a week',
+        insuranceAccepted: 'All Major Corporate Insurances, CMCHIS, Star Health',
+        websiteUrl: 'https://psghospitals.com',
+        address: 'Peelamedu, Avinashi Road, Coimbatore - 641004',
+      },
+      {
+        name: 'AIIMS New Delhi',
+        city: 'New Delhi',
+        state: 'Delhi',
+        pincode: '110029',
+        type: 'Apex Medical Institute',
+        rating: 4.9,
+        bedCapacity: 2500,
+        emergencyAvailable: true,
+        icuAvailable: true,
+        contact: '+91 11 2658 8500',
+        ambulanceContact: '102 / 108',
+        departments: 'All Super-Specialities, Advanced Trauma, Organ Transplant',
+        accreditations: 'Apex National Institute, JCI Reference',
+        operatingHours: '24 Hours / 7 Days a week',
+        insuranceAccepted: 'Central Government Health Scheme (CGHS), PM-JAY, ECHS',
+        websiteUrl: 'https://www.aiims.edu',
+        address: 'Sri Aurobindo Marg, Ansari Nagar, New Delhi - 110029',
+      },
+      {
+        name: 'Manipal Hospital',
+        city: 'Bengaluru',
+        state: 'Karnataka',
+        pincode: '560017',
+        type: 'Multi-Speciality',
+        rating: 4.8,
+        bedCapacity: 600,
+        emergencyAvailable: true,
+        icuAvailable: true,
+        contact: '+91 80 2502 4444',
+        ambulanceContact: '080 2222 1111',
+        departments: 'Emergency Medicine, Oncology, Nephrology, Intensive Care',
+        accreditations: 'NABH, NABL',
+        operatingHours: '24 Hours / 7 Days a week',
+        insuranceAccepted: 'MediAssist, Star Health, ICICI Lombard, Ayushman Bharat',
+        websiteUrl: 'https://www.manipalhospitals.com',
+        address: '98 HAL Airport Road, Kodihalli, Bengaluru - 560017',
+      },
+      {
+        name: 'Kauvery Hospital',
+        city: 'Tiruchirappalli',
+        state: 'Tamil Nadu',
+        pincode: '620017',
+        type: 'Multi-Speciality',
+        rating: 4.7,
+        bedCapacity: 350,
+        emergencyAvailable: true,
+        icuAvailable: true,
+        contact: '+91 431 407 7777',
+        ambulanceContact: '+91 431 407 7777',
+        departments: 'Vascular Surgery, Interventional Cardiology, Geriatric Care',
+        accreditations: 'NABH, NABL',
+        operatingHours: '24 Hours / 7 Days a week',
+        insuranceAccepted: 'Star Health, Bajaj Allianz, Care Health, CMCHIS',
+        websiteUrl: 'https://www.kauveryhospital.com',
+        address: 'Tennur High Road, Tennur, Tiruchirappalli - 620017',
+      },
+      {
+        name: 'City Care Multi-Speciality Clinic',
+        city: 'Coimbatore',
+        state: 'Tamil Nadu',
+        pincode: '641004',
+        type: 'Outpatient Clinic',
+        rating: 4.4,
+        bedCapacity: 20,
+        emergencyAvailable: false,
+        icuAvailable: false,
+        contact: '+91 422 439 1234',
+        ambulanceContact: '',
+        departments: 'Family Medicine, Outpatient Pediatrics, Preventive Health',
+        accreditations: 'NABH Clinic Standard',
+        operatingHours: '8:00 AM - 10:00 PM',
+        insuranceAccepted: 'Private Cashless TPA',
+        websiteUrl: '',
+        address: 'Avinashi Road, Peelamedu, Coimbatore - 641004',
+      },
     ],
   },
   users: {
@@ -385,6 +564,126 @@ const RESOURCE_CONFIG = {
   },
 };
 
+const INITIAL_BUNDLE_STATE = {
+  // Disease
+  diseaseName: '',
+  category: 'Infectious / Viral',
+  severityScore: 0.7,
+  precautions: '',
+  diseaseDescription: '',
+
+  // Symptoms
+  symptoms: '',
+  defaultSymptomCategory: 'General / Systemic',
+  defaultSymptomSeverity: 'Moderate',
+
+  // Specialist
+  specialistName: '',
+  specialty: '',
+  experience: '10+ years',
+  consultationFee: 750,
+  specialistBio: '',
+
+  // Diagnostic Test
+  testName: '',
+  testCategory: 'Hematology',
+  turnaroundTime: '2-4 hours',
+  approxCost: 450,
+  testDescription: '',
+
+  // Hospital
+  hospitalName: '',
+  city: 'Chennai',
+  state: 'Tamil Nadu',
+  hospitalType: 'Super-Speciality',
+  rating: 4.8,
+  bedCapacity: 500,
+  emergencyAvailable: true,
+  icuAvailable: true,
+  contact: '',
+  ambulanceContact: '',
+  departments: '',
+  accreditations: 'NABH, NABL',
+  address: '',
+};
+
+const BUNDLE_TEMPLATES = {
+  zika: {
+    diseaseName: 'Zika Virus Infection',
+    category: 'Infectious / Viral',
+    severityScore: 0.65,
+    precautions: 'Strict rest, drink abundant fluids, prevent mosquito bites with DEET repellents, avoid NSAIDs until dengue is ruled out.',
+    diseaseDescription: 'A mosquito-borne viral infection caused by Zika virus (flavivirus), transmitted by Aedes mosquitoes. Characterized by maculopapular rash, fever, and arthralgia.',
+
+    symptoms: 'Maculopapular Rash, Low-Grade Fever, Non-Purulent Conjunctivitis, Arthralgia, Retro-orbital Eye Pain',
+    defaultSymptomCategory: 'Dermatological',
+    defaultSymptomSeverity: 'Moderate',
+
+    specialistName: 'Dr. Maya Ramesh',
+    specialty: 'Infectious Disease Medicine',
+    experience: '12+ years',
+    consultationFee: 850,
+    specialistBio: 'Senior Consultant in Infectious Diseases specializing in vector-borne viral illnesses, travel medicine, and tropical virology.',
+
+    testName: 'Zika Virus RT-PCR & IgM Antibody Profile',
+    testCategory: 'Molecular Diagnostics',
+    turnaroundTime: '24-48 hours',
+    approxCost: 1800,
+    testDescription: 'Detects viral RNA during acute viremia stage and specific IgM antibodies for confirmation of recent infection.',
+
+    hospitalName: 'Apollo Speciality Hospitals',
+    city: 'Chennai',
+    state: 'Tamil Nadu',
+    hospitalType: 'Super-Speciality',
+    rating: 4.9,
+    bedCapacity: 600,
+    emergencyAvailable: true,
+    icuAvailable: true,
+    contact: '+91 44 2829 0200',
+    ambulanceContact: '1066',
+    departments: 'Infectious Diseases, Molecular Virology, Critical Care, Internal Medicine',
+    accreditations: 'JCI, NABH, NABL',
+    address: 'Greams Road, Thousand Lights, Chennai - 600006',
+  },
+  cardio: {
+    diseaseName: 'Acute Coronary Syndrome (ACS)',
+    category: 'Cardiovascular',
+    severityScore: 0.95,
+    precautions: 'Immediate emergency transport. Chew 325mg aspirin if conscious, administer sublingual nitroglycerin, keep patient calm and seated.',
+    diseaseDescription: 'A range of conditions associated with sudden, reduced blood flow to the heart muscle, including ST-elevation myocardial infarction (STEMI) and unstable angina.',
+
+    symptoms: 'Crushing Substernal Chest Pain, Left Arm Radiation, Diaphoresis & Cold Sweats, Acute Dyspnea, Presyncope',
+    defaultSymptomCategory: 'Cardiovascular',
+    defaultSymptomSeverity: 'Severe',
+
+    specialistName: 'Dr. Anand Natarajan',
+    specialty: 'Interventional Cardiology',
+    experience: '18+ years',
+    consultationFee: 1200,
+    specialistBio: 'Chief Interventional Cardiologist specializing in primary percutaneous coronary intervention (PCI), acute STEMI management, and coronary stenting.',
+
+    testName: 'High-Sensitivity Troponin-I & 12-Lead ECG',
+    testCategory: 'Cardiology',
+    turnaroundTime: '15-30 mins',
+    approxCost: 950,
+    testDescription: 'Rapid biomarker quantification for myocardial necrosis paired with emergency electrical tracing of cardiac ischemia.',
+
+    hospitalName: 'Fortis Escorts Heart & Trauma Institute',
+    city: 'Bengaluru',
+    state: 'Karnataka',
+    hospitalType: 'Super-Speciality',
+    rating: 4.9,
+    bedCapacity: 450,
+    emergencyAvailable: true,
+    icuAvailable: true,
+    contact: '+91 80 6621 4444',
+    ambulanceContact: '105010',
+    departments: 'Emergency Cardiology, 24/7 Cath Lab, Cardiac Intensive Care (CCU), Cardiothoracic Surgery',
+    accreditations: 'JCI, NABH',
+    address: 'Bannerghatta Road, Opposite IIMB, Bengaluru - 560076',
+  },
+};
+
 const AdminManagementPage = ({ token, resource: initialResource = 'symptoms', onBack, onLogout }) => {
   const [resource, setResource] = useState(initialResource);
   const [items, setItems] = useState([]);
@@ -402,6 +701,12 @@ const AdminManagementPage = ({ token, resource: initialResource = 'symptoms', on
   const [deleteConfirmItem, setDeleteConfirmItem] = useState(null);
   const [formData, setFormData] = useState({});
   const [formErrors, setFormErrors] = useState({});
+
+  // Unified Clinical Pathway Bundle State
+  const [showBundleModal, setShowBundleModal] = useState(false);
+  const [bundleLoading, setBundleLoading] = useState(false);
+  const [bundleError, setBundleError] = useState('');
+  const [bundleData, setBundleData] = useState(INITIAL_BUNDLE_STATE);
 
   // Sorting & Pagination States
   const [sortField, setSortField] = useState('name');
@@ -428,6 +733,7 @@ const AdminManagementPage = ({ token, resource: initialResource = 'symptoms', on
       if (e.key === 'Escape') {
         setShowModal(false);
         setShowPresetModal(false);
+        setShowBundleModal(false);
         setViewItem(null);
         setDeleteConfirmItem(null);
       }
@@ -575,8 +881,13 @@ const AdminManagementPage = ({ token, resource: initialResource = 'symptoms', on
   const openEditModal = (item) => {
     setEditItem(item);
     const formVals = { ...item };
-    if (resource === 'hospitals' && typeof item.emergencyAvailable === 'boolean') {
-      formVals.emergencyAvailable = item.emergencyAvailable ? 'Yes' : 'No';
+    if (resource === 'hospitals') {
+      if (typeof item.emergencyAvailable === 'boolean') {
+        formVals.emergencyAvailable = item.emergencyAvailable ? 'Yes' : 'No';
+      }
+      if (typeof item.icuAvailable === 'boolean') {
+        formVals.icuAvailable = item.icuAvailable ? 'Yes' : 'No';
+      }
     }
     setFormData(formVals);
     setFormErrors({});
@@ -585,12 +896,88 @@ const AdminManagementPage = ({ token, resource: initialResource = 'symptoms', on
 
   const handleQuickFill = (preset) => {
     const vals = { ...preset };
-    if (resource === 'hospitals' && typeof preset.emergencyAvailable === 'boolean') {
-      vals.emergencyAvailable = preset.emergencyAvailable ? 'Yes' : 'No';
+    if (resource === 'hospitals') {
+      if (typeof preset.emergencyAvailable === 'boolean') {
+        vals.emergencyAvailable = preset.emergencyAvailable ? 'Yes' : 'No';
+      }
+      if (typeof preset.icuAvailable === 'boolean') {
+        vals.icuAvailable = preset.icuAvailable ? 'Yes' : 'No';
+      }
     }
     setFormData(vals);
     setFormErrors({});
     showToast(`Pre-filled form with preset "${preset.name}"!`);
+  };
+
+  const handleLoadBundleTemplate = (tpl) => {
+    setBundleData({ ...tpl });
+    setBundleError('');
+    showToast(`Loaded clinical pathway template for "${tpl.diseaseName}"!`);
+  };
+
+  const handleBundleSubmit = async (event) => {
+    event.preventDefault();
+    if (!bundleData.diseaseName || !bundleData.diseaseName.trim()) {
+      setBundleError('Disease name is required');
+      return;
+    }
+    if (!bundleData.symptoms || !bundleData.symptoms.trim()) {
+      setBundleError('At least one symptom is required');
+      return;
+    }
+
+    setBundleLoading(true);
+    setBundleError('');
+
+    try {
+      const payload = {
+        diseaseName: bundleData.diseaseName.trim(),
+        category: bundleData.category,
+        severityScore: Number(bundleData.severityScore) || 0.5,
+        precautions: bundleData.precautions,
+        diseaseDescription: bundleData.diseaseDescription,
+
+        symptoms: bundleData.symptoms,
+        defaultSymptomCategory: bundleData.defaultSymptomCategory,
+        defaultSymptomSeverity: bundleData.defaultSymptomSeverity,
+
+        specialistName: bundleData.specialistName,
+        specialty: bundleData.specialty || bundleData.specialistName,
+        experience: bundleData.experience,
+        consultationFee: bundleData.consultationFee ? Number(bundleData.consultationFee) : null,
+        specialistBio: bundleData.specialistBio,
+
+        testName: bundleData.testName,
+        testCategory: bundleData.testCategory,
+        turnaroundTime: bundleData.turnaroundTime,
+        approxCost: bundleData.approxCost ? Number(bundleData.approxCost) : null,
+        testDescription: bundleData.testDescription,
+
+        hospitalName: bundleData.hospitalName,
+        city: bundleData.city,
+        state: bundleData.state,
+        hospitalType: bundleData.hospitalType,
+        rating: bundleData.rating ? Number(bundleData.rating) : null,
+        bedCapacity: bundleData.bedCapacity ? Number(bundleData.bedCapacity) : null,
+        emergencyAvailable: bundleData.emergencyAvailable === true || bundleData.emergencyAvailable === 'Yes',
+        icuAvailable: bundleData.icuAvailable === true || bundleData.icuAvailable === 'Yes',
+        contact: bundleData.contact,
+        ambulanceContact: bundleData.ambulanceContact,
+        departments: bundleData.departments,
+        accreditations: bundleData.accreditations,
+        address: bundleData.address,
+      };
+
+      const res = await createClinicalPathwayBundle(token, payload);
+      showToast(res.message || `Clinical Pathway Bundle for "${bundleData.diseaseName}" created successfully!`);
+      setShowBundleModal(false);
+      setBundleData(INITIAL_BUNDLE_STATE);
+      await loadItems();
+    } catch (err) {
+      setBundleError(err.message || 'Failed to create pathway bundle');
+    } finally {
+      setBundleLoading(false);
+    }
   };
 
   const handleSubmit = async (event) => {
@@ -623,9 +1010,10 @@ const AdminManagementPage = ({ token, resource: initialResource = 'symptoms', on
         }
       });
 
-      // Hospital boolean emergency coercion
+      // Hospital boolean coercion
       if (resource === 'hospitals') {
         payload.emergencyAvailable = payload.emergencyAvailable === 'Yes' || payload.emergencyAvailable === true;
+        payload.icuAvailable = payload.icuAvailable === 'Yes' || payload.icuAvailable === true;
       }
 
       // Password mapping for user
@@ -841,6 +1229,19 @@ const AdminManagementPage = ({ token, resource: initialResource = 'symptoms', on
         </div>
 
         <div className="admin-header-actions">
+          <button
+            type="button"
+            className="admin-bundle-action-btn"
+            onClick={() => {
+              setBundleData(INITIAL_BUNDLE_STATE);
+              setBundleError('');
+              setShowBundleModal(true);
+            }}
+            title="Create full clinical pathway bundle: Disease, Symptoms, Specialist, Test, and Hospital in one action"
+          >
+            <span>⚡</span> All-in-One Pathway
+          </button>
+
           {config.presets && config.presets.length > 0 && (
             <button
               type="button"
@@ -1165,6 +1566,17 @@ const AdminManagementPage = ({ token, resource: initialResource = 'symptoms', on
                             </td>
                           );
                         }
+                        if (field.type === 'rating') {
+                          return (
+                            <td key={field.key}>
+                              {val != null ? (
+                                <span className="admin-rating-badge">★ {Number(val).toFixed(1)}</span>
+                              ) : (
+                                <span className="admin-muted-text">-</span>
+                              )}
+                            </td>
+                          );
+                        }
                         return (
                           <td key={field.key} className={field.truncate ? 'admin-cell-truncate' : ''} title={typeof val === 'string' ? val : ''}>
                             {val != null && val !== '' ? String(val) : <span className="admin-muted-text">-</span>}
@@ -1483,6 +1895,8 @@ const AdminManagementPage = ({ token, resource: initialResource = 'symptoms', on
                         renderSeverityBadge(val)
                       ) : key === 'severityScore' ? (
                         renderScore(val)
+                      ) : key === 'rating' ? (
+                        <span className="admin-rating-badge">★ {Number(val).toFixed(1)} / 5.0</span>
                       ) : key === 'synonyms' ? (
                         <div className="admin-synonyms-tags-full">
                           {String(val || '').split(',').map((s, i) => (
@@ -1490,7 +1904,13 @@ const AdminManagementPage = ({ token, resource: initialResource = 'symptoms', on
                           ))}
                         </div>
                       ) : key === 'emergencyAvailable' ? (
-                        val ? <span className="admin-badge admin-badge--success">Yes (24/7 Service Available)</span> : 'No'
+                        val ? <span className="admin-badge admin-badge--success">Yes (24/7 ER Available)</span> : 'No'
+                      ) : key === 'icuAvailable' ? (
+                        val ? <span className="admin-badge admin-badge--success">Yes (ICU Equipped)</span> : 'No'
+                      ) : key === 'websiteUrl' && val ? (
+                        <a href={val} target="_blank" rel="noopener noreferrer" className="admin-link">
+                          {val} ↗
+                        </a>
                       ) : val ? (
                         String(val)
                       ) : (
@@ -1617,6 +2037,531 @@ const AdminManagementPage = ({ token, resource: initialResource = 'symptoms', on
                 {loading ? 'Deleting...' : 'Yes, Permanently Delete'}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ALL-IN-ONE CLINICAL PATHWAY BUNDLE MODAL */}
+      {showBundleModal && (
+        <div className="admin-modal-overlay" onClick={() => !bundleLoading && setShowBundleModal(false)}>
+          <div className="admin-modal-card admin-modal-card--bundle" onClick={(e) => e.stopPropagation()}>
+            <div className="admin-modal-header">
+              <div className="admin-modal-title-group">
+                <span className="admin-modal-icon">⚡</span>
+                <div>
+                  <h2>All-in-One Clinical Pathway Creator</h2>
+                  <p>Create Disease, Symptoms, Specialist, Diagnostic Test & Hospital simultaneously in a single coordinated action</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                className="admin-modal-close-btn"
+                onClick={() => !bundleLoading && setShowBundleModal(false)}
+                disabled={bundleLoading}
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Quick-fill Example Templates */}
+            <div className="admin-bundle-templates-bar">
+              <span className="admin-bundle-templates-label">One-Click Clinical Templates:</span>
+              <button
+                type="button"
+                className="admin-template-chip-btn"
+                onClick={() => handleLoadBundleTemplate(BUNDLE_TEMPLATES.zika)}
+              >
+                🦟 Template 1: Zika Virus Pathway
+              </button>
+              <button
+                type="button"
+                className="admin-template-chip-btn"
+                onClick={() => handleLoadBundleTemplate(BUNDLE_TEMPLATES.cardio)}
+              >
+                ❤️ Template 2: Acute Coronary Syndrome
+              </button>
+            </div>
+
+            {bundleError && (
+              <div className="admin-error-banner" style={{ margin: '16px 24px 0 24px' }}>
+                <span>⚠️</span>
+                <p>{bundleError}</p>
+                <button type="button" onClick={() => setBundleError('')}>Dismiss</button>
+              </div>
+            )}
+
+            <form onSubmit={handleBundleSubmit} className="admin-bundle-form-body">
+              {/* SECTION 1: DISEASE */}
+              <div className="admin-bundle-section">
+                <div className="admin-bundle-section-header">
+                  <span className="admin-section-icon">🦠</span>
+                  <div>
+                    <h3>1. Disease Entity Profile</h3>
+                    <p>Core condition pathology, categorization, and clinical severity weight</p>
+                  </div>
+                </div>
+                <div className="admin-modal-fields-grid">
+                  <label className="admin-field-label">
+                    <span>Disease Name <span className="admin-required">*</span></span>
+                    <input
+                      type="text"
+                      className="admin-form-control"
+                      value={bundleData.diseaseName}
+                      onChange={(e) => setBundleData({ ...bundleData, diseaseName: e.target.value })}
+                      placeholder="e.g. Zika Virus Infection, Chikungunya"
+                      required
+                    />
+                  </label>
+
+                  <label className="admin-field-label">
+                    <span>Clinical Category</span>
+                    <select
+                      className="admin-form-control"
+                      value={bundleData.category}
+                      onChange={(e) => setBundleData({ ...bundleData, category: e.target.value })}
+                    >
+                      <option value="Infectious / Viral">Infectious / Viral</option>
+                      <option value="Infectious / Parasitic">Infectious / Parasitic</option>
+                      <option value="Respiratory">Respiratory</option>
+                      <option value="Cardiovascular">Cardiovascular</option>
+                      <option value="Gastrointestinal / Bacterial">Gastrointestinal / Bacterial</option>
+                      <option value="Neurological">Neurological</option>
+                      <option value="Metabolic / Endocrine">Metabolic / Endocrine</option>
+                      <option value="Dermatological / Viral">Dermatological / Viral</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </label>
+
+                  <label className="admin-field-label">
+                    <span>Severity Score (0.0 to 1.0)</span>
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      max="1"
+                      className="admin-form-control"
+                      value={bundleData.severityScore}
+                      onChange={(e) => setBundleData({ ...bundleData, severityScore: e.target.value })}
+                      placeholder="0.75"
+                    />
+                    <div className="admin-score-presets">
+                      {[0.25, 0.50, 0.75, 0.95].map((sc) => (
+                        <button
+                          key={sc}
+                          type="button"
+                          className="admin-preset-score-btn"
+                          onClick={() => setBundleData({ ...bundleData, severityScore: sc })}
+                        >
+                          {sc >= 0.9 ? 'Critical' : sc >= 0.7 ? 'High' : sc >= 0.5 ? 'Moderate' : 'Mild'} ({sc})
+                        </button>
+                      ))}
+                    </div>
+                  </label>
+
+                  <label className="admin-field-label" style={{ gridColumn: 'span 2' }}>
+                    <span>Clinical Precautions & Care Instructions</span>
+                    <textarea
+                      rows={2}
+                      className="admin-form-control"
+                      value={bundleData.precautions}
+                      onChange={(e) => setBundleData({ ...bundleData, precautions: e.target.value })}
+                      placeholder="e.g. Ensure adequate hydration, rest, use mosquito repellent, avoid NSAIDs until dengue is ruled out"
+                    />
+                  </label>
+
+                  <label className="admin-field-label" style={{ gridColumn: 'span 2' }}>
+                    <span>Pathological Overview & Clinical Profile</span>
+                    <textarea
+                      rows={2}
+                      className="admin-form-control"
+                      value={bundleData.diseaseDescription}
+                      onChange={(e) => setBundleData({ ...bundleData, diseaseDescription: e.target.value })}
+                      placeholder="Comprehensive overview of transmission, pathophysiology, and clinical progression..."
+                    />
+                  </label>
+                </div>
+              </div>
+
+              {/* SECTION 2: SYMPTOMS */}
+              <div className="admin-bundle-section">
+                <div className="admin-bundle-section-header">
+                  <span className="admin-section-icon">📋</span>
+                  <div>
+                    <h3>2. Associated Clinical Symptoms</h3>
+                    <p>New symptoms will be automatically created and linked to this disease</p>
+                  </div>
+                </div>
+                <div className="admin-modal-fields-grid">
+                  <label className="admin-field-label" style={{ gridColumn: 'span 2' }}>
+                    <span>Associated Symptoms (Comma-separated) <span className="admin-required">*</span></span>
+                    <textarea
+                      rows={2}
+                      className="admin-form-control"
+                      value={bundleData.symptoms}
+                      onChange={(e) => setBundleData({ ...bundleData, symptoms: e.target.value })}
+                      placeholder="e.g. Maculopapular Rash, Low-Grade Fever, Conjunctivitis, Arthralgia, Muscle Pain"
+                      required
+                    />
+                  </label>
+
+                  <label className="admin-field-label">
+                    <span>Default Category for New Symptoms</span>
+                    <select
+                      className="admin-form-control"
+                      value={bundleData.defaultSymptomCategory}
+                      onChange={(e) => setBundleData({ ...bundleData, defaultSymptomCategory: e.target.value })}
+                    >
+                      <option value="General / Systemic">General / Systemic</option>
+                      <option value="Respiratory">Respiratory</option>
+                      <option value="Neurological">Neurological</option>
+                      <option value="Cardiovascular">Cardiovascular</option>
+                      <option value="Gastrointestinal">Gastrointestinal</option>
+                      <option value="Musculoskeletal">Musculoskeletal</option>
+                      <option value="Dermatological">Dermatological</option>
+                      <option value="ENT / Sensory">ENT / Sensory</option>
+                    </select>
+                  </label>
+
+                  <label className="admin-field-label">
+                    <span>Default Severity for New Symptoms</span>
+                    <select
+                      className="admin-form-control"
+                      value={bundleData.defaultSymptomSeverity}
+                      onChange={(e) => setBundleData({ ...bundleData, defaultSymptomSeverity: e.target.value })}
+                    >
+                      <option value="Mild">Mild</option>
+                      <option value="Moderate">Moderate</option>
+                      <option value="Severe">Severe</option>
+                    </select>
+                  </label>
+                </div>
+              </div>
+
+              {/* SECTION 3: SPECIALIST */}
+              <div className="admin-bundle-section">
+                <div className="admin-bundle-section-header">
+                  <span className="admin-section-icon">👨‍⚕️</span>
+                  <div>
+                    <h3>3. Recommended Medical Specialist</h3>
+                    <p>Doctor or clinician profile mapped to evaluate and manage this condition</p>
+                  </div>
+                </div>
+                <div className="admin-modal-fields-grid">
+                  <label className="admin-field-label">
+                    <span>Specialist / Doctor Name</span>
+                    <input
+                      type="text"
+                      className="admin-form-control"
+                      value={bundleData.specialistName}
+                      onChange={(e) => setBundleData({ ...bundleData, specialistName: e.target.value })}
+                      placeholder="e.g. Dr. Maya Ramesh / Infectious Disease Physician"
+                    />
+                  </label>
+
+                  <label className="admin-field-label">
+                    <span>Specialty Area</span>
+                    <input
+                      type="text"
+                      className="admin-form-control"
+                      value={bundleData.specialty}
+                      onChange={(e) => setBundleData({ ...bundleData, specialty: e.target.value })}
+                      placeholder="e.g. Infectious Disease Medicine, Cardiology"
+                    />
+                  </label>
+
+                  <label className="admin-field-label">
+                    <span>Clinical Experience</span>
+                    <input
+                      type="text"
+                      className="admin-form-control"
+                      value={bundleData.experience}
+                      onChange={(e) => setBundleData({ ...bundleData, experience: e.target.value })}
+                      placeholder="e.g. 12+ years"
+                    />
+                  </label>
+
+                  <label className="admin-field-label">
+                    <span>Consultation Fee (₹)</span>
+                    <input
+                      type="number"
+                      className="admin-form-control"
+                      value={bundleData.consultationFee}
+                      onChange={(e) => setBundleData({ ...bundleData, consultationFee: e.target.value })}
+                      placeholder="e.g. 800"
+                    />
+                  </label>
+
+                  <label className="admin-field-label" style={{ gridColumn: 'span 2' }}>
+                    <span>Specialist Clinical Focus & Bio</span>
+                    <textarea
+                      rows={2}
+                      className="admin-form-control"
+                      value={bundleData.specialistBio}
+                      onChange={(e) => setBundleData({ ...bundleData, specialistBio: e.target.value })}
+                      placeholder="Expert in tropical viral infections, vector-borne epidemiology, and post-viral recovery..."
+                    />
+                  </label>
+                </div>
+              </div>
+
+              {/* SECTION 4: DIAGNOSTIC TEST */}
+              <div className="admin-bundle-section">
+                <div className="admin-bundle-section-header">
+                  <span className="admin-section-icon">🔬</span>
+                  <div>
+                    <h3>4. Confirmatory Diagnostic Test</h3>
+                    <p>Laboratory investigation or imaging required for definitive diagnosis</p>
+                  </div>
+                </div>
+                <div className="admin-modal-fields-grid">
+                  <label className="admin-field-label">
+                    <span>Diagnostic Test Name</span>
+                    <input
+                      type="text"
+                      className="admin-form-control"
+                      value={bundleData.testName}
+                      onChange={(e) => setBundleData({ ...bundleData, testName: e.target.value })}
+                      placeholder="e.g. Zika Virus Real-Time RT-PCR"
+                    />
+                  </label>
+
+                  <label className="admin-field-label">
+                    <span>Laboratory Department</span>
+                    <select
+                      className="admin-form-control"
+                      value={bundleData.testCategory}
+                      onChange={(e) => setBundleData({ ...bundleData, testCategory: e.target.value })}
+                    >
+                      <option value="Molecular Diagnostics">Molecular Diagnostics</option>
+                      <option value="Hematology">Hematology</option>
+                      <option value="Serology">Serology</option>
+                      <option value="Biochemistry">Biochemistry</option>
+                      <option value="Radiology / Imaging">Radiology / Imaging</option>
+                      <option value="Microbiology">Microbiology</option>
+                      <option value="Cardiology">Cardiology</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </label>
+
+                  <label className="admin-field-label">
+                    <span>Report Turnaround Time</span>
+                    <input
+                      type="text"
+                      className="admin-form-control"
+                      value={bundleData.turnaroundTime}
+                      onChange={(e) => setBundleData({ ...bundleData, turnaroundTime: e.target.value })}
+                      placeholder="e.g. 24-48 hours"
+                    />
+                  </label>
+
+                  <label className="admin-field-label">
+                    <span>Approximate Cost (₹)</span>
+                    <input
+                      type="number"
+                      className="admin-form-control"
+                      value={bundleData.approxCost}
+                      onChange={(e) => setBundleData({ ...bundleData, approxCost: e.target.value })}
+                      placeholder="e.g. 1800"
+                    />
+                  </label>
+
+                  <label className="admin-field-label" style={{ gridColumn: 'span 2' }}>
+                    <span>Test Indications & Clinical Utility</span>
+                    <textarea
+                      rows={2}
+                      className="admin-form-control"
+                      value={bundleData.testDescription}
+                      onChange={(e) => setBundleData({ ...bundleData, testDescription: e.target.value })}
+                      placeholder="Detects viral RNA during acute viremic stage and confirms clinical etiology..."
+                    />
+                  </label>
+                </div>
+              </div>
+
+              {/* SECTION 5: HOSPITAL */}
+              <div className="admin-bundle-section">
+                <div className="admin-bundle-section-header">
+                  <span className="admin-section-icon">🏥</span>
+                  <div>
+                    <h3>5. Accredited Healthcare Facility</h3>
+                    <p>Equipped hospital with emergency, ICU, and clinical departments for this condition</p>
+                  </div>
+                </div>
+                <div className="admin-modal-fields-grid">
+                  <label className="admin-field-label">
+                    <span>Hospital / Healthcare Center Name</span>
+                    <input
+                      type="text"
+                      className="admin-form-control"
+                      value={bundleData.hospitalName}
+                      onChange={(e) => setBundleData({ ...bundleData, hospitalName: e.target.value })}
+                      placeholder="e.g. Apollo Speciality Hospitals"
+                    />
+                  </label>
+
+                  <label className="admin-field-label">
+                    <span>City</span>
+                    <input
+                      type="text"
+                      className="admin-form-control"
+                      value={bundleData.city}
+                      onChange={(e) => setBundleData({ ...bundleData, city: e.target.value })}
+                      placeholder="e.g. Chennai"
+                    />
+                  </label>
+
+                  <label className="admin-field-label">
+                    <span>State / Province</span>
+                    <input
+                      type="text"
+                      className="admin-form-control"
+                      value={bundleData.state}
+                      onChange={(e) => setBundleData({ ...bundleData, state: e.target.value })}
+                      placeholder="e.g. Tamil Nadu"
+                    />
+                  </label>
+
+                  <label className="admin-field-label">
+                    <span>Facility Type</span>
+                    <select
+                      className="admin-form-control"
+                      value={bundleData.hospitalType}
+                      onChange={(e) => setBundleData({ ...bundleData, hospitalType: e.target.value })}
+                    >
+                      <option value="Super-Speciality">Super-Speciality</option>
+                      <option value="Multi-Speciality">Multi-Speciality</option>
+                      <option value="Apex Medical Institute">Apex Medical Institute</option>
+                      <option value="Public / Government">Public / Government</option>
+                      <option value="Teaching Multi-Speciality">Teaching Multi-Speciality</option>
+                      <option value="Outpatient Clinic">Outpatient Clinic</option>
+                    </select>
+                  </label>
+
+                  <label className="admin-field-label">
+                    <span>Clinical Rating (1.0 to 5.0)</span>
+                    <input
+                      type="number"
+                      step="0.1"
+                      min="1"
+                      max="5"
+                      className="admin-form-control"
+                      value={bundleData.rating}
+                      onChange={(e) => setBundleData({ ...bundleData, rating: e.target.value })}
+                      placeholder="e.g. 4.8"
+                    />
+                  </label>
+
+                  <label className="admin-field-label">
+                    <span>Bed Capacity</span>
+                    <input
+                      type="number"
+                      className="admin-form-control"
+                      value={bundleData.bedCapacity}
+                      onChange={(e) => setBundleData({ ...bundleData, bedCapacity: e.target.value })}
+                      placeholder="e.g. 500"
+                    />
+                  </label>
+
+                  <label className="admin-field-label">
+                    <span>24/7 Emergency Center</span>
+                    <select
+                      className="admin-form-control"
+                      value={bundleData.emergencyAvailable ? 'Yes' : 'No'}
+                      onChange={(e) => setBundleData({ ...bundleData, emergencyAvailable: e.target.value === 'Yes' })}
+                    >
+                      <option value="Yes">Yes (24/7 Service)</option>
+                      <option value="No">No</option>
+                    </select>
+                  </label>
+
+                  <label className="admin-field-label">
+                    <span>Advanced ICU Unit</span>
+                    <select
+                      className="admin-form-control"
+                      value={bundleData.icuAvailable ? 'Yes' : 'No'}
+                      onChange={(e) => setBundleData({ ...bundleData, icuAvailable: e.target.value === 'Yes' })}
+                    >
+                      <option value="Yes">Yes (ICU Equipped)</option>
+                      <option value="No">No</option>
+                    </select>
+                  </label>
+
+                  <label className="admin-field-label">
+                    <span>Hospital Contact Helpline</span>
+                    <input
+                      type="text"
+                      className="admin-form-control"
+                      value={bundleData.contact}
+                      onChange={(e) => setBundleData({ ...bundleData, contact: e.target.value })}
+                      placeholder="e.g. +91 44 2829 0200"
+                    />
+                  </label>
+
+                  <label className="admin-field-label">
+                    <span>Direct Ambulance Helpline</span>
+                    <input
+                      type="text"
+                      className="admin-form-control"
+                      value={bundleData.ambulanceContact}
+                      onChange={(e) => setBundleData({ ...bundleData, ambulanceContact: e.target.value })}
+                      placeholder="e.g. 1066 / 108"
+                    />
+                  </label>
+
+                  <label className="admin-field-label">
+                    <span>Accreditations</span>
+                    <input
+                      type="text"
+                      className="admin-form-control"
+                      value={bundleData.accreditations}
+                      onChange={(e) => setBundleData({ ...bundleData, accreditations: e.target.value })}
+                      placeholder="e.g. JCI, NABH, NABL"
+                    />
+                  </label>
+
+                  <label className="admin-field-label">
+                    <span>Departments</span>
+                    <input
+                      type="text"
+                      className="admin-form-control"
+                      value={bundleData.departments}
+                      onChange={(e) => setBundleData({ ...bundleData, departments: e.target.value })}
+                      placeholder="e.g. Infectious Diseases, Critical Care, Virology"
+                    />
+                  </label>
+
+                  <label className="admin-field-label" style={{ gridColumn: 'span 2' }}>
+                    <span>Physical Address</span>
+                    <textarea
+                      rows={2}
+                      className="admin-form-control"
+                      value={bundleData.address}
+                      onChange={(e) => setBundleData({ ...bundleData, address: e.target.value })}
+                      placeholder="e.g. Greams Road, Thousand Lights, Chennai - 600006"
+                    />
+                  </label>
+                </div>
+              </div>
+
+              <div className="admin-modal-footer admin-modal-footer--between" style={{ marginTop: '24px' }}>
+                <button
+                  type="button"
+                  className="admin-secondary-btn"
+                  onClick={() => setShowBundleModal(false)}
+                  disabled={bundleLoading}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="admin-primary-create-btn"
+                  style={{ background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)', boxShadow: '0 4px 14px rgba(99, 102, 241, 0.4)' }}
+                  disabled={bundleLoading}
+                >
+                  {bundleLoading ? 'Creating Care Pathway...' : '⚡ Create Full Care Pathway Bundle'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

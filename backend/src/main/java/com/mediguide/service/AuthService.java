@@ -56,10 +56,6 @@ public class AuthService {
             throw new AuthException("Invalid email or password");
         }
 
-        if (user.getRole() != Role.USER) {
-            throw new ForbiddenException("Admin accounts must use admin login");
-        }
-
         user.setLastLogin(Instant.now());
         userRepository.save(user);
 

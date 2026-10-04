@@ -164,3 +164,13 @@ export const getAdminAnalytics = async (token) => {
   });
   return handleResponse(response);
 };
+
+export const createClinicalPathwayBundle = async (token, bundle) => {
+  const response = await fetch(`${BASE_URL}/api/admin/bundle`, {
+    method: 'POST',
+    headers: buildHeaders(token),
+    body: JSON.stringify(bundle),
+  });
+  return handleResponse(response);
+};
+
