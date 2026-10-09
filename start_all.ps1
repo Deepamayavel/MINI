@@ -4,6 +4,17 @@ Write-Host "===================================================" -ForegroundColo
 
 $root = $PSScriptRoot
 
+if (Test-Path "$root\.env") {
+    Write-Host "[*] Loading local configuration from .env..." -ForegroundColor Magenta
+    Get-Content "$root\.env" | ForEach-Object {
+        $line = $_.Trim()
+        if ($line -and -not $line.StartsWith("#") -and $line.Contains("=")) {
+            $kv = $line.Split("=", 2)
+            [System.Environment]::SetEnvironmentVariable($kv[0].Trim(), $kv[1].Trim(), "Process")
+        }
+    }
+}
+
 Write-Host "`n[1/4] Starting Local MongoDB Database (Port 27017)..." -ForegroundColor Yellow
 Start-Process powershell -ArgumentList "-NoExit", "-Command", "Set-Location '$root'; .\mongod.exe --dbpath local_data\db --port 27017 --bind_ip 127.0.0.1"
 
