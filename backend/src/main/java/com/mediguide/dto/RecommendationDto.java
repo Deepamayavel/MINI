@@ -15,6 +15,7 @@ import java.util.List;
 public class RecommendationDto {
     private String id;
     private String queryId;
+    private String rawText;
     private String predictedDisease;
     private String specialist;
     private List<String> diagnosticTests;

@@ -23,7 +23,9 @@ public class SearchController {
 
     @PostMapping
     public ResponseEntity<SearchResponse> search(@Valid @RequestBody SearchRequest request, Authentication authentication) {
-        String userId = authentication.getName();
+        String userId = (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getName()))
+                ? authentication.getName()
+                : "guest";
         return ResponseEntity.ok(searchService.search(userId, request));
     }
 }

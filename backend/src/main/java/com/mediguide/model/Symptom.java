@@ -17,4 +17,9 @@ public class Symptom {
     private String id;
     private String name;
     private String description;
+    private String category;
+    private String severity;
+    private String bodyLocation;
+    private String synonyms;
 }
+

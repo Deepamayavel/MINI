@@ -10,11 +10,11 @@ const handleResponse = async (response) => {
   }
 
   if (response.status === 401 || response.status === 403) {
-    const message = body?.message || body?.error;
-    if (message) {
-      throw new Error(message);
+    const rawMessage = body?.message;
+    if (rawMessage && rawMessage !== 'Forbidden') {
+      throw new Error(rawMessage);
     }
-    throw new Error('Your session has expired. Please log out and log in again.');
+    throw new Error('Your session has expired or you are not logged in. Please sign in to access your records.');
   }
 
   const message = body?.message || body?.error || response.statusText || 'Request failed';
@@ -164,3 +164,13 @@ export const getAdminAnalytics = async (token) => {
   });
   return handleResponse(response);
 };
+
+export const createClinicalPathwayBundle = async (token, bundle) => {
+  const response = await fetch(`${BASE_URL}/api/admin/bundle`, {
+    method: 'POST',
+    headers: buildHeaders(token),
+    body: JSON.stringify(bundle),
+  });
+  return handleResponse(response);
+};
+

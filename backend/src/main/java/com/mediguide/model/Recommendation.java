@@ -21,6 +21,7 @@ public class Recommendation {
     private String id;
     private String userId;
     private String queryId;
+    private String rawText;
     private String predictedDisease;
     private String specialist;
     private List<String> diagnosticTests;

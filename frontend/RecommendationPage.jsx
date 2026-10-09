@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './RecommendationPage.css';
 import { getLatestRecommendation, getRecommendations, getRecommendationById } from '../src/api.js';
+import SearchMetricsSection from './SearchMetricsSection.jsx';
 import {
   SUPPORTED_LANGUAGES,
   detectInputLanguage,
@@ -11,7 +12,7 @@ import {
 
 const PAGE_SIZE = 6;
 
-const RecommendationPage = ({ userName = '', token, onLogout, onBack }) => {
+const RecommendationPage = ({ userName = '', token, onLogout, onBack, onLogin, onRegister, currentLanguage = 'en-IN', onLanguageChange }) => {
   const [latest, setLatest] = useState(null);
   const [previous, setPrevious] = useState([]);
   const [selectedRecommendation, setSelectedRecommendation] = useState(null);
@@ -21,28 +22,37 @@ const RecommendationPage = ({ userName = '', token, onLogout, onBack }) => {
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
 
-  // Language state: 'auto' or specific language code (e.g., 'ta', 'hi')
-  const [langMode, setLangMode] = useState(() => {
-    try {
-      return localStorage.getItem('mediguide_user_lang') || 'auto';
-    } catch {
-      return 'auto';
+  // Language state: 'auto' (resolves to user input language) or specific code (e.g., 'ta-IN', 'ar-SA')
+  const [langMode, setLangMode] = useState('auto');
+
+  useEffect(() => {
+    if (currentLanguage && currentLanguage !== 'auto' && !currentLanguage.startsWith('en')) {
+      setLangMode(currentLanguage);
     }
-  });
+  }, [currentLanguage]);
+
   const [showInEnglish, setShowInEnglish] = useState(false);
 
   const getResolvedLang = (rec) => {
-    if (langMode !== 'auto') return langMode;
-    if (rec?.rawText) {
-      const det = detectInputLanguage(rec.rawText, 'en-IN');
+    // 1. Explicit user selection from dropdown
+    if (langMode && langMode !== 'auto') return langMode;
+    // 2. Specific recommendation query text language
+    const textToDetect = rec?.rawText || rec?.queryText || rec?.symptomText;
+    if (textToDetect) {
+      const det = detectInputLanguage(textToDetect, 'en-IN');
       if (det && !det.startsWith('en')) return det;
     }
+    // 3. Latest search input language from active session
     try {
+      const latestLang = localStorage.getItem('mediguide_latest_lang');
+      if (latestLang && !latestLang.startsWith('en')) return latestLang;
       const saved = localStorage.getItem('mediguide_user_lang');
       if (saved && saved !== 'auto' && !saved.startsWith('en')) return saved;
     } catch {
       // ignore
     }
+    // 4. Prop currentLanguage if non-English
+    if (currentLanguage && !currentLanguage.startsWith('en')) return currentLanguage;
     return 'en-IN';
   };
 
@@ -87,13 +97,13 @@ const RecommendationPage = ({ userName = '', token, onLogout, onBack }) => {
 
   const getTriageClass = (disease = '') => {
     const text = disease.toLowerCase();
-    if (text.includes('urgent') || text.includes('severe') || text.includes('emergency') || text.includes('stroke') || text.includes('heart') || text.includes('pneumonia') || text.includes('dengue')) {
-      return { badge: 'triage-urgent', label: '🔴 Urgent Care Recommended' };
+    if (text.includes('urgent') || text.includes('severe') || text.includes('emergency') || text.includes('stroke') || text.includes('heart') || text.includes('pneumonia') || text.includes('dengue') || text.includes('appendicitis')) {
+      return { badge: 'triage-urgent', icon: '🔴', label: 'Urgent Care Recommended' };
     }
-    if (text.includes('bronchitis') || text.includes('migraine') || text.includes('infection') || text.includes('typhoid') || text.includes('jaundice')) {
-      return { badge: 'triage-moderate', label: '🟡 Moderate Medical Attention' };
+    if (text.includes('bronchitis') || text.includes('migraine') || text.includes('infection') || text.includes('typhoid') || text.includes('jaundice') || text.includes('malaria') || text.includes('covid')) {
+      return { badge: 'triage-moderate', icon: '🟡', label: 'Doctor Consultation in 24-48h' };
     }
-    return { badge: 'triage-mild', label: '🟢 Routine / Primary Care' };
+    return { badge: 'triage-mild', icon: '🟢', label: 'Routine Self-Care / Non-Urgent' };
   };
 
   // Derive active candidate for detailed view
@@ -175,13 +185,30 @@ const RecommendationPage = ({ userName = '', token, onLogout, onBack }) => {
             {showInEnglish ? '🌐 View in User Language' : '🔄 Show in English'}
           </button>
 
-          <div className="recommendation-user-pill">
-            <span>👤</span>
-            <span>{userName}</span>
-          </div>
-          <button className="recommendation-btn-logout" type="button" onClick={onLogout}>
-            Sign Out
-          </button>
+          {token ? (
+            <>
+              <div className="recommendation-user-pill">
+                <span>👤</span>
+                <span>{userName || 'User'}</span>
+              </div>
+              <button className="recommendation-btn-logout" type="button" onClick={onLogout}>
+                Sign Out
+              </button>
+            </>
+          ) : (
+            <div className="recommendation-guest-header-actions">
+              {onLogin && (
+                <button type="button" className="rec-btn-signin" onClick={onLogin}>
+                  Sign In
+                </button>
+              )}
+              {onRegister && (
+                <button type="button" className="rec-btn-register" onClick={onRegister}>
+                  Get Started
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </header>
 
@@ -195,8 +222,43 @@ const RecommendationPage = ({ userName = '', token, onLogout, onBack }) => {
           <p>Verified medical specialists, diagnostic tests, healthcare facilities, and preventive guidelines based on your Top-3 symptom diagnoses.</p>
         </section>
 
-        {error && <div className="recommendation-error-box">{error}</div>}
-        {loading && <div className="recommendation-loading-box">🔄 Loading clinical pathways…</div>}
+        {!token ? (
+          <section className="recommendation-guest-card">
+            <div className="rec-guest-icon" aria-hidden="true">🔒</div>
+            <h2>Sign In for Clinical Care Pathways</h2>
+            <p>
+              Personalized specialist recommendations, hospital triage, diagnostic test checklists, and preventive care regimens are saved securely to your personal account.
+            </p>
+            <div className="rec-guest-actions">
+              {onLogin && (
+                <button type="button" className="rec-guest-signin-btn" onClick={onLogin}>
+                  Sign In
+                </button>
+              )}
+              {onRegister && (
+                <button type="button" className="rec-guest-signup-btn" onClick={onRegister}>
+                  Create Free Account
+                </button>
+              )}
+            </div>
+          </section>
+        ) : (
+          <>
+            {error && (
+              <div className="recommendation-error-banner">
+                <span className="rec-error-icon">⚠️</span>
+                <div className="rec-error-text">
+                  <strong>Access Notice</strong>
+                  <p>{error}</p>
+                </div>
+                {onLogin && (
+                  <button type="button" className="rec-reauth-btn" onClick={onLogin}>
+                    Sign In Again
+                  </button>
+                )}
+              </div>
+            )}
+            {loading && <div className="recommendation-loading-box">🔄 Loading clinical pathways…</div>}
 
         {/* ── Latest Recommendation Hero Card ────────────────────────────── */}
         {latest && !selectedRecommendation && (() => {
@@ -234,7 +296,7 @@ const RecommendationPage = ({ userName = '', token, onLogout, onBack }) => {
               <div className="latest-card-body">
                 <div className="latest-condition-info">
                   <span className={`triage-badge ${triageInfo.badge}`}>
-                    {localizedTriageLabel}
+                    {triageInfo.icon} {localizedTriageLabel}
                   </span>
                   <h2>
                     {localizedLatestDisease}
@@ -243,7 +305,7 @@ const RecommendationPage = ({ userName = '', token, onLogout, onBack }) => {
                     )}
                   </h2>
                   <p className="latest-specialist-text">
-                    <strong>{(!showInEnglish && isLatestNonEng && uiLatest?.specialistHeading) || 'Primary Specialist'}:</strong>{' '}
+                    <strong>{(!showInEnglish && isLatestNonEng && (uiLatest?.recommendedSpecialist || uiLatest?.colSpecialist)) || 'Primary Specialist'}:</strong>{' '}
                     {localizedLatestSpecialist}
                     {!showInEnglish && isLatestNonEng && localizedLatestSpecialist !== rawSpecialist && (
                       <span className="rec-sub-eng"> ({rawSpecialist})</span>
@@ -376,7 +438,7 @@ const RecommendationPage = ({ userName = '', token, onLogout, onBack }) => {
                 <div className="clinical-card clinical-card--specialist">
                   <div className="card-header">
                     <span className="card-icon">👨‍⚕️</span>
-                    <h3>{(!showInEnglish && isDetailNonEng && uiDetail?.specialistHeading) || 'Recommended Specialist'}</h3>
+                    <h3>{(!showInEnglish && isDetailNonEng && (uiDetail?.recommendedSpecialist || uiDetail?.colSpecialist)) || 'Recommended Specialist'}</h3>
                   </div>
                   <div className="card-body">
                     <div className="specialist-badge">
@@ -425,7 +487,7 @@ const RecommendationPage = ({ userName = '', token, onLogout, onBack }) => {
                 <div className="clinical-card clinical-card--hospitals">
                   <div className="card-header">
                     <span className="card-icon">🏥</span>
-                    <h3>{(!showInEnglish && isDetailNonEng && uiDetail?.facilitiesHeading) || 'Nearby Facilities & Hospitals'}</h3>
+                    <h3>{(!showInEnglish && isDetailNonEng && uiDetail?.nearbyHospitals) || 'Nearby Facilities & Hospitals'}</h3>
                   </div>
                   <div className="card-body">
                     <div className="hospitals-chips-list">
@@ -498,6 +560,15 @@ const RecommendationPage = ({ userName = '', token, onLogout, onBack }) => {
                   </div>
                 </div>
               </div>
+
+              {/* ── AI Clinical Evaluation & Facility Metrics Section ────────── */}
+              <SearchMetricsSection
+                activeCandidate={activeDetailCand}
+                topPredictions={detailCands}
+                currentLanguage={detailLang}
+                onSelectCandidate={(idx) => setSelectedCandIdx(idx)}
+                selectedPredictionIdx={selectedCandIdx}
+              />
             </section>
           );
         })()}
@@ -540,8 +611,8 @@ const RecommendationPage = ({ userName = '', token, onLogout, onBack }) => {
                         {!showInEnglish && isItemNonEng && localizedPrevDisease !== item.predictedDisease && (
                           <span className="rec-item-eng-sub">({item.predictedDisease})</span>
                         )}
-                        <span className={`triage-badge-sm ${triageInfo.badge}`}>
-                          {localizedTriage.split(' ')[0]}
+                        <span className={`triage-badge-sm ${triageInfo.badge}`} title={localizedTriage}>
+                          {triageInfo.icon}
                         </span>
                       </div>
                       <span className="previous-date-label">{new Date(item.createdAt).toLocaleString()}</span>
@@ -584,6 +655,8 @@ const RecommendationPage = ({ userName = '', token, onLogout, onBack }) => {
             </div>
           )}
         </section>
+          </>
+        )}
       </main>
     </div>
   );

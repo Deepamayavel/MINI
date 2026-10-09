@@ -986,3 +986,176 @@
   font-weight: 700;
   color: #047857;
 }
+
+/* ── Guest State & Authentication Notices ── */
+.recommendation-guest-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rec-btn-signin {
+  padding: 8px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--rec-border);
+  background: #ffffff;
+  color: var(--rec-text);
+  font-weight: 700;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.rec-btn-signin:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.rec-btn-register {
+  padding: 8px 18px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.88rem;
+  cursor: pointer;
+  box-shadow: 0 3px 12px rgba(16, 185, 129, 0.25);
+  transition: all 0.2s ease;
+}
+
+.rec-btn-register:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);
+}
+
+.recommendation-guest-card {
+  padding: 48px 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  background: #ffffff;
+  border-radius: 20px;
+  border: 1px dashed var(--rec-border);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  margin-bottom: 24px;
+}
+
+.rec-guest-icon {
+  font-size: 2.8rem;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.recommendation-guest-card h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--rec-text);
+}
+
+.recommendation-guest-card p {
+  margin: 0;
+  max-width: 520px;
+  font-size: 0.95rem;
+  color: var(--rec-muted);
+  line-height: 1.6;
+}
+
+.rec-guest-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.rec-guest-signin-btn {
+  padding: 10px 24px;
+  border-radius: 12px;
+  border: 1px solid var(--rec-border);
+  background: #ffffff;
+  color: var(--rec-text);
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.rec-guest-signin-btn:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.rec-guest-signup-btn {
+  padding: 10px 26px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
+  transition: all 0.2s ease;
+}
+
+.rec-guest-signup-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.35);
+}
+
+.recommendation-error-banner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 18px;
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  border-radius: 14px;
+  margin-bottom: 20px;
+}
+
+.rec-error-icon {
+  font-size: 1.6rem;
+  flex-shrink: 0;
+}
+
+.rec-error-text {
+  flex: 1;
+  text-align: left;
+}
+
+.rec-error-text strong {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #9f1239;
+  margin-bottom: 2px;
+}
+
+.rec-error-text p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #be123c;
+  line-height: 1.4;
+}
+
+.rec-reauth-btn {
+  padding: 8px 16px;
+  border-radius: 10px;
+  border: 1px solid #fda4af;
+  background: #ffffff;
+  color: #be123c;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.18s ease;
+}
+
+.rec-reauth-btn:hover {
+  background: #be123c;
+  color: #ffffff;
+}
+

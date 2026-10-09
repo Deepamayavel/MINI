@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import './SearchPage.css';
 import { search } from '../src/api.js';
 import docIllustration from '../src/doc.png';
+import SearchMetricsSection from './SearchMetricsSection.jsx';
 import {
   detectInputLanguage,
   translateMedicalTerm,
@@ -48,6 +49,24 @@ const MULTILINGUAL_SAMPLE_PHRASES = {
     'కడుపు నొప్పి, వాంతులు మరియు తలతిరగడం',
     'ఛాతీ నొప్పి మరియు శ్వాస తీసుకోవడంలో ఇబ్బంది',
   ],
+  'fr-FR': [
+    "J'ai une forte fièvre, des maux de tête et d'intenses douleurs musculaires",
+    "Toux sèche persistante, mal de gorge et légère fièvre",
+    "Douleurs abdominales aiguës, nausées et vomissements répétés",
+    "Douleur thoracique serrée, essoufflement et étourdissements",
+  ],
+  'de-DE': [
+    'Ich habe hohes Fieber, starke Kopfschmerzen und Gliederschmerzen',
+    'Anhaltender trockener Husten, Halsschmerzen und leichtes Fieber',
+    'Starke Bauchschmerzen, Übelkeit und Erbrechen',
+    'Brustschmerzen, Atemnot und Schwindelgefühl',
+  ],
+  'ar-SA': [
+    'عندي حمى شديدة وصداع حاد وألم في كامل الجسم',
+    'سعال جاف مستمر والتهاب في الحلق وحمى خفيفة',
+    'ألم شديد في البطن وغثيان وقيء مستمر',
+    'ألم وضيق في الصدر وضيق في التنفس ودوار',
+  ],
   'es-ES': [
     'Tengo fiebre alta, dolor de cabeza y dolor de cuerpo',
     'Tos seca persistente, dolor de garganta y resfriado',
@@ -75,13 +94,25 @@ const getTriageSeverity = (diseaseName = '', confidence = 0.5) => {
   return { level: 'mild', label: 'Mild / Home Care Guidance', badgeClass: 'triage-badge--mild', icon: '🟢' };
 };
 
-const SearchPage = ({ userName = '', token, onLogout, onBack, startVoice = false, initialQuery = '' }) => {
+const SearchPage = ({
+  userName = '',
+  token,
+  onLogout,
+  onBack,
+  onLogin,
+  onRegister,
+  startVoice = false,
+  initialQuery = '',
+  currentLanguage = 'en-IN',
+  onLanguageChange
+}) => {
   const [query, setQuery] = useState(initialQuery);
-  const [selectedLang, setSelectedLang] = useState('en-IN');
-  const [activeInputLang, setActiveInputLang] = useState('en-IN');
+  const [selectedLang, setSelectedLang] = useState(currentLanguage || 'en-IN');
+  const [activeInputLang, setActiveInputLang] = useState(currentLanguage || 'en-IN');
   const [showInOriginalEnglish, setShowInOriginalEnglish] = useState(false);
   const [listening, setListening] = useState(false);
   const [audioLevel, setAudioLevel] = useState(0);
+  const [speaking, setSpeaking] = useState(false);
   const [liveTranscript, setLiveTranscript] = useState('');
   const [voiceUsed, setVoiceUsed] = useState(startVoice);
   const [result, setResult] = useState(null);
@@ -95,6 +126,20 @@ const SearchPage = ({ userName = '', token, onLogout, onBack, startVoice = false
   const animationFrameRef = useRef(null);
   const queryRef = useRef(query);
   const selectedLangRef = useRef(selectedLang);
+
+  useEffect(() => {
+    if (initialQuery && initialQuery.trim()) {
+      executeSearch(initialQuery.trim());
+    }
+  }, []);
+
+  useEffect(() => {
+    if (currentLanguage && currentLanguage !== selectedLang) {
+      setSelectedLang(currentLanguage);
+      selectedLangRef.current = currentLanguage;
+      setActiveInputLang(currentLanguage);
+    }
+  }, [currentLanguage]);
 
   useEffect(() => {
     queryRef.current = query;
@@ -168,10 +213,6 @@ const SearchPage = ({ userName = '', token, onLogout, onBack, startVoice = false
       setError('Please speak or enter your symptoms before analyzing.');
       return;
     }
-    if (!token) {
-      setError('You must be logged in to run search.');
-      return;
-    }
 
     // Auto-detect input language from script or active language selector
     const detected = detectInputLanguage(trimmed, selectedLangRef.current || selectedLang);
@@ -179,8 +220,13 @@ const SearchPage = ({ userName = '', token, onLogout, onBack, startVoice = false
     setShowInOriginalEnglish(false);
     try {
       localStorage.setItem('mediguide_user_lang', detected);
+      localStorage.setItem('mediguide_latest_lang', detected);
+      localStorage.setItem('mediguide_latest_query_text', trimmed);
     } catch {
       // ignore
+    }
+    if (onLanguageChange) {
+      onLanguageChange(detected);
     }
 
     setError('');
@@ -267,6 +313,9 @@ const SearchPage = ({ userName = '', token, onLogout, onBack, startVoice = false
 
     return () => {
       stopListening();
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
     };
   }, []);
 
@@ -319,6 +368,9 @@ const SearchPage = ({ userName = '', token, onLogout, onBack, startVoice = false
     selectedLangRef.current = newLang;
     setActiveInputLang(newLang);
     setShowInOriginalEnglish(false);
+    if (onLanguageChange) {
+      onLanguageChange(newLang);
+    }
     if (listening) {
       startListening(newLang);
     }
@@ -361,6 +413,10 @@ const SearchPage = ({ userName = '', token, onLogout, onBack, startVoice = false
     setVoiceUsed(false);
     setShowInOriginalEnglish(false);
     stopListening();
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+    setSpeaking(false);
   };
 
   const samplePhrases = MULTILINGUAL_SAMPLE_PHRASES[selectedLang] || MULTILINGUAL_SAMPLE_PHRASES['en-IN'];
@@ -430,6 +486,47 @@ const SearchPage = ({ userName = '', token, onLogout, onBack, startVoice = false
 
   const activeTriage = activeCandidate ? getLocalizedTriage(activeCandidate.disease || activeCandidate.predictedDisease, activeCandidate.confidenceScore) : null;
 
+  const handleSpeakReport = () => {
+    if (!('speechSynthesis' in window)) {
+      alert('Speech synthesis (voice audio playback) is not supported in this browser.');
+      return;
+    }
+
+    if (speaking) {
+      window.speechSynthesis.cancel();
+      setSpeaking(false);
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+
+    if (!activeCandidate) return;
+
+    const diseaseName = getLocalizedDisease(activeCandidate.disease);
+    const specialistName = getLocalizedSpecialist(activeCandidate.recommendedSpecialist || result?.recommendedSpecialist);
+    const tests = (activeCandidate.recommendedTests && activeCandidate.recommendedTests.length > 0
+      ? activeCandidate.recommendedTests
+      : result?.recommendedTests || []
+    ).map(getLocalizedTest).slice(0, 3).join(', ');
+    const precs = (activeCandidate.precautions && activeCandidate.precautions.length > 0
+      ? activeCandidate.precautions
+      : result?.precautions || []
+    ).map(getLocalizedPrecaution).slice(0, 3).join('. ');
+
+    const speechText = `Assessment: ${diseaseName}. Match strength: ${Math.round((activeCandidate.confidenceScore || 0) * 100)} percent. Recommended specialist: ${specialistName}. Diagnostic tests: ${tests || 'Clinical consultation'}. Key precautions: ${precs}.`;
+
+    const utterance = new SpeechSynthesisUtterance(speechText);
+    utterance.lang = activeInputLang || selectedLang || 'en-IN';
+    utterance.rate = 0.95;
+    utterance.pitch = 1.0;
+
+    utterance.onstart = () => setSpeaking(true);
+    utterance.onend = () => setSpeaking(false);
+    utterance.onerror = () => setSpeaking(false);
+
+    window.speechSynthesis.speak(utterance);
+  };
+
   return (
     <div className="search-shell">
       <header className="search-header">
@@ -469,15 +566,26 @@ const SearchPage = ({ userName = '', token, onLogout, onBack, startVoice = false
             </select>
           </div>
 
-          <div className="user-row">
-            <div className="user-pill">
-              <span className="user-avatar-badge">{userName ? userName.slice(0, 1).toUpperCase() : 'U'}</span>
-              <span>{userName}</span>
+          {token ? (
+            <div className="user-row">
+              <div className="user-pill">
+                <span className="user-avatar-badge">{userName ? userName.slice(0, 1).toUpperCase() : 'U'}</span>
+                <span>{userName}</span>
+              </div>
+              <button className="logout-btn" type="button" onClick={onLogout}>
+                Logout
+              </button>
             </div>
-            <button className="logout-btn" type="button" onClick={onLogout}>
-              Logout
-            </button>
-          </div>
+          ) : (
+            <div className="guest-nav-actions">
+              <button className="guest-btn-signin" type="button" onClick={onLogin}>
+                Sign In
+              </button>
+              <button className="guest-btn-register" type="button" onClick={onRegister}>
+                Get Started
+              </button>
+            </div>
+          )}
         </div>
       </header>
 
@@ -558,19 +666,9 @@ const SearchPage = ({ userName = '', token, onLogout, onBack, startVoice = false
           <div className="search-card">
             <div className="search-card-topbar">
               <span className="search-card-label">🩺 Describe Symptoms</span>
-              <div className="card-lang-selector">
-                <span className="card-lang-label">🌐 Input Language:</span>
-                <select
-                  className="card-lang-dropdown"
-                  value={selectedLang}
-                  onChange={handleLanguageChange}
-                >
-                  {SUPPORTED_LANGUAGES.map((lang) => (
-                    <option key={lang.code} value={lang.code}>
-                      {lang.flag} {lang.native} ({lang.name})
-                    </option>
-                  ))}
-                </select>
+              <div className="card-lang-indicator" title={`Active language: ${currentLangObj.name} (Change in top navbar)`}>
+                <span className="card-lang-dot"></span>
+                <span className="card-lang-text">🌐 {currentLangObj.flag} {currentLangObj.native}</span>
               </div>
             </div>
 
@@ -812,6 +910,16 @@ const SearchPage = ({ userName = '', token, onLogout, onBack, startVoice = false
               </div>
 
               <div className="report-hero-right">
+                <button
+                  type="button"
+                  className={`voice-listen-diagnosis-btn ${speaking ? 'voice-listen-diagnosis-btn--active' : ''}`}
+                  onClick={handleSpeakReport}
+                  title={speaking ? 'Stop speaking diagnosis' : 'Listen to diagnosis read aloud'}
+                  aria-label={speaking ? 'Stop Voice' : 'Listen via Voice'}
+                >
+                  <span className="voice-listen-icon">{speaking ? '⏹️' : '🔊'}</span>
+                  <span>{speaking ? 'Stop Voice' : 'Listen via Voice'}</span>
+                </button>
                 <div className="confidence-metric-card">
                   <span className="confidence-metric-label">{uiLabels?.matchStrength || 'MATCH STRENGTH'}</span>
                   <div className="confidence-metric-value">
@@ -958,6 +1066,15 @@ const SearchPage = ({ userName = '', token, onLogout, onBack, startVoice = false
               </div>
             </div>
 
+            {/* ── AI Model Evaluation & Performance Metrics Section ────────── */}
+            <SearchMetricsSection
+              activeCandidate={activeCandidate}
+              topPredictions={topPredictionsList}
+              currentLanguage={targetLang}
+              onSelectCandidate={(idx) => setSelectedPredictionIdx(idx)}
+              selectedPredictionIdx={selectedPredictionIdx}
+            />
+
             {/* ── Top-3 Differential Comparison Matrix ────────────────────── */}
             {topPredictionsList.length > 1 && (
               <div className="knn-matrix-container">
@@ -1038,6 +1155,29 @@ const SearchPage = ({ userName = '', token, onLogout, onBack, startVoice = false
                       })}
                     </tbody>
                   </table>
+                </div>
+              </div>
+            )}
+
+            {/* ── Guest Personal Health Record Prompt ─────────────────────── */}
+            {!token && (
+              <div className="guest-save-banner">
+                <div className="guest-save-content">
+                  <span className="guest-save-icon" aria-hidden="true">📋</span>
+                  <div>
+                    <h4 className="guest-save-title">Save this diagnosis to your Personal Health Record</h4>
+                    <p className="guest-save-desc">
+                      Create a free account or sign in to save this differential diagnosis, track symptom recurrence over time, and access accredited hospital directions anytime.
+                    </p>
+                  </div>
+                </div>
+                <div className="guest-save-actions">
+                  <button type="button" className="btn-banner-login" onClick={onLogin}>
+                    Sign In
+                  </button>
+                  <button type="button" className="btn-banner-register" onClick={onRegister}>
+                    Create Free Account →
+                  </button>
                 </div>
               </div>
             )}

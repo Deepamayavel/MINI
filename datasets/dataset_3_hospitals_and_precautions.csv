@@ -1,0 +1,31 @@
+Disease,Referral_Hospitals,Precaution_1,Precaution_2,Precaution_3,Precaution_4
+Diabetes,"Apollo Hospitals, Fortis Healthcare, AIIMS",Monitor blood sugar regularly,Follow a low-sugar diet,Exercise daily,Take prescribed insulin or medication
+Hypertension,"Apollo Hospitals, Fortis Healthcare, Manipal Hospitals",Reduce salt intake,Exercise regularly,Avoid stress,Take prescribed medications
+Heart Attack,"Apollo Hospitals, Fortis Heart Institute, AIIMS Cardiology",Call emergency services immediately,Chew aspirin if not allergic,Rest and avoid exertion,Follow up with cardiologist
+Common Cold,"Apollo Clinics, Fortis Clinics, Local Government Hospital",Rest and stay hydrated,Use saline nasal drops,Avoid cold exposure,Take OTC cold medication
+Influenza,"Apollo Hospitals, Fortis Healthcare, AIIMS",Rest and stay hydrated,Take antiviral medication,Avoid contact with others,Get annual flu vaccine
+COVID-19,"Apollo COVID Center, Fortis Healthcare, AIIMS",Isolate immediately,Monitor oxygen levels,Stay hydrated,Seek emergency care if breathing worsens
+Pneumonia,"Apollo Hospitals, Fortis Healthcare, AIIMS",Complete the full antibiotic course,Rest and stay hydrated,Use a humidifier,Avoid smoking
+Tuberculosis,"Government TB Hospital, AIIMS, Apollo Hospitals",Complete full 6-month treatment,Wear a mask,Ensure good ventilation,Avoid close contact
+Dengue Fever,"Apollo Hospitals, Fortis Healthcare, Government General Hospital",Stay hydrated with fluids,Monitor platelet count,Avoid aspirin,Use mosquito repellent
+Malaria,"Government General Hospital, Apollo Hospitals, Fortis Healthcare",Take full course of antimalarials,Use mosquito nets,Stay hydrated,Avoid mosquito bites
+Typhoid,"Apollo Hospitals, Fortis Healthcare, Government General Hospital",Complete antibiotic course,Drink boiled water only,Eat light easily digestible food,Maintain hygiene
+Gastritis,"Apollo Hospitals, Fortis Healthcare, Manipal Hospitals",Avoid spicy and acidic foods,Take antacids as prescribed,Eat small frequent meals,Avoid alcohol and smoking
+Appendicitis,"Apollo Hospitals, Fortis Healthcare, AIIMS",Seek immediate medical attention,Do not eat or drink before surgery,Follow post-surgery care,Rest adequately
+Migraine,"Apollo Hospitals, Fortis Neurology, NIMHANS",Rest in a dark quiet room,Take prescribed migraine medication,Avoid triggers like bright light,Stay hydrated
+Anemia,"Apollo Hospitals, Fortis Healthcare, AIIMS",Eat iron-rich foods,Take iron supplements as prescribed,Avoid tea/coffee with meals,Get regular blood tests
+Urinary Tract Infection,"Apollo Hospitals, Fortis Healthcare, Manipal Hospitals",Drink plenty of water,Complete antibiotic course,Maintain hygiene,Avoid holding urine
+Kidney Stones,"Apollo Hospitals, Fortis Urology, AIIMS",Drink 2-3 liters of water daily,Avoid high-oxalate foods,Take prescribed medication,Follow up with urologist
+Arthritis,"Apollo Hospitals, Fortis Orthopedics, Manipal Hospitals",Do low-impact exercises,Apply hot/cold packs,Take anti-inflammatory medication,Maintain healthy weight
+Jaundice,"Apollo Hospitals, Fortis Liver Institute, AIIMS",Rest and avoid alcohol,Eat light easily digestible food,Stay hydrated,Avoid fatty foods
+Hepatitis,"Apollo Hospitals, Fortis Liver Institute, AIIMS",Avoid alcohol completely,Get vaccinated for Hepatitis A and B,Take antiviral medication,Follow up regularly
+Allergy,"Apollo Hospitals, Fortis Healthcare, Manipal Hospitals",Identify and avoid allergens,Take antihistamines as prescribed,Carry an epinephrine auto-injector,Consult allergist for immunotherapy
+Food Poisoning,"Apollo Clinics, Fortis Healthcare, Government General Hospital",Stay hydrated with ORS,Avoid solid food initially,Seek care if symptoms persist over 2 days,Maintain food hygiene
+Vertigo,"Apollo Hospitals, Fortis Neurology, NIMHANS",Avoid sudden head movements,Do Epley maneuver exercises,Take prescribed vestibular medication,Avoid driving during episodes
+Asthma,"Apollo Hospitals, Fortis Pulmonology, AIIMS",Always carry your inhaler,Avoid triggers like dust and smoke,Take controller medication daily,Monitor peak flow regularly
+Bronchitis,"Apollo Hospitals, Fortis Healthcare, Manipal Hospitals",Rest and stay hydrated,Use a humidifier,Avoid smoking,Take prescribed bronchodilators
+Chickenpox,"Apollo Clinics, Fortis Healthcare, Government General Hospital",Avoid scratching blisters,Apply calamine lotion,Stay isolated to prevent spread,Take antiviral medication if prescribed
+Measles,"Government General Hospital, Apollo Hospitals, Fortis Healthcare",Stay isolated,Rest and stay hydrated,Take vitamin A supplements,Get vaccinated (MMR)
+Irritable Bowel Syndrome,"Apollo Hospitals, Fortis Healthcare, Manipal Hospitals",Avoid trigger foods,Eat high-fiber diet,Manage stress,Take prescribed medication
+Depression,"NIMHANS, Apollo Mental Health, Fortis Mental Health",Seek professional counseling,Take prescribed antidepressants,Exercise regularly,Maintain social connections
+Anxiety,"NIMHANS, Apollo Mental Health, Fortis Mental Health",Practice deep breathing exercises,Seek therapy or counseling,Avoid caffeine and alcohol,Take prescribed medication

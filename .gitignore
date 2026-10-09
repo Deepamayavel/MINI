@@ -23,3 +23,7 @@ Thumbs.db
 .idea/
 *.log
 
+# Local Database & Binary
+local_data/
+mongod.exe
+

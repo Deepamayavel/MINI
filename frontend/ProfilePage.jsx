@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './ProfilePage.css';
 import { getDashboardSummary } from '../src/api.js';
+import { SUPPORTED_LANGUAGES } from '../src/medicalTranslations.js';
 
 const ProfilePage = ({
   userName = 'User',
@@ -12,6 +13,8 @@ const ProfilePage = ({
   onSearchClick,
   onHistoryClick,
   onRecommendationsClick,
+  currentLanguage = 'en-IN',
+  onLanguageChange,
 }) => {
   const [summary, setSummary] = useState({ totalSearches: 0, totalRecommendations: 0, lastSearchDate: null });
   const [isEditingName, setIsEditingName] = useState(false);
@@ -116,6 +119,22 @@ const ProfilePage = ({
         </div>
 
         <div className="profile-top-actions">
+          <div className="profile-language-selector-wrapper" title="Change Language">
+            <span className="lang-globe-icon" aria-hidden="true">🌐</span>
+            <select
+              id="profile-lang-select"
+              className="profile-language-dropdown"
+              value={currentLanguage}
+              onChange={(e) => onLanguageChange && onLanguageChange(e.target.value)}
+              aria-label="Language Selector"
+            >
+              {SUPPORTED_LANGUAGES.map((lang) => (
+                <option key={lang.code} value={lang.code}>
+                  {lang.flag} {lang.native} ({lang.name})
+                </option>
+              ))}
+            </select>
+          </div>
           <button className="profile-btn-ghost" type="button" onClick={onBack}>
             🏠 Dashboard
           </button>

@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import './Dashboard.css';
 import { getHistory, getDashboardSummary } from '../src/api.js';
+import {
+  SUPPORTED_LANGUAGES,
+  getDashboardLabels,
+  getTranslatedHealthTip,
+  translateMedicalTerm,
+} from '../src/medicalTranslations.js';
 
 const HEALTH_TIPS = [
   { icon: '💧', category: 'Hydration', title: 'Optimal Daily Hydration', text: 'Drink at least 8–10 glasses of water daily to maintain cellular hydration, kidney function, and energy levels.' },
@@ -22,7 +28,19 @@ const getDailyTipIndex = () => {
   return dayOfYear % HEALTH_TIPS.length;
 };
 
-const DashboardPage = ({ userName = 'User', userEmail, token, onLogout, onSearchClick, onVoiceSearchClick, onHistoryClick, onRecommendationsClick, onProfileClick }) => {
+const DashboardPage = ({
+  userName = 'User',
+  userEmail,
+  token,
+  onLogout,
+  onSearchClick,
+  onVoiceSearchClick,
+  onHistoryClick,
+  onRecommendationsClick,
+  onProfileClick,
+  currentLanguage = 'en-IN',
+  onLanguageChange,
+}) => {
   const [recentSearches, setRecentSearches] = useState([]);
   const [summary, setSummary] = useState({ totalSearches: 0, totalRecommendations: 0, lastSearchDate: null });
   const [tipIndex, setTipIndex] = useState(getDailyTipIndex);
@@ -30,6 +48,10 @@ const DashboardPage = ({ userName = 'User', userEmail, token, onLogout, onSearch
   const [height, setHeight] = useState('');
   const [weight, setWeight] = useState('');
   const [bmiResult, setBmiResult] = useState(null);
+
+  // Localized dictionary for the entire dashboard
+  const t = getDashboardLabels(currentLanguage);
+  const activeTip = getTranslatedHealthTip(tipIndex, HEALTH_TIPS, currentLanguage);
 
   const displayEmail = userEmail || (userName.includes('@') ? userName : `${userName.toLowerCase().replace(/\s+/g, '')}@gmail.com`);
 
@@ -41,17 +63,17 @@ const DashboardPage = ({ userName = 'User', userEmail, token, onLogout, onSearch
     if (!heightInMetres || !weightInKg || heightInMetres <= 0 || weightInKg <= 0) return;
 
     const bmi = weightInKg / (heightInMetres * heightInMetres);
-    let category = 'Healthy weight';
+    let category = t.healthyWeight;
     let badgeClass = 'bmi-cat--normal';
 
     if (bmi < 18.5) {
-      category = 'Underweight';
+      category = t.underweight;
       badgeClass = 'bmi-cat--under';
     } else if (bmi >= 25 && bmi < 30) {
-      category = 'Overweight';
+      category = t.overweight;
       badgeClass = 'bmi-cat--over';
     } else if (bmi >= 30) {
-      category = 'Obesity (Consult a Doctor)';
+      category = t.obesity;
       badgeClass = 'bmi-cat--obese';
     }
 
@@ -82,7 +104,7 @@ const DashboardPage = ({ userName = 'User', userEmail, token, onLogout, onSearch
           </div>
           <div>
             <p className="sidebar-brand-title">MediGuide</p>
-            <span className="sidebar-brand-tag">Patient Portal</span>
+            <span className="sidebar-brand-tag">{t.brandTag}</span>
           </div>
         </div>
 
@@ -90,23 +112,23 @@ const DashboardPage = ({ userName = 'User', userEmail, token, onLogout, onSearch
         <nav className="sidebar-nav">
           <button className="sidebar-nav-btn sidebar-nav-btn--active" type="button">
             <span className="sidebar-nav-icon">🏠</span>
-            <span>Dashboard</span>
+            <span>{t.navDashboard}</span>
           </button>
           <button className="sidebar-nav-btn" type="button" onClick={onSearchClick}>
             <span className="sidebar-nav-icon">🔍</span>
-            <span>Symptom Search</span>
+            <span>{t.navSearch}</span>
           </button>
           <button className="sidebar-nav-btn" type="button" onClick={onRecommendationsClick}>
             <span className="sidebar-nav-icon">📌</span>
-            <span>Recommendations</span>
+            <span>{t.navRecommendations}</span>
           </button>
           <button className="sidebar-nav-btn" type="button" onClick={onHistoryClick}>
             <span className="sidebar-nav-icon">🕘</span>
-            <span>Search History</span>
+            <span>{t.navHistory}</span>
           </button>
           <button className="sidebar-nav-btn" type="button" onClick={onProfileClick}>
             <span className="sidebar-nav-icon">👤</span>
-            <span>My Profile</span>
+            <span>{t.navProfile}</span>
           </button>
         </nav>
 
@@ -116,7 +138,7 @@ const DashboardPage = ({ userName = 'User', userEmail, token, onLogout, onSearch
             <path d="M16 17L21 12L16 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             <path d="M21 12H9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-          <span>Sign Out</span>
+          <span>{t.navSignOut}</span>
         </button>
       </aside>
 
@@ -128,13 +150,31 @@ const DashboardPage = ({ userName = 'User', userEmail, token, onLogout, onSearch
             <div className="dashboard-header-badge">
               <span className="live-sparkle">✨</span> AI Healthcare Assistant Online
             </div>
-            <h1>Welcome back, {userName} 👋</h1>
+            <h1>{t.welcomeGreeting}, {userName} 👋</h1>
             <p className="dashboard-header-sub">
-              Analyze your symptoms with AI, explore Top-3 clinical recommendations, and manage your health.
+              {t.welcomeSubtitle}
             </p>
           </div>
 
           <div className="dashboard-header-right">
+            {/* 🌐 Language Switcher Dropdown */}
+            <div className="dashboard-language-selector-wrapper" title={t.languageSelect}>
+              <span className="lang-globe-icon" aria-hidden="true">🌐</span>
+              <select
+                id="dashboard-lang-select"
+                className="dashboard-language-dropdown"
+                value={currentLanguage}
+                onChange={(e) => onLanguageChange && onLanguageChange(e.target.value)}
+                aria-label={t.languageSelect}
+              >
+                {SUPPORTED_LANGUAGES.map((lang) => (
+                  <option key={lang.code} value={lang.code}>
+                    {lang.flag} {lang.native} ({lang.name})
+                  </option>
+                ))}
+              </select>
+            </div>
+
             <div className="user-profile-badge" onClick={onProfileClick} title="View Profile" style={{ cursor: 'pointer' }}>
               <div className="user-profile-avatar">
                 {userName ? userName.slice(0, 1).toUpperCase() : 'U'}
@@ -144,8 +184,8 @@ const DashboardPage = ({ userName = 'User', userEmail, token, onLogout, onSearch
                 <span className="user-profile-email">{displayEmail}</span>
               </div>
             </div>
-            <button className="header-logout-pill" type="button" onClick={onLogout} title="Sign Out">
-              Logout
+            <button className="header-logout-pill" type="button" onClick={onLogout} title={t.navSignOut}>
+              {t.navSignOut}
             </button>
           </div>
         </header>
@@ -155,38 +195,38 @@ const DashboardPage = ({ userName = 'User', userEmail, token, onLogout, onSearch
           <div className="stat-card stat-card--searches">
             <div className="stat-icon-wrapper">🔍</div>
             <div className="stat-body">
-              <span className="stat-label">TOTAL SEARCHES</span>
+              <span className="stat-label">{t.statSearchesTitle.toUpperCase()}</span>
               <h2 className="stat-value">{summary.totalSearches}</h2>
-              <span className="stat-meta">Recorded queries</span>
+              <span className="stat-meta">{t.statSearchesSub}</span>
             </div>
           </div>
 
           <div className="stat-card stat-card--recommendations">
             <div className="stat-icon-wrapper">🩺</div>
             <div className="stat-body">
-              <span className="stat-label">RECOMMENDATIONS</span>
+              <span className="stat-label">{t.statReportsTitle.toUpperCase()}</span>
               <h2 className="stat-value">{summary.totalRecommendations}</h2>
-              <span className="stat-meta">Clinical care pathways</span>
+              <span className="stat-meta">{t.statReportsSub}</span>
             </div>
           </div>
 
           <div className="stat-card stat-card--activity">
             <div className="stat-icon-wrapper">🕒</div>
             <div className="stat-body">
-              <span className="stat-label">LAST CHECKUP</span>
+              <span className="stat-label">{t.statLastActivityTitle.toUpperCase()}</span>
               <h2 className="stat-value-date">
-                {summary.lastSearchDate ? new Date(summary.lastSearchDate).toLocaleDateString() : 'No searches yet'}
+                {summary.lastSearchDate ? new Date(summary.lastSearchDate).toLocaleDateString() : t.noActivity}
               </h2>
-              <span className="stat-meta">Recent activity log</span>
+              <span className="stat-meta">{t.statReadinessSub}</span>
             </div>
           </div>
         </section>
 
-        {/* Health Tools Grid with Solid Interactive Buttons */}
+        {/* Health Tools Grid */}
         <section className="quick-actions-section">
           <div className="section-title-wrap">
-            <h2>Explore Health Tools</h2>
-            <p>Direct access to all diagnostic, wellness, and medical history features</p>
+            <h2>{t.statReadinessTitle}</h2>
+            <p>{t.statReportsSub}</p>
           </div>
 
           <div className="quick-cards-grid">
@@ -196,14 +236,14 @@ const DashboardPage = ({ userName = 'User', userEmail, token, onLogout, onSearch
                 <div className="action-icon-circle">🔍</div>
                 <span className="action-tag">Voice & Text</span>
               </div>
-              <h3>AI Symptom Search</h3>
-              <p>Describe what you feel via speech or text to receive instant k=3 differential predictions.</p>
+              <h3>{t.checkerTitle}</h3>
+              <p>{t.checkerDesc}</p>
               <button 
                 type="button" 
                 className="action-solid-btn action-solid-btn--emerald"
                 onClick={onSearchClick}
               >
-                <span>🔍 Launch Search</span>
+                <span>🔍 {t.launchAnalysis}</span>
               </button>
             </article>
 
@@ -213,14 +253,14 @@ const DashboardPage = ({ userName = 'User', userEmail, token, onLogout, onSearch
                 <div className="action-icon-circle action-icon-circle--rec">🩺</div>
                 <span className="action-tag action-tag--rec">Clinical Care</span>
               </div>
-              <h3>Clinical Care Plans</h3>
-              <p>Access specialists, lab test recommendations, and preventive care guidelines.</p>
+              <h3>{t.navRecommendations}</h3>
+              <p>{t.statReportsSub}</p>
               <button 
                 type="button" 
                 className="action-solid-btn action-solid-btn--teal"
                 onClick={onRecommendationsClick}
               >
-                <span>📌 View Care Plans</span>
+                <span>📌 {t.navRecommendations}</span>
               </button>
             </article>
 
@@ -230,14 +270,14 @@ const DashboardPage = ({ userName = 'User', userEmail, token, onLogout, onSearch
                 <div className="action-icon-circle action-icon-circle--vitals">⚖️</div>
                 <span className="action-tag action-tag--vitals">Health Metric</span>
               </div>
-              <h3>BMI & Vitals Calculator</h3>
-              <p>Calculate your Body Mass Index score and determine healthy weight categories instantly.</p>
+              <h3>{t.bmiTitle}</h3>
+              <p>{t.bmiDesc}</p>
               <button 
                 type="button" 
                 className="action-solid-btn action-solid-btn--indigo"
                 onClick={() => setIsBmiOpen(true)}
               >
-                <span>⚖️ Calculate BMI</span>
+                <span>⚖️ {t.openBmi}</span>
               </button>
             </article>
 
@@ -247,14 +287,14 @@ const DashboardPage = ({ userName = 'User', userEmail, token, onLogout, onSearch
                 <div className="action-icon-circle action-icon-circle--history">🕘</div>
                 <span className="action-tag action-tag--history">Timeline</span>
               </div>
-              <h3>Search & History Log</h3>
-              <p>Review previously recorded symptoms, differential match scores, and timestamp logs.</p>
+              <h3>{t.navHistory}</h3>
+              <p>{t.recentSearchesSub}</p>
               <button 
                 type="button" 
                 className="action-solid-btn action-solid-btn--slate"
                 onClick={onHistoryClick}
               >
-                <span>🕘 Open History</span>
+                <span>🕘 {t.navHistory}</span>
               </button>
             </article>
           </div>
@@ -268,12 +308,12 @@ const DashboardPage = ({ userName = 'User', userEmail, token, onLogout, onSearch
               <div className="panel-header-left">
                 <span className="panel-icon">📋</span>
                 <div>
-                  <h3>Recent Search History</h3>
-                  <span className="panel-sub">Your latest symptom assessments</span>
+                  <h3>{t.recentSearchesTitle}</h3>
+                  <span className="panel-sub">{t.recentSearchesSub}</span>
                 </div>
               </div>
               <button type="button" className="panel-header-btn" onClick={onHistoryClick}>
-                View All History →
+                {t.recentSearchesSub} →
               </button>
             </div>
 
@@ -281,9 +321,9 @@ const DashboardPage = ({ userName = 'User', userEmail, token, onLogout, onSearch
               {recentSearches.length === 0 ? (
                 <div className="empty-recent-box">
                   <span className="empty-icon">🔍</span>
-                  <p>No recent symptom searches recorded.</p>
+                  <p>{t.noRecentSearches}</p>
                   <button type="button" className="empty-action-btn" onClick={onSearchClick}>
-                    🔍 Search Your Symptoms Now
+                    🔍 {t.startAnalysis}
                   </button>
                 </div>
               ) : (
@@ -300,13 +340,13 @@ const DashboardPage = ({ userName = 'User', userEmail, token, onLogout, onSearch
                       <div className="recent-condition-chips-list">
                         {item.topPredictions.map((c, i) => (
                           <span key={i} className="recent-condition-tag">
-                            #{c.rank || (i + 1)} {c.disease}
+                            #{c.rank || (i + 1)} {translateMedicalTerm(c.disease, currentLanguage)}
                           </span>
                         ))}
                       </div>
                     ) : item.predictedDisease ? (
                       <span className="recent-condition-tag">
-                        {item.predictedDisease}
+                        {translateMedicalTerm(item.predictedDisease, currentLanguage)}
                       </span>
                     ) : null}
                   </div>
@@ -322,21 +362,21 @@ const DashboardPage = ({ userName = 'User', userEmail, token, onLogout, onSearch
                 <span className="panel-icon">💡</span>
                 <div className="tip-title-group">
                   <div className="tip-heading-row">
-                    <h3>Daily Health Insight</h3>
+                    <h3>{t.dailyTipTitle}</h3>
                     <span className="tip-counter-badge">Tip {tipIndex + 1} of {HEALTH_TIPS.length}</span>
                   </div>
-                  <span className="panel-sub">Preventive wellness guidance</span>
+                  <span className="panel-sub">{t.dailyTipDesc}</span>
                 </div>
               </div>
             </div>
 
             <div className="tip-content-box">
               <div className="tip-top-meta">
-                <span className="tip-category-pill">{HEALTH_TIPS[tipIndex].category}</span>
-                <span className="tip-icon-large">{HEALTH_TIPS[tipIndex].icon}</span>
+                <span className="tip-category-pill">{activeTip.category}</span>
+                <span className="tip-icon-large">{activeTip.icon}</span>
               </div>
-              <h4 className="tip-headline">{HEALTH_TIPS[tipIndex].title}</h4>
-              <p className="tip-body">{HEALTH_TIPS[tipIndex].text}</p>
+              <h4 className="tip-headline">{activeTip.title}</h4>
+              <p className="tip-body">{activeTip.text}</p>
             </div>
 
             <div className="tip-carousel-controls">
@@ -356,7 +396,7 @@ const DashboardPage = ({ userName = 'User', userEmail, token, onLogout, onSearch
                 className="tip-next-btn"
                 onClick={() => setTipIndex((tipIndex + 1) % HEALTH_TIPS.length)}
               >
-                Next Tip →
+                {t.nextTipBtn}
               </button>
             </div>
           </div>
@@ -372,7 +412,7 @@ const DashboardPage = ({ userName = 'User', userEmail, token, onLogout, onSearch
                 <span className="bmi-icon">⚖️</span>
                 <div>
                   <span className="bmi-sub-tag">HEALTH UTILITY</span>
-                  <h2 id="bmi-modal-title">Body Mass Index (BMI) Calculator</h2>
+                  <h2 id="bmi-modal-title">{t.bmiTitle}</h2>
                 </div>
               </div>
               <button type="button" className="bmi-modal-close" onClick={() => setIsBmiOpen(false)} aria-label="Close BMI calculator">
@@ -381,13 +421,13 @@ const DashboardPage = ({ userName = 'User', userEmail, token, onLogout, onSearch
             </div>
 
             <p className="bmi-modal-desc">
-              Enter your height and weight to determine your Body Mass Index (BMI) and health category.
+              {t.bmiDesc}
             </p>
 
             <form className="bmi-form" onSubmit={calculateBmi}>
               <div className="bmi-inputs-row">
                 <label className="bmi-field">
-                  <span>Height (in cm)</span>
+                  <span>{t.heightLabel}</span>
                   <input
                     type="number"
                     min="50"
@@ -401,7 +441,7 @@ const DashboardPage = ({ userName = 'User', userEmail, token, onLogout, onSearch
                 </label>
 
                 <label className="bmi-field">
-                  <span>Weight (in kg)</span>
+                  <span>{t.weightLabel}</span>
                   <input
                     type="number"
                     min="20"
@@ -416,13 +456,13 @@ const DashboardPage = ({ userName = 'User', userEmail, token, onLogout, onSearch
               </div>
 
               <button type="submit" className="bmi-calc-btn">
-                ⚡ Calculate BMI Score
+                ⚡ {t.calculateBmiBtn}
               </button>
             </form>
 
             {bmiResult && (
               <div className="bmi-result-card" aria-live="polite">
-                <span className="bmi-result-label">YOUR CALCULATED BMI</span>
+                <span className="bmi-result-label">{t.yourBmi}</span>
                 <div className="bmi-score-number">{bmiResult.value}</div>
                 <div className={`bmi-category-badge ${bmiResult.badgeClass}`}>
                   {bmiResult.category}

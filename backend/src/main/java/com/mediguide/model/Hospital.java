@@ -18,4 +18,18 @@ public class Hospital {
     private String name;
     private String address;
     private String contact;
+    private String city;
+    private String state;
+    private String pincode;
+    private String type;
+    private Boolean emergencyAvailable;
+    private Boolean icuAvailable;
+    private Double rating;
+    private Integer bedCapacity;
+    private String ambulanceContact;
+    private String departments;
+    private String accreditations;
+    private String operatingHours;
+    private String insuranceAccepted;
+    private String websiteUrl;
 }

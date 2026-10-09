@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './HistoryPage.css';
 import { getHistory, deleteHistory, getHistoryDetail } from '../src/api.js';
+import SearchMetricsSection from './SearchMetricsSection.jsx';
 import {
   detectInputLanguage,
   translateMedicalTerm,
@@ -11,7 +12,16 @@ import {
 
 const PAGE_SIZE = 5;
 
-const HistoryPage = ({ userName = '', token, onLogout, onBack }) => {
+const HistoryPage = ({
+  userName = '',
+  token,
+  onLogout,
+  onBack,
+  onLogin,
+  onRegister,
+  currentLanguage = 'en-IN',
+  onLanguageChange
+}) => {
   const [historyItems, setHistoryItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -21,14 +31,25 @@ const HistoryPage = ({ userName = '', token, onLogout, onBack }) => {
   const [detailLoading, setDetailLoading] = useState(false);
   const [langMode, setLangMode] = useState(() => {
     try {
-      return localStorage.getItem('mediguide_user_lang') || 'auto';
+      return currentLanguage || localStorage.getItem('mediguide_user_lang') || 'auto';
     } catch {
       return 'auto';
     }
   });
+
+  useEffect(() => {
+    if (currentLanguage) {
+      setLangMode(currentLanguage);
+    }
+  }, [currentLanguage]);
+
   const [showInEnglish, setShowInEnglish] = useState(false);
 
   const loadHistory = async (p = 0) => {
+    if (!token) {
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError('');
     try {
@@ -152,8 +173,25 @@ const HistoryPage = ({ userName = '', token, onLogout, onBack }) => {
             {showInEnglish ? '🌐 View in User Language' : '🔄 Show in English'}
           </button>
 
-          <div className="history-user-pill">Welcome, {userName}</div>
-          <button className="history-logout" type="button" onClick={onLogout}>Logout</button>
+          {token ? (
+            <>
+              <div className="history-user-pill">Welcome, {userName || 'User'}</div>
+              <button className="history-logout" type="button" onClick={onLogout}>Logout</button>
+            </>
+          ) : (
+            <div className="history-guest-header-actions">
+              {onLogin && (
+                <button type="button" className="history-btn-signin" onClick={onLogin}>
+                  Sign In
+                </button>
+              )}
+              {onRegister && (
+                <button type="button" className="history-btn-register" onClick={onRegister}>
+                  Get Started
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </header>
 
@@ -344,6 +382,15 @@ const HistoryPage = ({ userName = '', token, onLogout, onBack }) => {
                       )}
                     </div>
                   </div>
+
+                  {/* ── AI Clinical Evaluation & Facility Metrics Section ────────── */}
+                  <SearchMetricsSection
+                    activeCandidate={activeModalCand}
+                    topPredictions={modalTopCands}
+                    currentLanguage={modalLang}
+                    onSelectCandidate={(idx) => setModalCandIdx(idx)}
+                    selectedPredictionIdx={modalCandIdx}
+                  />
                 </div>
               </div>
             </div>
@@ -351,33 +398,70 @@ const HistoryPage = ({ userName = '', token, onLogout, onBack }) => {
         })()}
 
         <section className="history-card">
-          <div className="history-card-header">
-            <div>
-              <h2>Recent Search History</h2>
-            </div>
-            <button className="history-clear" type="button" onClick={async () => {
-              if (window.confirm('Clear all history items on this page?')) {
-                try {
-                  await Promise.all(historyItems.map((item) => deleteHistory(token, item.id)));
-                  loadHistory(page);
-                } catch (err) {
-                  setError(err.message || 'Failed to clear history');
-                }
-              }
-            }}>Clear All</button>
-          </div>
-
-          {loading && <div className="history-loading">Loading history…</div>}
-          {error && <div className="history-error">{error}</div>}
-          {!loading && historyItems.length === 0 && (
-            <div className="history-empty-state">
-              <div className="history-empty-icon" aria-hidden="true">📄</div>
-              <div>
-                <p>No history found</p>
-                <span>Your previous searches will appear here.</span>
+          {!token ? (
+            <div className="history-guest-card">
+              <div className="history-guest-icon" aria-hidden="true">🔒</div>
+              <h2 className="history-guest-title">Sign In to View Your Search History</h2>
+              <p className="history-guest-desc">
+                Your symptom searches, differential diagnoses, and specialist recommendations are saved securely to your personal MediGuide account.
+              </p>
+              <div className="history-guest-btns">
+                {onLogin && (
+                  <button type="button" className="history-guest-signin-btn" onClick={onLogin}>
+                    Sign In
+                  </button>
+                )}
+                {onRegister && (
+                  <button type="button" className="history-guest-signup-btn" onClick={onRegister}>
+                    Create Free Account
+                  </button>
+                )}
               </div>
             </div>
-          )}
+          ) : (
+            <>
+              <div className="history-card-header">
+                <div>
+                  <h2>Recent Search History</h2>
+                </div>
+                {historyItems.length > 0 && (
+                  <button className="history-clear" type="button" onClick={async () => {
+                    if (window.confirm('Clear all history items on this page?')) {
+                      try {
+                        await Promise.all(historyItems.map((item) => deleteHistory(token, item.id)));
+                        loadHistory(page);
+                      } catch (err) {
+                        setError(err.message || 'Failed to clear history');
+                      }
+                    }
+                  }}>Clear All</button>
+                )}
+              </div>
+
+              {loading && <div className="history-loading">Loading history…</div>}
+              {error && (
+                <div className="history-error-banner">
+                  <div className="history-error-icon" aria-hidden="true">⚠️</div>
+                  <div className="history-error-body">
+                    <strong>Session / Authentication Notice</strong>
+                    <p>{error}</p>
+                  </div>
+                  {onLogin && (
+                    <button type="button" className="history-reauth-btn" onClick={onLogin}>
+                      Sign In Again
+                    </button>
+                  )}
+                </div>
+              )}
+              {!loading && !error && historyItems.length === 0 && (
+                <div className="history-empty-state">
+                  <div className="history-empty-icon" aria-hidden="true">📄</div>
+                  <div>
+                    <p>No history found</p>
+                    <span>Your previous searches will appear here.</span>
+                  </div>
+                </div>
+              )}
 
           <div className="history-list">
             {historyItems.map((item) => {
@@ -448,6 +532,8 @@ const HistoryPage = ({ userName = '', token, onLogout, onBack }) => {
               <span>Page {page + 1} of {totalPages}</span>
               <button type="button" className="history-page-btn" disabled={page >= totalPages - 1} onClick={() => loadHistory(page + 1)}>Next →</button>
             </div>
+          )}
+            </>
           )}
         </section>
       </main>
