@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import org.springframework.beans.factory.annotation.Value;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -21,7 +23,9 @@ public class NlpClientService {
 
     private static final Logger log = LoggerFactory.getLogger(NlpClientService.class);
     private final RestTemplate restTemplate = new RestTemplate();
-    private final String nlpUrl = "http://localhost:8000/extract-symptoms";
+
+    @Value("${nlp.service.url:http://localhost:8000}")
+    private String nlpBaseUrl;
 
     private static final Set<String> STOPWORDS = Set.of(
             "i", "have", "am", "is", "are", "was", "been", "be", "the", "a", "an",
@@ -40,7 +44,8 @@ public class NlpClientService {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             Map<String, String> payload = Collections.singletonMap("text", rawText);
-            Map response = restTemplate.postForObject(nlpUrl,
+            String endpoint = (nlpBaseUrl != null ? nlpBaseUrl.replaceAll("/+$", "") : "http://localhost:8000") + "/extract-symptoms";
+            Map response = restTemplate.postForObject(endpoint,
                     new HttpEntity<>(payload, headers), Map.class);
             if (response != null && response.containsKey("symptoms")) {
                 List<String> symptoms = (List<String>) response.get("symptoms");

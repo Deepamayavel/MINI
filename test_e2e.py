@@ -54,7 +54,7 @@ def run_tests():
     # 1. Patient Authentication
     print("\n[Step 1] Testing Patient Authentication...")
     patient_email = "susithra@gmail.com"
-    patient_pass = "Password@123"
+    patient_pass = "susithra123"
     
     status, auth_data = request_json(f"{BASE_URL}/api/auth/login", method="POST", data={
         "email": patient_email,

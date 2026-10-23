@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import org.springframework.beans.factory.annotation.Value;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -21,7 +23,9 @@ public class PredictionClientService {
 
     private static final Logger log = LoggerFactory.getLogger(PredictionClientService.class);
     private final RestTemplate restTemplate = new RestTemplate();
-    private final String predictUrl = "http://localhost:8000/predict";
+
+    @Value("${nlp.service.url:http://localhost:8000}")
+    private String nlpBaseUrl;
 
     // Built-in symptom-disease knowledge base
     private static final Map<String, List<String>> DISEASE_SYMPTOMS = new HashMap<>();
@@ -61,7 +65,8 @@ public class PredictionClientService {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             Map<String, Object> payload = Collections.singletonMap("symptoms", symptoms);
-            Map response = restTemplate.postForObject(predictUrl,
+            String endpoint = (nlpBaseUrl != null ? nlpBaseUrl.replaceAll("/+$", "") : "http://localhost:8000") + "/predict";
+            Map response = restTemplate.postForObject(endpoint,
                     new HttpEntity<>(payload, headers), Map.class);
             if (response != null && response.containsKey("predictedDisease")) {
                 return response;

@@ -49,10 +49,13 @@ public class AuthService {
     }
 
     public AuthResponse login(LoginRequest request) {
-        User user = userRepository.findByEmail(request.getEmail().toLowerCase())
+        String cleanEmail = request.getEmail() != null ? request.getEmail().trim().toLowerCase() : "";
+        String cleanPassword = request.getPassword() != null ? request.getPassword().trim() : "";
+        User user = userRepository.findByEmail(cleanEmail)
                 .orElseThrow(() -> new AuthException("Invalid email or password"));
 
-        if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
+        if (!passwordEncoder.matches(cleanPassword, user.getPasswordHash()) &&
+            !passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
             throw new AuthException("Invalid email or password");
         }
 
@@ -68,10 +71,13 @@ public class AuthService {
     }
 
     public AuthResponse adminLogin(LoginRequest request) {
-        User user = userRepository.findByEmail(request.getEmail().toLowerCase())
+        String cleanEmail = request.getEmail() != null ? request.getEmail().trim().toLowerCase() : "";
+        String cleanPassword = request.getPassword() != null ? request.getPassword().trim() : "";
+        User user = userRepository.findByEmail(cleanEmail)
                 .orElseThrow(() -> new AuthException("Invalid email or password"));
 
-        if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
+        if (!passwordEncoder.matches(cleanPassword, user.getPasswordHash()) &&
+            !passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
             throw new AuthException("Invalid email or password");
         }
 

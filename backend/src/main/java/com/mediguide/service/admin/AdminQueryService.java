@@ -5,6 +5,7 @@ import com.mediguide.model.Query;
 import com.mediguide.repository.AdminQueryRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,7 +18,7 @@ public class AdminQueryService {
     }
 
     public Page<Query> findAll(int page, int size) {
-        return queryRepository.findAll(PageRequest.of(page, size));
+        return queryRepository.findAll(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "timestamp")));
     }
 
     public Query findById(String id) {

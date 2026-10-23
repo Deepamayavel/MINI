@@ -16,7 +16,7 @@ const LoginPage = ({ onLogin, onRegisterClick, onAdminLoginClick }) => {
     setLoading(true);
 
     try {
-      const auth = await login({ email, password });
+      const auth = await login({ email: email.trim(), password: password.trim() });
       if (onLogin) {
         onLogin(auth);
       }

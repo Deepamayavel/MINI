@@ -38,7 +38,7 @@ const RegisterPage = ({ onCreateAccount, onLoginClick }) => {
 
     setLoading(true);
     try {
-      const auth = await register({ name: fullName, email, password });
+      const auth = await register({ name: fullName.trim(), email: email.trim(), password: password.trim() });
       if (onCreateAccount) {
         onCreateAccount(auth);
       }

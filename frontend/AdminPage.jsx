@@ -16,7 +16,7 @@ const AdminPage = ({ onAdminLogin, onBackToLogin }) => {
     setLoading(true);
 
     try {
-      const auth = await adminLogin({ email, password, rememberMe: remember });
+      const auth = await adminLogin({ email: email.trim(), password: password.trim(), rememberMe: remember });
       if (onAdminLogin) {
         onAdminLogin(auth);
       }

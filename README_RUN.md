@@ -43,4 +43,4 @@ Then open **http://localhost:5173** in your browser!
 
 ## 🔑 Default Login Credentials:
 * **Admin Login**: `admin@mediguide.com` / `Admin@1234`
-* **Patient Login**: Any registered email (e.g. `susithra@gmail.com` / `Password@123`) or click **Create Account**.
+* **Patient Login**: Any registered email (e.g. `susithra@gmail.com` / `susithra123`) or click **Create Account**.
