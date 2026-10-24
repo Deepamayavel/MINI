@@ -1,0 +1,6 @@
+backend/
+local_data/
+mongod.exe
+*.csv
+*.owl
+*.bat
