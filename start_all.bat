@@ -7,7 +7,7 @@ echo.
 
 if exist "%~dp0.env" (
     echo [*] Loading local configuration from .env...
-    for /f "usebackq tokens=*" %%i in ("%~dp0.env") do set "%%i"
+    for /f "usebackq eol=# tokens=*" %%i in ("%~dp0.env") do set "%%i"
 )
 
 echo [1/4] Starting Local MongoDB Database (Port 27017)...
