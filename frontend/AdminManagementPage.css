@@ -37,6 +37,9 @@
   background: var(--admin-bg);
   color: var(--admin-text-main);
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
   box-sizing: border-box;
 }
 
