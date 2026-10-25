@@ -1580,6 +1580,79 @@
   }
 }
 
+@media (max-width: 540px) {
+  .search-shell {
+    padding: 10px 8px;
+  }
+
+  .search-header {
+    padding: 12px 10px;
+    gap: 12px;
+  }
+
+  .header-brand-row {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .header-controls-row {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .search-main-card {
+    padding: 16px 12px;
+    border-radius: 18px;
+  }
+
+  .search-title-row h1 {
+    font-size: 1.35rem;
+  }
+
+  .symptom-textarea {
+    font-size: 0.95rem;
+    padding: 12px;
+    min-height: 100px;
+  }
+
+  .action-buttons-row {
+    flex-direction: column;
+    width: 100%;
+    gap: 8px;
+  }
+
+  .search-btn-primary,
+  .voice-record-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .symptom-tag-pill {
+    font-size: 0.78rem;
+    padding: 4px 10px;
+  }
+
+  .output-language-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px 14px;
+    gap: 10px;
+  }
+
+  .output-lang-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .report-hero {
+    padding: 16px 14px;
+  }
+
+  .disease-name-large {
+    font-size: 1.5rem;
+  }
+}
+
 /* ── Multilingual Result Banner & Localized Presentation ───────────────────── */
 .output-language-banner {
   display: flex;

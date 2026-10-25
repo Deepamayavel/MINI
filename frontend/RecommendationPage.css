@@ -828,6 +828,64 @@
   }
 }
 
+@media (max-width: 540px) {
+  .recommendation-shell {
+    padding: 10px 8px;
+  }
+
+  .recommendation-header {
+    padding: 12px 10px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .header-brand-wrap {
+    gap: 8px;
+  }
+
+  .rec-brand-title {
+    font-size: 1.15rem;
+  }
+
+  .header-actions-wrap {
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .latest-card {
+    padding: 16px 12px;
+    border-radius: 18px;
+  }
+
+  .latest-disease-name {
+    font-size: 1.45rem;
+  }
+
+  .clinical-card {
+    padding: 16px 12px;
+    border-radius: 16px;
+  }
+
+  .rec-detail-lang-banner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .rec-lang-toggle-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .rec-tabs-nav {
+    overflow-x: auto;
+    width: 100%;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
 /* ── Multilingual Controls & Translation Indicators ──────────────────────── */
 .rec-lang-pill {
   display: flex;

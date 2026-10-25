@@ -816,4 +816,105 @@
   color: #ffffff;
 }
 
+/* ── Mobile Responsive Adaptations ───────────────────────────────────────── */
+@media (max-width: 768px) {
+  .history-shell {
+    padding: 16px 12px;
+    gap: 18px;
+  }
+
+  .history-topbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .history-user-row {
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .history-user-pill,
+  .history-clear,
+  .history-logout {
+    padding: 8px 12px;
+    font-size: 0.82rem;
+  }
+
+  .history-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .history-card-actions {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .history-hero {
+    padding: 20px 16px;
+  }
+
+  .history-hero h1 {
+    font-size: 1.45rem;
+  }
+
+  .history-detail-modal {
+    width: 95vw !important;
+    max-width: 95vw !important;
+    margin: 10px auto;
+    padding: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .history-shell {
+    padding: 10px 8px;
+  }
+
+  .history-brand-row {
+    width: 100%;
+    gap: 10px;
+  }
+
+  .history-back {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+  }
+
+  .history-logo {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+  }
+
+  .history-logo-title {
+    font-size: 1.15rem;
+  }
+
+  .history-card {
+    padding: 16px 12px;
+    border-radius: 16px;
+  }
+
+  .history-disease-title {
+    font-size: 1.25rem;
+  }
+
+  .history-symptoms-chips {
+    gap: 4px;
+  }
+
+  .history-chip {
+    font-size: 0.75rem;
+    padding: 4px 8px;
+  }
+}
+
 

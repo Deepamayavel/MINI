@@ -462,3 +462,31 @@
     align-items: flex-start;
   }
 }
+
+@media (max-width: 540px) {
+  .admin-dashboard-shell {
+    padding: 10px 8px;
+    gap: 16px;
+  }
+
+  .admin-dashboard-header {
+    padding: 14px 12px;
+    border-radius: 16px;
+    gap: 10px;
+  }
+
+  .admin-actions-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .admin-kpi-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .admin-card {
+    padding: 16px 12px;
+    border-radius: 16px;
+  }
+}

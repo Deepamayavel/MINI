@@ -658,3 +658,40 @@
     align-self: center;
   }
 }
+
+@media (max-width: 540px) {
+  .profile-shell {
+    padding: 10px 8px;
+  }
+
+  .profile-header {
+    padding: 12px 10px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .profile-header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .profile-identity-card {
+    padding: 18px 14px;
+    border-radius: 18px;
+  }
+
+  .profile-avatar-wrap {
+    width: 70px;
+    height: 70px;
+    font-size: 1.8rem;
+  }
+
+  .profile-name-text {
+    font-size: 1.35rem;
+  }
+
+  .profile-section-card {
+    padding: 18px 14px;
+    border-radius: 18px;
+  }
+}

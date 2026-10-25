@@ -419,3 +419,38 @@
     padding: 32px 24px;
   }
 }
+
+@media (max-width: 540px) {
+  .register-shell {
+    padding: 14px 10px;
+    min-height: 100dvh;
+  }
+
+  .register-grid {
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
+  }
+
+  .register-card {
+    padding: 22px 14px;
+    gap: 16px;
+  }
+
+  .register-header h1 {
+    font-size: 1.4rem;
+  }
+
+  .register-header p {
+    font-size: 0.84rem;
+  }
+
+  .primary-btn {
+    padding: 12px;
+    font-size: 0.92rem;
+  }
+
+  .password-requirements {
+    font-size: 0.78rem;
+    padding: 8px 10px;
+  }
+}

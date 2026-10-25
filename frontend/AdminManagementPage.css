@@ -1362,6 +1362,29 @@
   }
 }
 
+@media (max-width: 600px) {
+  .admin-management-shell {
+    padding: 10px 8px;
+  }
+  .admin-tabs-nav {
+    overflow-x: auto;
+    width: 100%;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+  }
+  .admin-table-wrapper {
+    overflow-x: auto;
+    width: 100%;
+    -webkit-overflow-scrolling: touch;
+  }
+  .admin-modal-card {
+    width: 95vw !important;
+    max-width: 95vw !important;
+    margin: 10px auto;
+    padding: 16px 12px;
+  }
+}
+
 /* ── All-in-One Clinical Pathway Bundle & Enriched Hospital Styles ────────── */
 .admin-bundle-action-btn {
   display: inline-flex;

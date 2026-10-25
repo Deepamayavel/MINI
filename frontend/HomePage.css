@@ -1027,7 +1027,8 @@ html {
 
 @media (max-width: 768px) {
   .home-navbar {
-    padding: 14px 20px;
+    padding: 12px 18px;
+    gap: 12px;
   }
 
   .home-nav-links {
@@ -1035,28 +1036,150 @@ html {
   }
 
   .home-main {
-    padding: 24px 16px 60px;
-    gap: 50px;
+    padding: 20px 14px 50px;
+    gap: 40px;
   }
 
   .features-grid,
   .specialties-grid {
     grid-template-columns: 1fr;
+    gap: 16px;
   }
 
   .home-search-box {
     flex-direction: column;
-    padding: 14px;
+    padding: 12px;
     align-items: stretch;
   }
 
   .home-search-actions {
     flex-direction: column;
+    width: 100%;
+    gap: 8px;
   }
 
   .home-voice-btn,
   .home-analyze-btn {
     width: 100%;
     justify-content: center;
+    padding: 12px;
+  }
+}
+
+@media (max-width: 600px) {
+  .home-navbar {
+    padding: 10px 12px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .home-brand-wordmark {
+    font-size: 1.15rem;
+  }
+
+  .home-brand-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+  }
+
+  .home-brand-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .home-nav-actions {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .home-language-selector-wrapper {
+    padding: 4px 8px;
+    font-size: 0.78rem;
+  }
+
+  .home-language-dropdown {
+    font-size: 0.78rem;
+  }
+
+  .home-admin-btn,
+  .home-btn-ghost,
+  .home-btn-primary {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+    border-radius: 8px;
+  }
+
+  .home-hero-title {
+    font-size: 1.85rem !important;
+    line-height: 1.25;
+  }
+
+  .home-hero-description {
+    font-size: 0.92rem;
+    line-height: 1.5;
+  }
+
+  .home-pill-badge {
+    font-size: 0.75rem;
+    padding: 5px 10px;
+  }
+
+  .home-search-box {
+    border-radius: 16px;
+    padding: 10px;
+  }
+
+  .home-search-input {
+    font-size: 0.92rem;
+    min-height: 48px;
+  }
+
+  .home-trust-row {
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .home-stat-badge {
+    position: static;
+    margin-top: 16px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .features-card,
+  .specialties-card,
+  .steps-card {
+    padding: 20px 16px;
+  }
+
+  .section-header h2 {
+    font-size: 1.6rem;
+  }
+
+  .section-header p {
+    font-size: 0.9rem;
+  }
+
+  .home-cta-banner {
+    padding: 30px 16px;
+    border-radius: 20px;
+  }
+
+  .home-cta-banner h2 {
+    font-size: 1.6rem;
+  }
+
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .home-ambient-glow {
+    display: none;
   }
 }
